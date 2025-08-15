@@ -1,0 +1,10 @@
+/* You can keep this file for custom styles that are hard to do with Tailwind */
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
