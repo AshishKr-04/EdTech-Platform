@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/auth'); // Make sure this is imported
 
 const router = express.Router();
 
@@ -47,8 +48,25 @@ router.post('/login', async (req, res) => {
         });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        res.status(500).send('Server error');
     }
 });
+
+// --- 👇 THIS IS THE NEW ROUTE TO ADD ---
+// @route   GET api/auth/me
+// @desc    Get the logged-in user's data (excluding password)
+// @access  Private
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    // req.user.id is available from the authMiddleware
+    // We use .select('-password') to exclude the password from being sent
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+// --- 👆 END OF NEW ROUTE ---
 
 module.exports = router;

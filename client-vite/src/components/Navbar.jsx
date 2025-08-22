@@ -12,10 +12,9 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  // This block renders links for logged-in users
   const authLinks = (
     <div className="flex items-center space-x-4">
-      {/* This part only shows if the user is an Instructor */}
+      {/* Instructor Links */}
       {auth.user?.role === 'Instructor' && (
         <>
           <Link to="/my-courses" className="hover:text-gray-300">My Courses</Link>
@@ -24,11 +23,14 @@ const Navbar = () => {
           </Link>
         </>
       )}
+      {/* Student Links */}
+      {auth.user?.role === 'Student' && (
+        <Link to="/my-learning" className="hover:text-gray-300">My Learning</Link>
+      )}
       <a href="#!" onClick={handleLogout} className="hover:underline">Logout</a>
     </div>
   );
 
-  // This block renders links for guests
   const guestLinks = (
     <div className="nav-links">
       <Link to="/login">Login</Link>

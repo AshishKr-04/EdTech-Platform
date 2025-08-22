@@ -19,6 +19,11 @@ const UserSchema = new mongoose.Schema({
     enum: ['Student', 'Instructor'],
     default: 'Student',
   },
+  // --- 👇 THIS IS THE NEW PART TO ADD ---
+  enrolledCourses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Course',
+  }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

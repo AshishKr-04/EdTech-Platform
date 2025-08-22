@@ -1,8 +1,4 @@
 require('dotenv').config();
-
-// 👇 Add this single line for debugging
-console.log('The value of MONGO_URI is:', process.env.MONGO_URI);
-
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -10,6 +6,7 @@ const mongoose = require('mongoose');
 // --- Import Routes ---
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
+const userRoutes = require('./routes/users'); // 👈 This is the new line to import user routes
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,6 +18,7 @@ app.use(express.json());
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
+app.use('/api/users', userRoutes); // 👈 This is the new line to use the user routes
 
 // --- Database Connection & Server Start ---
 console.log('Attempting to connect to MongoDB...');

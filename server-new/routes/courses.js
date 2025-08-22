@@ -87,4 +87,33 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
+// --- 👇 THIS IS THE NEW ROUTE TO ADD ---
+// @route   POST api/courses/:id/enroll
+// @desc    Enroll the logged-in student in a course
+// @access  Private (Student only)
+router.post('/:id/enroll', authMiddleware, async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the user and add the course to their enrolledCourses array
+    // We use $addToSet to prevent duplicate enrollments
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $addToSet: { enrolledCourses: courseId } },
+      { new: true } // Return the updated user document
+    );
+
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    res.json(user.enrolledCourses);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+// --- 👆 END OF NEW ROUTE ---
+
 module.exports = router;

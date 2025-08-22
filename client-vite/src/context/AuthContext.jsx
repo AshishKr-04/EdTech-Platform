@@ -1,54 +1,61 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode'; // Import the decoder
+import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
+
+// A helper function to set the auth token in axios headers
+const setAuthToken = (token) => {
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete axios.defaults.headers.common['Authorization'];
+  }
+};
 
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     token: localStorage.getItem('token'),
     isAuthenticated: null,
     loading: true,
-    user: null, // This will hold user info like id and role
+    user: null,
   });
 
-  useEffect(() => {
+  const loadUser = async () => {
     const token = localStorage.getItem('token');
     if (token) {
+      setAuthToken(token);
       try {
-        const decodedUser = jwtDecode(token); // Decode the token
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // Get the full user profile from our new endpoint
+        const res = await axios.get('http://localhost:5000/api/auth/me');
         setAuth({
           token: token,
           isAuthenticated: true,
           loading: false,
-          user: decodedUser.user, // Store the user object from the token
+          user: res.data, // Store the full user object
         });
       } catch (err) {
-        // Handle invalid token
+        // Handle token being invalid or expired
         localStorage.removeItem('token');
         setAuth({ token: null, isAuthenticated: false, loading: false, user: null });
       }
     } else {
       setAuth({ token: null, isAuthenticated: false, loading: false, user: null });
     }
+  };
+
+  useEffect(() => {
+    loadUser();
   }, []);
 
-  const login = (token) => {
+  const login = async (token) => {
     localStorage.setItem('token', token);
-    const decodedUser = jwtDecode(token); // Decode on login
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    setAuth({
-      token: token,
-      isAuthenticated: true,
-      loading: false,
-      user: decodedUser.user, // Store user object on login
-    });
+    await loadUser(); // Load user data right after setting the token
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
+    setAuthToken(null);
     setAuth({ token: null, isAuthenticated: false, loading: false, user: null });
   };
 
