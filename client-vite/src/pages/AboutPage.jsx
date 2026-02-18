@@ -30,7 +30,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- Mission & Vision --- */}
+      {/* --- Mission & Vision Section --- */}
       <section className="py-20 container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div>
@@ -42,14 +42,22 @@ const AboutPage = () => {
               We leverage the latest MERN technology to provide a seamless, secure, and interactive environment for digital education.
             </p>
           </div>
-          <div className="bg-indigo-100 h-64 rounded-2xl flex items-center justify-center">
-             <span className="text-indigo-600 font-bold text-2xl">[Visionary Image Placeholder]</span>
+          
+          {/* --- 👇 UPDATED IMAGE CONTAINER WITH CORRECT PATH --- */}
+          <div className="h-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white relative group">
+              <img 
+                src="/images/about-vision.jpg" 
+                alt="Visionary Classroom" 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              {/* Subtle indigo overlay on hover */}
+              <div className="absolute inset-0 bg-indigo-900 opacity-0 group-hover:opacity-10 transition-opacity duration-500"></div>
           </div>
         </div>
       </section>
 
       {/* --- Core Values Section --- */}
-      <section className="bg-gray-900 text-white py-20 px-4">
+      <section className="bg-gray-900 text-white py-20 px-4 rounded-[3rem] mx-4 mb-10">
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-12">Our Core Values</h2>
           <div className="grid md:grid-cols-3 gap-8">
@@ -69,12 +77,12 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- Call to Action --- */}
+      {/* --- Call to Action Section --- */}
       <section className="py-20 text-center container mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-6">Ready to start your journey?</h2>
+        <h2 className="text-4xl font-bold mb-6 text-gray-900">Ready to start your journey?</h2>
         <div className="flex justify-center space-x-4">
-          <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700">Explore Courses</button>
-          <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg font-bold hover:bg-indigo-50">Join as Instructor</button>
+          <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg">Explore Courses</button>
+          <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg font-bold hover:bg-indigo-50 transition">Join as Instructor</button>
         </div>
       </section>
     </div>
