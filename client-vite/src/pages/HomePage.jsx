@@ -7,13 +7,16 @@ import { AuthContext } from '../context/AuthContext';
 const StarRating = ({ rating }) => {
   const stars = [];
   for (let i = 1; i <= 5; i++) {
-    if (i <= rating) {
-      stars.push(<span key={i} className="text-yellow-400">★</span>);
-    } else {
-      stars.push(<span key={i} className="text-gray-300">★</span>);
-    }
+    stars.push(
+      <span key={i} className={i <= rating ? "text-yellow-400" : "text-gray-300"}>★</span>
+    );
   }
-  return <div className="flex items-center"><span className="mr-1 font-bold text-sm text-yellow-600">{rating}</span>{stars}</div>;
+  return (
+    <div className="flex items-center">
+      <span className="mr-1 font-bold text-sm text-yellow-600">{rating || 0}</span>
+      {stars}
+    </div>
+  );
 };
 
 const HomePage = () => {
@@ -23,6 +26,7 @@ const HomePage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Only fetch courses if logged in
     if (auth.isAuthenticated) {
       const fetchCourses = async () => {
         try {
@@ -39,78 +43,122 @@ const HomePage = () => {
     }
   }, [auth.isAuthenticated]);
 
+  // --- VIEW FOR LOGGED-IN USERS (Dashboard Style) ---
   if (auth.isAuthenticated) {
-    if (loading) return <p className="text-center">Loading courses...</p>;
-    if (error) return <p className="text-center text-red-500">{error}</p>;
-
     return (
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center text-indigo-600 my-8">Welcome Back!</h1>
-        <h2 className="text-2xl font-semibold mb-6">Available Courses</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {courses.map((course) => (
-              // --- 👇 THIS IS THE CHANGE ---
-              // The entire card is now wrapped in a Link
-              <Link to={`/course/${course._id}`} key={course._id} className="group block">
-                <div className="relative bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-                  <div className="w-full h-32 bg-gray-200"></div> 
-                  <div className="p-4">
-                    <h2 className="text-lg font-bold text-gray-900 truncate">{course.title}</h2>
-                    <p className="text-sm text-gray-600 mt-1">{course.instructor.name}</p>
-                    <div className="mt-2">
-                      <StarRating rating={course.rating} />
-                    </div>
-                    <div className="mt-2 text-sm text-gray-500 flex items-center space-x-4">
-                      <span>{course.duration}</span>
-                      <span>{course.lessons.length} modules</span>
-                    </div>
-                  </div>
-                  {/* The hover effect still works, and clicking it will navigate */}
-                  <div className="absolute inset-0 bg-white p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col">
-                    <h3 className="text-lg font-bold text-indigo-700">{course.title}</h3>
-                    <p className="text-sm mt-2 flex-grow">{course.description}</p>
-                    <div className="mt-4">
-                      <p className="text-2xl font-extrabold text-gray-900">₹{course.price}</p>
-                      <button className="w-full mt-2 bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">
-                        Go to Course
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="bg-indigo-50 rounded-3xl p-8 mb-12 flex flex-col md:flex-row items-center justify-between">
+            <div>
+                <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Welcome Back, {auth.user?.name}! 👋</h1>
+                <p className="text-indigo-600 font-medium">Ready to pick up where you left off?</p>
+            </div>
+            <Link to="/courses" className="mt-4 md:mt-0 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition">
+                Browse All Courses
+            </Link>
+        </div>
+
+        <h2 className="text-2xl font-bold mb-8 text-gray-800 border-b-2 border-indigo-100 pb-2 inline-block">
+            Recommended for You
+        </h2>
+
+        {loading ? (
+            <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div></div>
+        ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+        ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {courses.slice(0, 8).map((course) => (
+                    <Link to={`/course/${course._id}`} key={course._id} className="group block">
+                        <div className="relative bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            <div className="w-full h-40 bg-indigo-100 flex items-center justify-center text-indigo-300 text-4xl">
+                                📚
+                            </div> 
+                            <div className="p-5">
+                                <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{course.title}</h3>
+                                <p className="text-sm text-gray-500 mt-1">by {course.instructor.name}</p>
+                                <div className="mt-3">
+                                    <StarRating rating={course.rating} />
+                                </div>
+                                <div className="mt-4 flex items-center justify-between text-sm font-medium">
+                                    <span className="text-gray-400">⏱ {course.duration}</span>
+                                    <span className="text-indigo-700 bg-indigo-50 px-2 py-1 rounded">₹{course.price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+                ))}
+            </div>
+        )}
       </div>
     );
   }
 
-  // Logged-out view remains the same
+  // --- VIEW FOR LOGGED-OUT USERS (Landing Page Style) ---
   return (
-    <div className="container mx-auto px-6 py-12 md:py-24">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-12">
-        <div className="md:w-1/2 text-center md:text-left">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight mb-4">
-            Transforming Education Through Technology
+    <div className="space-y-24 pb-20">
+      {/* 1. NEW INTERACTIVE HERO SECTION */}
+      <section className="flex flex-col md:flex-row items-center justify-between px-4 mt-10 gap-12">
+        <div className="md:w-1/2 space-y-8">
+          <h1 className="text-5xl md:text-7xl font-black text-gray-900 leading-[1.1]">
+            Transforming <span className="text-indigo-600">Education</span> Through Technology
           </h1>
-          <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 my-6">
+          
+          <blockquote className="border-l-4 border-indigo-600 pl-6 py-2 italic text-gray-600 text-xl">
             <p>"The beautiful thing about learning is that no one can take it away from you."</p>
-            <cite className="block text-right mt-2 not-italic">- B.B. King</cite>
+            <cite className="block text-right mt-3 not-italic font-bold text-gray-800 text-base">— B.B. King</cite>
           </blockquote>
-          <Link
-            to="/login"
-            className="inline-block bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-blue-700 transition-colors"
-          >
-            Get Started
-          </Link>
+
+          <div className="flex flex-wrap gap-4">
+            <Link to="/register" className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition transform hover:-translate-y-1 shadow-xl">
+              Get Started Free
+            </Link>
+            <Link to="/about" className="border-2 border-gray-200 text-gray-700 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition">
+              Explore Mission
+            </Link>
+          </div>
         </div>
-        <div className="md:w-1/2">
-          <img
-            src="/images/hero-illustration.png" 
-            alt="Illustration of a person learning online"
-            className="w-full h-auto max-w-lg mx-auto"
+        
+        <div className="md:w-1/2 relative">
+          <div className="absolute -inset-4 bg-indigo-100 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+          <img 
+            src="https://img.freepik.com/free-vector/learning-concept-illustration_114360-6186.jpg" 
+            alt="Hero Illustration" 
+            className="relative w-full max-w-lg mx-auto rounded-3xl drop-shadow-2xl"
           />
         </div>
-      </div>
+      </section>
+
+      {/* 2. STATS SECTION */}
+      <section className="bg-gray-900 text-white py-16 rounded-[3rem] mx-4">
+        <div className="container mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div><p className="text-4xl font-bold text-indigo-400">200+</p><p className="text-gray-400">Students</p></div>
+            <div><p className="text-4xl font-bold text-indigo-400">10+</p><p className="text-gray-400">Courses</p></div>
+            <div><p className="text-4xl font-bold text-indigo-400">50+</p><p className="text-gray-400">Instructors</p></div>
+            <div><p className="text-4xl font-bold text-indigo-400">99%</p><p className="text-gray-400">Satisfaction</p></div>
+        </div>
+      </section>
+
+      {/* 3. HOW IT WORKS */}
+      <section className="px-4 text-center">
+        <h2 className="text-4xl font-bold mb-16">Start Learning in <span className="text-indigo-600">3 Steps</span></h2>
+        <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+          <div className="space-y-4 p-6 hover:scale-105 transition-transform">
+            <div className="bg-indigo-600 w-12 h-12 rounded-xl text-white flex items-center justify-center font-bold text-xl mx-auto shadow-lg shadow-indigo-200">1</div>
+            <h3 className="text-xl font-bold">Create Profile</h3>
+            <p className="text-gray-500">Sign up and tell us your interests so we can personalize your dashboard.</p>
+          </div>
+          <div className="space-y-4 p-6 hover:scale-105 transition-transform">
+            <div className="bg-indigo-600 w-12 h-12 rounded-xl text-white flex items-center justify-center font-bold text-xl mx-auto shadow-lg shadow-indigo-200">2</div>
+            <h3 className="text-xl font-bold">Join Course</h3>
+            <p className="text-gray-500">Browse hundreds of professional courses and enroll with one click.</p>
+          </div>
+          <div className="space-y-4 p-6 hover:scale-105 transition-transform">
+            <div className="bg-indigo-600 w-12 h-12 rounded-xl text-white flex items-center justify-center font-bold text-xl mx-auto shadow-lg shadow-indigo-200">3</div>
+            <h3 className="text-xl font-bold">Level Up</h3>
+            <p className="text-gray-500">Watch videos, complete lessons, and gain certificates to boost your career.</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
