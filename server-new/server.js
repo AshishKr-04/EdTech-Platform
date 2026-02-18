@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 // --- Import Routes ---
 const authRoutes = require('./routes/auth');
 const courseRoutes = require('./routes/courses');
-const userRoutes = require('./routes/users'); // 👈 This is the new line to import user routes
+const userRoutes = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,10 +15,16 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// --- 👇 ADD THIS HERE ---
+// Root Health Check Route
+app.get('/', (req, res) => {
+  res.send('EduMind Backend is running successfully! 🚀');
+});
+
 // --- Use Routes ---
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
-app.use('/api/users', userRoutes); // 👈 This is the new line to use the user routes
+app.use('/api/users', userRoutes);
 
 // --- Database Connection & Server Start ---
 console.log('Attempting to connect to MongoDB...');
