@@ -1,7 +1,9 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // 👈 Import Link
+import { useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Mail, Lock } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import api from '../utils/api';
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -15,32 +17,71 @@ const LoginPage = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const res = await api.post('/auth/login', { email, password });
       login(res.data.token);
       navigate('/');
     } catch (err) {
-      setError(err.response.data.msg || 'Login failed.');
+      setError(err.response?.data?.msg || 'Login failed.');
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 text-center">
-      <h1 className="text-3xl font-bold mb-2">Login</h1>
-      <p className="text-lg text-gray-600 italic mb-6">"Let's start a new way to learn things"</p>
-      <form onSubmit={onSubmit} className="space-y-4 text-left">
-        <div>
-          <input type="email" placeholder="Email Address" name="email" value={email} onChange={onChange} required className="w-full px-4 py-2 border rounded-md" />
+    <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-4">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-gray-100"
+      >
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Welcome Back</h1>
+          <p className="text-gray-500">Sign in to continue your learning journey</p>
         </div>
-        <div>
-          <input type="password" placeholder="Password" name="password" value={password} onChange={onChange} required className="w-full px-4 py-2 border rounded-md" />
+
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              type="email"
+              placeholder="Email Address"
+              name="email"
+              value={email}
+              onChange={onChange}
+              required
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            />
+          </div>
+
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
+            <input
+              type="password"
+              placeholder="Password"
+              name="password"
+              value={password}
+              onChange={onChange}
+              required
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+            />
+          </div>
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit"
+            className="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
+          >
+            Sign In
+          </motion.button>
+        </form>
+
+        <div className="mt-8 text-center">
+          <p className="text-gray-600">
+            Don't have an account? <Link to="/register" className="text-indigo-600 font-bold hover:underline">Register for free</Link>
+          </p>
         </div>
-        {error && <p className="text-red-500">{error}</p>}
-        <input type="submit" value="Login" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 cursor-pointer" />
-      </form>
-      {/* 👇 THIS IS THE NEW PART */}
-      <p className="mt-4 text-gray-600">
-        Don't have an account? <Link to="/register" className="text-blue-600 hover:underline">Register here</Link>
-      </p>
+      </motion.div>
     </div>
   );
 };
