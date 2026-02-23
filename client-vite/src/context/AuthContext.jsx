@@ -1,10 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 
 export const AuthContext = createContext();
 
-// A helper function to set the auth token in axios headers
 const setAuthToken = (token) => {
   if (token) {
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -26,17 +24,17 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       setAuthToken(token);
       try {
-        // Get the full user profile from our new endpoint
-        const res = await axios.get('http://localhost:5000/api/auth/me');
+        // We use a relative path now because baseURL is set in main.jsx
+        const res = await axios.get('/auth/me');
         setAuth({
           token: token,
           isAuthenticated: true,
           loading: false,
-          user: res.data, // Store the full user object
+          user: res.data,
         });
       } catch (err) {
-        // Handle token being invalid or expired
         localStorage.removeItem('token');
+        setAuthToken(null);
         setAuth({ token: null, isAuthenticated: false, loading: false, user: null });
       }
     } else {
@@ -50,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     localStorage.setItem('token', token);
-    await loadUser(); // Load user data right after setting the token
+    await loadUser();
   };
 
   const logout = () => {
@@ -61,7 +59,12 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ auth, login, logout }}>
-      {!auth.loading && children}
+      {/* If loading is true, we could show a spinner here */}
+      {!auth.loading ? children : (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 };
