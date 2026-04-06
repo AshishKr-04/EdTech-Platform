@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 const CreateCoursePage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState(''); // 👈 1. Add price to state
-  const [duration, setDuration] = useState(''); // 👈 Add duration to state
+  const [price, setPrice] = useState('');
+  const [duration, setDuration] = useState('');
   const [lessons, setLessons] = useState([{ title: '', content: '' }]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // --- Lesson Field Handlers ---
   const handleLessonChange = (index, event) => {
     const values = [...lessons];
     values[index][event.target.name] = event.target.value;
@@ -23,34 +23,41 @@ const CreateCoursePage = () => {
   };
 
   const handleRemoveLesson = (index) => {
+    if (lessons.length === 1) return;
     const values = [...lessons];
     values.splice(index, 1);
     setLessons(values);
   };
 
-  // --- Form Submission Handler ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
-      // 👇 2. Include price and duration in the data sent to the backend
-      const courseData = { title, description, price, duration, lessons };
-      
-      await axios.post('http://localhost:5000/api/courses', courseData);
-      
-      navigate('/courses'); 
+      const courseData = {
+        title,
+        description,
+        price: Number(price),
+        duration,
+        lessons,
+      };
+
+      await api.post('/courses', courseData);
+      navigate('/courses');
     } catch (err) {
-      setError(err.response?.data?.msg || 'Failed to create course. Please try again.');
       console.error(err);
+      setError(err.response?.data?.message || err.response?.data?.msg || 'Failed to create course. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Create a New Course</h1>
+
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Course Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
           <input
@@ -63,7 +70,6 @@ const CreateCoursePage = () => {
           />
         </div>
 
-        {/* Course Description */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
           <textarea
@@ -75,8 +81,7 @@ const CreateCoursePage = () => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
           />
         </div>
-        
-        {/* --- 👇 3. NEW PRICE AND DURATION FIELDS --- */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price (in ₹)</label>
@@ -90,6 +95,7 @@ const CreateCoursePage = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
+
           <div>
             <label htmlFor="duration" className="block text-sm font-medium text-gray-700">Total Duration</label>
             <input
@@ -103,11 +109,10 @@ const CreateCoursePage = () => {
             />
           </div>
         </div>
-        {/* --- END OF NEW FIELDS --- */}
 
-        {/* Dynamic Lesson Fields */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Lessons</h2>
+
           {lessons.map((lesson, index) => (
             <div key={index} className="p-4 border rounded-md mb-4 space-y-2 relative">
               <h3 className="font-medium">Lesson {index + 1}</h3>
@@ -137,6 +142,7 @@ const CreateCoursePage = () => {
               </button>
             </div>
           ))}
+
           <button
             type="button"
             onClick={handleAddLesson}
@@ -147,12 +153,13 @@ const CreateCoursePage = () => {
         </div>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
-        
+
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700"
+          disabled={loading}
+          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 disabled:opacity-60"
         >
-          Create Course
+          {loading ? 'Creating...' : 'Create Course'}
         </button>
       </form>
     </div>

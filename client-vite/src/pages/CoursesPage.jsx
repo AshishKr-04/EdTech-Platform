@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // 👈 1. Import Link
-import axios from 'axios';
+import { Link } from 'react-router-dom';
+import api from '../utils/api';
 
-// Helper component for rendering star ratings
-const StarRating = ({ rating }) => {
+const StarRating = ({ rating = 0 }) => {
+  const safeRating = Number(rating) || 0;
   const stars = [];
+
   for (let i = 1; i <= 5; i++) {
-    if (i <= rating) {
-      stars.push(<span key={i} className="text-yellow-400">★</span>);
-    } else {
-      stars.push(<span key={i} className="text-gray-300">★</span>);
-    }
+    stars.push(
+      <span key={i} className={i <= safeRating ? "text-yellow-400" : "text-gray-300"}>
+        ★
+      </span>
+    );
   }
-  return <div className="flex items-center"><span className="mr-1 font-bold text-sm text-yellow-600">{rating}</span>{stars}</div>;
+
+  return (
+    <div className="flex items-center">
+      <span className="mr-1 font-bold text-sm text-yellow-600">{safeRating}</span>
+      {stars}
+    </div>
+  );
 };
 
 const CoursesPage = () => {
@@ -23,8 +30,13 @@ const CoursesPage = () => {
   useEffect(() => {
     const fetchAllCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/courses');
-        setCourses(response.data);
+        setLoading(true);
+        setError('');
+
+        const response = await api.get('/courses');
+        const fetchedCourses = response.data.courses || response.data || [];
+
+        setCourses(Array.isArray(fetchedCourses) ? fetchedCourses : []);
       } catch (err) {
         setError('Failed to fetch courses. Please try again later.');
         console.error(err);
@@ -42,44 +54,41 @@ const CoursesPage = () => {
   return (
     <div className="container mx-auto px-4">
       <h1 className="text-4xl font-bold text-center text-gray-800 my-8">All Courses</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {courses.map((course) => (
-          // --- 👇 2. Wrap the card with a Link component ---
-          <Link to={`/course/${course._id}`} key={course._id} className="group block">
-            <div className="relative bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 h-full">
-              
-              <div className="w-full h-32 bg-gray-200">
-                {/* Future course image goes here */}
-              </div> 
+        {courses.map((course) => {
+          const lessons = Array.isArray(course.lessons) ? course.lessons : [];
+          return (
+            <Link to={`/course/${course._id}`} key={course._id} className="group block">
+              <div className="relative bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 h-full">
+                <div className="w-full h-32 bg-gray-200" />
 
-              <div className="p-4">
-                <h2 className="text-lg font-bold text-gray-900 truncate">{course.title}</h2>
-                <p className="text-sm text-gray-600 mt-1">{course.instructor.name}</p>
-                <div className="mt-2">
-                  <StarRating rating={course.rating} />
+                <div className="p-4">
+                  <h2 className="text-lg font-bold text-gray-900 truncate">{course.title}</h2>
+                  <p className="text-sm text-gray-600 mt-1">{course.instructor?.name || 'Unknown Instructor'}</p>
+                  <div className="mt-2">
+                    <StarRating rating={course.rating} />
+                  </div>
+                  <div className="mt-2 text-sm text-gray-500 flex items-center space-x-4">
+                    <span>{course.duration}</span>
+                    <span>{lessons.length} modules</span>
+                  </div>
                 </div>
-                <div className="mt-2 text-sm text-gray-500 flex items-center space-x-4">
-                  <span>{course.duration}</span>
-                  <span>{course.lessons.length} modules</span>
-                </div>
-              </div>
 
-              {/* Hover Pop-out Effect */}
-              <div className="absolute inset-0 bg-white p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col">
-                <h3 className="text-lg font-bold text-indigo-700">{course.title}</h3>
-                <p className="text-sm mt-2 flex-grow">{course.description}</p>
-                <div className="mt-4">
-                  <p className="text-2xl font-extrabold text-gray-900">₹{course.price}</p>
-                  <button className="w-full mt-2 bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">
-                    Go to Course
-                  </button>
+                <div className="absolute inset-0 bg-white p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col">
+                  <h3 className="text-lg font-bold text-indigo-700">{course.title}</h3>
+                  <p className="text-sm mt-2 flex-grow">{course.description}</p>
+                  <div className="mt-4">
+                    <p className="text-2xl font-extrabold text-gray-900">₹{course.price}</p>
+                    <button className="w-full mt-2 bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">
+                      Go to Course
+                    </button>
+                  </div>
                 </div>
               </div>
-
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
