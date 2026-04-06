@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, ChevronDown, Loader2 } from 'lucide-react';
-import api from '../api'; // ✅ FIX: use axios instance
+import api from "../utils/api"; // ✅ FIX: use axios instance
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({

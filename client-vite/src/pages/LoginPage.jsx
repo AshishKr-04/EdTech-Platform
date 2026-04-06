@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import api from '../api'; // ✅ FIX: use axios instance
+import api from "../utils/api";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
