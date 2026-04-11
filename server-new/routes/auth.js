@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
-const authMiddleware = require('../middleware/auth');
+const { authMiddleware } = require('../middleware/auth'); // ✅ FIXED
 
 const router = express.Router();
 
@@ -13,7 +13,6 @@ router.post('/register', async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
-    // ✅ Basic validation
     if (!name || !email || !password) {
       return res.status(400).json({
         message: 'All fields are required',
@@ -28,21 +27,18 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // ✅ Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // ✅ Create user
     user = new User({
       name,
       email,
       password: hashedPassword,
-      role: role || 'Student', // default
+      role: role || 'Student',
     });
 
     await user.save();
 
-    // ✅ CLEAN JWT PAYLOAD (IMPORTANT)
     const token = jwt.sign(
       {
         id: user.id,
@@ -61,14 +57,11 @@ router.post('/register', async (req, res) => {
         email: user.email,
         role: user.role,
       },
-      message: 'User registered successfully',
     });
 
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -78,7 +71,6 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // ✅ Validation
     if (!email || !password) {
       return res.status(400).json({
         message: 'Email and password are required',
@@ -101,7 +93,6 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // ✅ CLEAN JWT PAYLOAD
     const token = jwt.sign(
       {
         id: user.id,
@@ -124,9 +115,7 @@ router.post('/login', async (req, res) => {
 
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -134,8 +123,7 @@ router.post('/login', async (req, res) => {
 // ================= GET CURRENT USER =================
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
-      .select('-password');
+    const user = await User.findById(req.user.id).select('-password');
 
     res.json({
       success: true,
@@ -144,9 +132,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({
-      message: 'Server error',
-    });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

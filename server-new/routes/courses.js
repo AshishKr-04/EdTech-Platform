@@ -4,43 +4,26 @@ const router = express.Router();
 const Course = require('../models/Course');
 const User = require('../models/User');
 
-const authMiddleware = require('../middleware/auth');
-const instructorMiddleware = require('../middleware/instructor');
+const { authMiddleware, instructorOnly } = require('../middleware/auth');
 
 
-// =====================================================
-// ✅ 1. INSTRUCTOR ROUTES (TOP PRIORITY)
-// =====================================================
+// ================= INSTRUCTOR COURSES =================
+router.get('/instructor/my-courses', authMiddleware, instructorOnly, async (req, res) => {
+  try {
+    const courses = await Course.find({
+      instructor: req.user.id,
+    }).sort({ createdAt: -1 });
 
-// GET MY COURSES (Instructor Dashboard)
-router.get(
-  '/instructor/my-courses',
-  authMiddleware,
-  instructorMiddleware,
-  async (req, res) => {
-    try {
-      const courses = await Course.find({
-        instructor: req.user.id,
-      }).sort({ createdAt: -1 });
+    res.json({ success: true, courses });
 
-      res.json({
-        success: true,
-        courses,
-      });
-
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Server error" });
-    }
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
-);
+});
 
 
-// =====================================================
-// ✅ 2. CREATE COURSE (Instructor only)
-// =====================================================
-
-router.post('/', authMiddleware, instructorMiddleware, async (req, res) => {
+// ================= CREATE COURSE =================
+router.post('/', authMiddleware, instructorOnly, async (req, res) => {
   try {
     const { title, description, lessons, price, duration } = req.body;
 
@@ -55,43 +38,26 @@ router.post('/', authMiddleware, instructorMiddleware, async (req, res) => {
 
     await course.save();
 
-    res.status(201).json({
-      success: true,
-      course,
-    });
+    res.status(201).json({ success: true, course });
 
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
 
-// =====================================================
-// ✅ 3. GET ALL COURSES
-// =====================================================
-
+// ================= GET ALL =================
 router.get('/', async (req, res) => {
   try {
-    const courses = await Course.find()
-      .populate('instructor', 'name');
-
-    res.json({
-      success: true,
-      courses,
-    });
-
+    const courses = await Course.find().populate('instructor', 'name');
+    res.json({ success: true, courses });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
 });
 
 
-// =====================================================
-// ✅ 4. PROGRESS + ENROLL ROUTES (BEFORE :id)
-// =====================================================
-
-// ENROLL
+// ================= ENROLL =================
 router.post('/:id/enroll', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -112,7 +78,7 @@ router.post('/:id/enroll', authMiddleware, async (req, res) => {
 });
 
 
-// MARK PROGRESS
+// ================= PROGRESS =================
 router.post('/:id/progress', authMiddleware, async (req, res) => {
   try {
     const { lessonIndex } = req.body;
@@ -123,10 +89,7 @@ router.post('/:id/progress', authMiddleware, async (req, res) => {
     );
 
     if (!progress) {
-      progress = {
-        courseId: req.params.id,
-        completedLessons: []
-      };
+      progress = { courseId: req.params.id, completedLessons: [] };
       user.progress.push(progress);
     }
 
@@ -136,7 +99,7 @@ router.post('/:id/progress', authMiddleware, async (req, res) => {
 
     await user.save();
 
-    res.json({ success: true, progress });
+    res.json({ success: true });
 
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -144,7 +107,6 @@ router.post('/:id/progress', authMiddleware, async (req, res) => {
 });
 
 
-// GET PROGRESS
 router.get('/:id/progress', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -163,32 +125,20 @@ router.get('/:id/progress', authMiddleware, async (req, res) => {
 });
 
 
-// =====================================================
-// ✅ 5. UPDATE COURSE (Instructor only)
-// =====================================================
-
-router.put('/:id', authMiddleware, instructorMiddleware, async (req, res) => {
+// ================= UPDATE =================
+router.put('/:id', authMiddleware, instructorOnly, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
 
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
+    if (!course) return res.status(404).json({ message: "Not found" });
 
     if (course.instructor.toString() !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const updated = await Course.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+    const updated = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
-    res.json({
-      success: true,
-      course: updated,
-    });
+    res.json({ success: true, course: updated });
 
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -196,17 +146,12 @@ router.put('/:id', authMiddleware, instructorMiddleware, async (req, res) => {
 });
 
 
-// =====================================================
-// ✅ 6. DELETE COURSE (Instructor only)
-// =====================================================
-
-router.delete('/:id', authMiddleware, instructorMiddleware, async (req, res) => {
+// ================= DELETE =================
+router.delete('/:id', authMiddleware, instructorOnly, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
 
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
+    if (!course) return res.status(404).json({ message: "Not found" });
 
     if (course.instructor.toString() !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
@@ -214,10 +159,7 @@ router.delete('/:id', authMiddleware, instructorMiddleware, async (req, res) => 
 
     await course.deleteOne();
 
-    res.json({
-      success: true,
-      message: "Course deleted",
-    });
+    res.json({ success: true });
 
   } catch (err) {
     res.status(500).json({ message: "Server error" });
@@ -225,23 +167,15 @@ router.delete('/:id', authMiddleware, instructorMiddleware, async (req, res) => 
 });
 
 
-// =====================================================
-// ✅ 7. GET SINGLE COURSE (MUST BE LAST)
-// =====================================================
-
+// ================= GET SINGLE (LAST) =================
 router.get('/:id', async (req, res) => {
   try {
     const course = await Course.findById(req.params.id)
       .populate('instructor', 'name');
 
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
+    if (!course) return res.status(404).json({ message: "Course not found" });
 
-    res.json({
-      success: true,
-      course,
-    });
+    res.json({ success: true, course });
 
   } catch (err) {
     res.status(500).json({ message: "Server error" });
