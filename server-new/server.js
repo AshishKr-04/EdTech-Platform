@@ -11,28 +11,40 @@ const userRoutes = require('./routes/users');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// ✅ CORS CONFIG (IMPORTANT)
+// ✅ CORS CONFIG (FINAL FIX)
 const allowedOrigins = [
-  'http://localhost:5173',
-  'https://edtech-platform-04.vercel.app'
+  'http://localhost:5173', // local
+  'https://edtech-platform-04.vercel.app', // old vercel
+  'https://ed-tech-platform-ey8a469gi-ashish-kumars-projects-1d996dea.vercel.app' // current vercel
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman / Thunder Client
+    // Allow requests with no origin (Postman, Thunder Client)
+    if (!origin) return callback(null, true);
+
+    // Allow all Vercel preview deployments (VERY IMPORTANT)
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+
+    // Allow whitelisted origins
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
-    } else {
-      return callback(new Error("CORS not allowed"));
     }
+
+    console.log("❌ Blocked by CORS:", origin);
+    return callback(new Error("CORS not allowed"));
   },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 
 // Middleware
 app.use(express.json());
 
-// Health route
+// ✅ Health check route
 app.get('/', (req, res) => {
   res.send('EduMind Backend is running successfully! 🚀');
 });
