@@ -1,119 +1,252 @@
 const express = require('express');
 const router = express.Router();
-const authMiddleware = require('../middleware/auth');
+
 const Course = require('../models/Course');
 const User = require('../models/User');
 
-// Create a course
-router.post('/', authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (user.role !== 'Instructor') {
-      return res.status(403).json({ msg: 'Access denied. Instructors only.' });
+const authMiddleware = require('../middleware/auth');
+const instructorMiddleware = require('../middleware/instructor');
+
+
+// =====================================================
+// ✅ 1. INSTRUCTOR ROUTES (TOP PRIORITY)
+// =====================================================
+
+// GET MY COURSES (Instructor Dashboard)
+router.get(
+  '/instructor/my-courses',
+  authMiddleware,
+  instructorMiddleware,
+  async (req, res) => {
+    try {
+      const courses = await Course.find({
+        instructor: req.user.id,
+      }).sort({ createdAt: -1 });
+
+      res.json({
+        success: true,
+        courses,
+      });
+
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
     }
-    const { title, description, price, duration, lessons } = req.body;
-    const newCourse = new Course({
+  }
+);
+
+
+// =====================================================
+// ✅ 2. CREATE COURSE (Instructor only)
+// =====================================================
+
+router.post('/', authMiddleware, instructorMiddleware, async (req, res) => {
+  try {
+    const { title, description, lessons, price, duration } = req.body;
+
+    const course = new Course({
       title,
       description,
-      price,
-      duration,
-      lessons,
+      lessons: lessons || [],
+      price: price || 0,
+      duration: duration || "0 hours",
       instructor: req.user.id,
     });
-    const course = await newCourse.save();
-    res.json(course);
+
+    await course.save();
+
+    res.status(201).json({
+      success: true,
+      course,
+    });
+
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Get all courses
+
+// =====================================================
+// ✅ 3. GET ALL COURSES
+// =====================================================
+
 router.get('/', async (req, res) => {
   try {
-    const courses = await Course.find().populate('instructor', ['name']);
-    res.json(courses);
+    const courses = await Course.find()
+      .populate('instructor', 'name');
+
+    res.json({
+      success: true,
+      courses,
+    });
+
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Get all courses for the logged-in instructor
-router.get('/my-courses', authMiddleware, async (req, res) => {
-  try {
-    const courses = await Course.find({ instructor: req.user.id }).populate('instructor', ['name']);
-    res.json(courses);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
 
-// Get a single course by its ID
-router.get('/:id', async (req, res) => {
-  try {
-    const course = await Course.findById(req.params.id).populate('instructor', ['name']);
-    if (!course) {
-      return res.status(404).json({ msg: 'Course not found' });
-    }
-    res.json(course);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
+// =====================================================
+// ✅ 4. PROGRESS + ENROLL ROUTES (BEFORE :id)
+// =====================================================
 
-// Update a course
-router.put('/:id', authMiddleware, async (req, res) => {
-  const { title, description, price, duration, lessons } = req.body;
-  try {
-    let course = await Course.findById(req.params.id);
-    if (!course) {
-      return res.status(404).json({ msg: 'Course not found' });
-    }
-    if (course.instructor.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-    course = await Course.findByIdAndUpdate(
-      req.params.id,
-      { $set: { title, description, price, duration, lessons } },
-      { new: true }
-    );
-    res.json(course);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// --- 👇 THIS IS THE NEW ROUTE TO ADD ---
-// @route   POST api/courses/:id/enroll
-// @desc    Enroll the logged-in student in a course
-// @access  Private (Student only)
+// ENROLL
 router.post('/:id/enroll', authMiddleware, async (req, res) => {
   try {
+    const user = await User.findById(req.user.id);
     const courseId = req.params.id;
-    const userId = req.user.id;
 
-    // Find the user and add the course to their enrolledCourses array
-    // We use $addToSet to prevent duplicate enrollments
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { enrolledCourses: courseId } },
-      { new: true } // Return the updated user document
-    );
-
-    if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
+    if (user.enrolledCourses.includes(courseId)) {
+      return res.status(400).json({ message: "Already enrolled" });
     }
 
-    res.json(user.enrolledCourses);
+    user.enrolledCourses.push(courseId);
+    await user.save();
+
+    res.json({ success: true });
+
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ message: "Server error" });
   }
 });
-// --- 👆 END OF NEW ROUTE ---
+
+
+// MARK PROGRESS
+router.post('/:id/progress', authMiddleware, async (req, res) => {
+  try {
+    const { lessonIndex } = req.body;
+    const user = await User.findById(req.user.id);
+
+    let progress = user.progress.find(
+      p => p.courseId.toString() === req.params.id
+    );
+
+    if (!progress) {
+      progress = {
+        courseId: req.params.id,
+        completedLessons: []
+      };
+      user.progress.push(progress);
+    }
+
+    if (!progress.completedLessons.includes(lessonIndex)) {
+      progress.completedLessons.push(lessonIndex);
+    }
+
+    await user.save();
+
+    res.json({ success: true, progress });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// GET PROGRESS
+router.get('/:id/progress', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+
+    const progress = user.progress.find(
+      p => p.courseId.toString() === req.params.id
+    );
+
+    res.json({
+      completedLessons: progress?.completedLessons || []
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// =====================================================
+// ✅ 5. UPDATE COURSE (Instructor only)
+// =====================================================
+
+router.put('/:id', authMiddleware, instructorMiddleware, async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    if (course.instructor.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const updated = await Course.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      course: updated,
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// =====================================================
+// ✅ 6. DELETE COURSE (Instructor only)
+// =====================================================
+
+router.delete('/:id', authMiddleware, instructorMiddleware, async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id);
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    if (course.instructor.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await course.deleteOne();
+
+    res.json({
+      success: true,
+      message: "Course deleted",
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// =====================================================
+// ✅ 7. GET SINGLE COURSE (MUST BE LAST)
+// =====================================================
+
+router.get('/:id', async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.id)
+      .populate('instructor', 'name');
+
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
+
+    res.json({
+      success: true,
+      course,
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 module.exports = router;

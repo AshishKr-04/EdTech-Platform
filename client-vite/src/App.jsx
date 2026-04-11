@@ -79,6 +79,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/my-learning/:id"
+              element={
+                <ProtectedRoute>
+                  <MyLearningPage />
+                </ProtectedRoute>
+              }
+            />
 
           </Routes>
         </main>

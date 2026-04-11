@@ -1,61 +1,109 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import api from "../utils/api";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
 const MyCoursesPage = () => {
+  const { auth } = useContext(AuthContext);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchMyCourses = async () => {
+    const fetchCourses = async () => {
       try {
-        const res = await api.get("/users/enrolled-courses");
+        let res;
+
+        // ✅ Instructor
+        if (auth.user?.role === "Instructor") {
+          res = await api.get("/courses/instructor/my-courses");
+        } 
+        // ✅ Student
+        else {
+          res = await api.get("/users/enrolled-courses");
+        }
+
         setCourses(res.data.courses || []);
+
       } catch (err) {
         console.error(err);
-        setError("Failed to load your courses");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMyCourses();
-  }, []);
+    if (!auth.loading) {
+      fetchCourses();
+    }
+  }, [auth]);
 
-  if (loading) return <p className="text-center">Loading your courses...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/courses/${id}`);
+      setCourses(courses.filter(c => c._id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-bold my-6">🎓 My Courses</h1>
+    <div>
+      <h1 className="text-3xl font-bold mb-6">
+        {auth.user?.role === "Instructor"
+          ? "My Created Courses"
+          : "My Courses"}
+      </h1>
+
+      {/* ✅ CREATE BUTTON */}
+      {auth.user?.role === "Instructor" && (
+        <Link to="/create-course">
+          <button className="mb-6 bg-green-600 text-white px-4 py-2 rounded">
+            + Create Course
+          </button>
+        </Link>
+      )}
 
       {courses.length === 0 ? (
-        <p className="text-gray-500">
-          You haven't enrolled in any courses yet.
-        </p>
+        <p>No courses found</p>
       ) : (
         <div className="grid md:grid-cols-3 gap-6">
-          {courses.map((course) => (
-            <Link key={course._id} to={`/course/${course._id}`}>
-              <div className="bg-white border rounded-xl p-5 shadow hover:shadow-lg transition">
-                <h2 className="text-lg font-bold text-gray-800">
-                  {course.title}
-                </h2>
+          {courses.map(course => (
+            <div key={course._id} className="border p-4 rounded shadow">
 
-                <p className="text-sm text-gray-600 mt-1">
-                  {course.duration}
-                </p>
+              <h2 className="font-bold text-lg">{course.title}</h2>
+              <p className="text-gray-600">{course.description}</p>
 
-                <p className="text-indigo-600 font-semibold mt-3">
-                  ₹{course.price}
-                </p>
+              {/* ✅ STUDENT */}
+              {auth.user?.role === "Student" && (
+                <Link to={`/my-learning/${course._id}`}>
+                  <button className="mt-3 bg-indigo-600 text-white px-3 py-1 rounded">
+                    Start Learning
+                  </button>
+                </Link>
+              )}
 
-                <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
-                  Continue Learning →
-                </button>
-              </div>
-            </Link>
+              {/* ✅ INSTRUCTOR */}
+              {auth.user?.role === "Instructor" && (
+                <div className="flex gap-2 mt-4">
+
+                  <Link to={`/edit-course/${course._id}`}>
+                    <button className="bg-blue-500 text-white px-3 py-1 rounded">
+                      Edit
+                    </button>
+                  </Link>
+
+                  <button
+                    onClick={() => handleDelete(course._id)}
+                    className="bg-red-500 text-white px-3 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+
+                </div>
+              )}
+
+            </div>
           ))}
         </div>
       )}

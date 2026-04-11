@@ -1,67 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-
-// Reusable StarRating component
-const StarRating = ({ rating }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(<span key={i} className={i <= rating ? "text-yellow-400" : "text-gray-300"}>★</span>);
-  }
-  return <div className="flex items-center"><span className="mr-1 font-bold text-sm text-yellow-600">{rating}</span>{stars}</div>;
-};
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api from "../utils/api";
 
 const MyLearningPage = () => {
-  const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { id } = useParams();
 
+  const [course, setCourse] = useState(null);
+  const [activeLessonIndex, setActiveLessonIndex] = useState(0);
+  const [completedLessons, setCompletedLessons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // ✅ Fetch course + progress
   useEffect(() => {
-    const fetchEnrolledCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users/my-learning');
-        setEnrolledCourses(response.data);
+        const courseRes = await api.get(`/courses/${id}`);
+        const progressRes = await api.get(`/courses/${id}/progress`);
+
+        setCourse(courseRes.data.course || courseRes.data);
+        setCompletedLessons(progressRes.data.completedLessons || []);
+
       } catch (err) {
-        setError('Failed to fetch your enrolled courses.');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchEnrolledCourses();
-  }, []);
 
-  if (loading) return <p className="text-center">Loading your courses...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+    fetchData();
+  }, [id]);
+
+  // ✅ Mark lesson complete
+  const markComplete = async (index) => {
+    try {
+      await api.post(`/courses/${id}/progress`, {
+        lessonIndex: index,
+      });
+
+      setCompletedLessons((prev) =>
+        prev.includes(index) ? prev : [...prev, index]
+      );
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (!course) return <p className="text-center">Course not found</p>;
+
+  const lessons = course.lessons || [];
+  const activeLesson = lessons[activeLessonIndex];
+
+  const progressPercent =
+    lessons.length > 0
+      ? (completedLessons.length / lessons.length) * 100
+      : 0;
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-4xl font-bold text-center text-gray-800 my-8">My Learning</h1>
-      
-      {enrolledCourses.length === 0 ? (
-        <p className="text-center text-gray-600">You are not enrolled in any courses yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {enrolledCourses.map((course) => (
-            <Link to={`/course/${course._id}`} key={course._id} className="group block">
-              <div className="relative bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 h-full">
-                <div className="w-full h-32 bg-gray-200"></div> 
-                <div className="p-4">
-                  <h2 className="text-lg font-bold text-gray-900 truncate">{course.title}</h2>
-                  <p className="text-sm text-gray-600 mt-1">{course.instructor.name}</p>
-                   <div className="mt-2">
-                    <StarRating rating={course.rating} />
-                  </div>
-                  <div className="mt-2 text-sm text-gray-500 flex items-center space-x-4">
-                    <span>{course.duration}</span>
-                    <span>{course.lessons.length} modules</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
+    <div className="flex h-[80vh] border rounded overflow-hidden">
+
+      {/* 🎯 LEFT: VIDEO PLAYER */}
+      <div className="w-3/4 bg-black text-white p-4">
+
+        <h2 className="text-xl font-bold mb-3">
+          {activeLesson.title}
+        </h2>
+
+        {/* 🎥 VIDEO */}
+        {activeLesson.videoUrl ? (
+          <video
+            src={activeLesson.videoUrl}
+            controls
+            className="w-full h-[60vh] rounded"
+            onEnded={() => markComplete(activeLessonIndex)}
+          />
+        ) : (
+          <div className="h-[60vh] flex items-center justify-center bg-gray-800">
+            <p>No video available</p>
+          </div>
+        )}
+
+        {/* CONTENT */}
+        <p className="mt-4">{activeLesson.content}</p>
+
+        {/* COMPLETE BUTTON */}
+        <button
+          onClick={() => markComplete(activeLessonIndex)}
+          className={`mt-4 px-4 py-2 rounded ${
+            completedLessons.includes(activeLessonIndex)
+              ? "bg-green-500"
+              : "bg-indigo-600"
+          }`}
+        >
+          {completedLessons.includes(activeLessonIndex)
+            ? "Completed ✅"
+            : "Mark Complete"}
+        </button>
+
+        {/* PROGRESS BAR */}
+        <div className="mt-6">
+          <p>Progress: {Math.round(progressPercent)}%</p>
+          <div className="w-full bg-gray-600 h-2 rounded mt-1">
+            <div
+              className="bg-indigo-500 h-2 rounded"
+              style={{ width: `${progressPercent}%` }}
+            ></div>
+          </div>
         </div>
-      )}
+      </div>
+
+      {/* 📚 RIGHT: LESSON LIST */}
+      <div className="w-1/4 bg-gray-100 overflow-y-auto">
+
+        <h3 className="p-4 font-bold border-b">Lessons</h3>
+
+        {lessons.map((lesson, index) => (
+          <div
+            key={index}
+            onClick={() => setActiveLessonIndex(index)}
+            className={`p-4 cursor-pointer border-b hover:bg-gray-200 ${
+              index === activeLessonIndex ? "bg-gray-300" : ""
+            }`}
+          >
+            <div className="flex justify-between items-center">
+              <span>{lesson.title}</span>
+
+              {completedLessons.includes(index) && (
+                <span className="text-green-500">✔</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
