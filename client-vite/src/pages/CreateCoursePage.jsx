@@ -1,166 +1,186 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
 
 const CreateCoursePage = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [duration, setDuration] = useState('');
-  const [lessons, setLessons] = useState([{ title: '', content: '' }]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLessonChange = (index, event) => {
-    const values = [...lessons];
-    values[index][event.target.name] = event.target.value;
-    setLessons(values);
+  const [courseData, setCourseData] = useState({
+    title: "",
+    description: "",
+    price: "",
+    duration: "",
+    lessons: [
+      { title: "", content: "", videoUrl: "" }
+    ],
+  });
+
+  const handleChange = (e) => {
+    setCourseData({
+      ...courseData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  const handleAddLesson = () => {
-    setLessons([...lessons, { title: '', content: '' }]);
+  // ✅ LESSON CHANGE
+  const handleLessonChange = (index, e) => {
+    const updatedLessons = [...courseData.lessons];
+    updatedLessons[index][e.target.name] = e.target.value;
+
+    setCourseData({
+      ...courseData,
+      lessons: updatedLessons,
+    });
   };
 
-  const handleRemoveLesson = (index) => {
-    if (lessons.length === 1) return;
-    const values = [...lessons];
-    values.splice(index, 1);
-    setLessons(values);
+  // ✅ ADD LESSON
+  const addLesson = () => {
+    setCourseData({
+      ...courseData,
+      lessons: [
+        ...courseData.lessons,
+        { title: "", content: "", videoUrl: "" }
+      ],
+    });
   };
 
+  // ✅ REMOVE LESSON
+  const removeLesson = (index) => {
+    const updatedLessons = courseData.lessons.filter((_, i) => i !== index);
+
+    setCourseData({
+      ...courseData,
+      lessons: updatedLessons,
+    });
+  };
+
+  // ✅ SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
 
     try {
-      const courseData = {
-        title,
-        description,
-        price: Number(price),
-        duration,
-        lessons,
-      };
+      await api.post("/courses", courseData);
 
-      await api.post('/courses', courseData);
-      navigate('/courses');
+      alert("Course Created Successfully 🎉");
+      navigate("/my-courses");
+
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || err.response?.data?.msg || 'Failed to create course. Please try again.');
-    } finally {
-      setLoading(false);
+      alert("Error creating course");
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Create a New Course</h1>
+    <div className="max-w-4xl mx-auto p-6">
+
+      <h1 className="text-3xl font-bold mb-6">Create Course</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+
+        {/* BASIC DETAILS */}
+        <input
+          type="text"
+          name="title"
+          placeholder="Course Title"
+          className="w-full border p-3 rounded"
+          onChange={handleChange}
+          required
+        />
+
+        <textarea
+          name="description"
+          placeholder="Course Description"
+          className="w-full border p-3 rounded"
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          className="w-full border p-3 rounded"
+          onChange={handleChange}
+        />
+
+        <input
+          type="text"
+          name="duration"
+          placeholder="Duration (e.g. 5 hours)"
+          className="w-full border p-3 rounded"
+          onChange={handleChange}
+        />
+
+        {/* LESSON BUILDER */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          />
-        </div>
+          <h2 className="text-xl font-bold mb-3">Lessons</h2>
 
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            rows="4"
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          />
-        </div>
+          {courseData.lessons.map((lesson, index) => (
+            <div key={index} className="border p-4 mb-4 rounded">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price (in ₹)</label>
-            <input
-              type="number"
-              id="price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-              placeholder="e.g., 499"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
+              <h3 className="font-semibold mb-2">
+                Lesson {index + 1}
+              </h3>
 
-          <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-gray-700">Total Duration</label>
-            <input
-              type="text"
-              id="duration"
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required
-              placeholder="e.g., 8.5 total hours"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            />
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Lessons</h2>
-
-          {lessons.map((lesson, index) => (
-            <div key={index} className="p-4 border rounded-md mb-4 space-y-2 relative">
-              <h3 className="font-medium">Lesson {index + 1}</h3>
               <input
                 type="text"
                 name="title"
                 placeholder="Lesson Title"
+                className="w-full border p-2 mb-2 rounded"
                 value={lesson.title}
                 onChange={(e) => handleLessonChange(index, e)}
                 required
-                className="w-full px-3 py-2 border rounded-md"
               />
+
               <textarea
                 name="content"
                 placeholder="Lesson Content"
+                className="w-full border p-2 mb-2 rounded"
                 value={lesson.content}
                 onChange={(e) => handleLessonChange(index, e)}
                 required
-                className="w-full px-3 py-2 border rounded-md"
               />
-              <button
-                type="button"
-                onClick={() => handleRemoveLesson(index)}
-                className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-xs rounded hover:bg-red-600"
-              >
-                Remove
-              </button>
+
+              <input
+                type="text"
+                name="videoUrl"
+                placeholder="Video URL (optional)"
+                className="w-full border p-2 mb-2 rounded"
+                value={lesson.videoUrl}
+                onChange={(e) => handleLessonChange(index, e)}
+              />
+
+              {/* REMOVE BUTTON */}
+              {courseData.lessons.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeLesson(index)}
+                  className="bg-red-500 text-white px-3 py-1 rounded"
+                >
+                  Remove Lesson
+                </button>
+              )}
             </div>
           ))}
 
+          {/* ADD BUTTON */}
           <button
             type="button"
-            onClick={handleAddLesson}
-            className="mt-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+            onClick={addLesson}
+            className="bg-green-600 text-white px-4 py-2 rounded"
           >
-            Add Lesson
+            + Add Lesson
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-center">{error}</p>}
-
+        {/* SUBMIT */}
         <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-indigo-600 text-white py-3 rounded-md text-lg font-semibold hover:bg-indigo-700 disabled:opacity-60"
+          className="w-full bg-indigo-600 text-white py-3 rounded"
         >
-          {loading ? 'Creating...' : 'Create Course'}
+          Create Course
         </button>
+
       </form>
     </div>
   );
