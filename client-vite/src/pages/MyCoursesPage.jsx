@@ -1,33 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-
-// You can reuse the StarRating component if you've moved it to its own file
-const StarRating = ({ rating }) => {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(<span key={i} className={i <= rating ? "text-yellow-400" : "text-gray-300"}>★</span>);
-  }
-  return <div className="flex items-center"><span className="mr-1 font-bold text-sm text-yellow-600">{rating}</span>{stars}</div>;
-};
+import React, { useEffect, useState } from "react";
+import api from "../utils/api";
+import { Link } from "react-router-dom";
 
 const MyCoursesPage = () => {
-  const [myCourses, setMyCourses] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchMyCourses = async () => {
       try {
-        // We call the new secure endpoint. The token is sent automatically.
-        const response = await axios.get('http://localhost:5000/api/courses/my-courses');
-        setMyCourses(response.data);
+        const res = await api.get("/users/enrolled-courses");
+        setCourses(res.data.courses || []);
       } catch (err) {
-        setError('Failed to fetch your courses.');
+        console.error(err);
+        setError("Failed to load your courses");
       } finally {
         setLoading(false);
       }
     };
+
     fetchMyCourses();
   }, []);
 
@@ -36,27 +28,32 @@ const MyCoursesPage = () => {
 
   return (
     <div className="container mx-auto px-4">
-      <h1 className="text-4xl font-bold text-center text-gray-800 my-8">My Courses</h1>
-      
-      {myCourses.length === 0 ? (
-        <p className="text-center text-gray-600">You haven't created any courses yet.</p>
+      <h1 className="text-3xl font-bold my-6">🎓 My Courses</h1>
+
+      {courses.length === 0 ? (
+        <p className="text-gray-500">
+          You haven't enrolled in any courses yet.
+        </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {myCourses.map((course) => (
-            <Link to={`/course/${course._id}`} key={course._id} className="group block">
-              <div className="relative bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 h-full">
-                <div className="w-full h-32 bg-gray-200"></div> 
-                <div className="p-4">
-                  <h2 className="text-lg font-bold text-gray-900 truncate">{course.title}</h2>
-                  <p className="text-sm text-gray-600 mt-1">{course.instructor.name}</p>
-                   <div className="mt-2">
-                    <StarRating rating={course.rating} />
-                  </div>
-                  <div className="mt-2 text-sm text-gray-500 flex items-center space-x-4">
-                    <span>{course.duration}</span>
-                    <span>{course.lessons.length} modules</span>
-                  </div>
-                </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {courses.map((course) => (
+            <Link key={course._id} to={`/course/${course._id}`}>
+              <div className="bg-white border rounded-xl p-5 shadow hover:shadow-lg transition">
+                <h2 className="text-lg font-bold text-gray-800">
+                  {course.title}
+                </h2>
+
+                <p className="text-sm text-gray-600 mt-1">
+                  {course.duration}
+                </p>
+
+                <p className="text-indigo-600 font-semibold mt-3">
+                  ₹{course.price}
+                </p>
+
+                <button className="mt-4 w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700">
+                  Continue Learning →
+                </button>
               </div>
             </Link>
           ))}

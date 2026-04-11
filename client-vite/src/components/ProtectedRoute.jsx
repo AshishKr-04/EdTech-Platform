@@ -1,18 +1,19 @@
-import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 
-const ProtectedRoute = () => {
+const ProtectedRoute = ({ children }) => {
   const { auth } = useContext(AuthContext);
 
-  // If the context is still loading, you can show a loading spinner
   if (auth.loading) {
-    return <div>Loading...</div>;
+    return <p className="text-center mt-10">Loading...</p>;
   }
 
-  // If the user is authenticated, render the child component (the page).
-  // Otherwise, redirect them to the login page.
-  return auth.isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
+  if (!auth.isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;

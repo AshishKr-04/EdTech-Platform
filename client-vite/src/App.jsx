@@ -11,21 +11,21 @@ import ContactPage from './pages/ContactPage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import EditCoursePage from './pages/EditCoursePage';
 import MyCoursesPage from './pages/MyCoursesPage';
-import MyLearningPage from './pages/MyLearningPage'; 
+import MyLearningPage from './pages/MyLearningPage';
+
 import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // 👈 1. Import the Footer
+import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
-      {/* 2. Added a flex container to keep footer at the bottom */}
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        
-        {/* 3. Added flex-grow to main so it pushes the footer down */}
+
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
+
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
@@ -34,18 +34,56 @@ function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route path="/course/:id" element={<CourseDetailPage />} />
-              <Route path="/create-course" element={<CreateCoursePage />} />
-              <Route path="/edit-course/:id" element={<EditCoursePage />} />
-              <Route path="/my-courses" element={<MyCoursesPage />} />
-              <Route path="/my-learning" element={<MyLearningPage />} />
-            </Route>
+            {/* Protected Routes (FIXED) */}
+            <Route
+              path="/course/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseDetailPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/create-course"
+              element={
+                <ProtectedRoute>
+                  <CreateCoursePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/edit-course/:id"
+              element={
+                <ProtectedRoute>
+                  <EditCoursePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <MyCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/my-learning"
+              element={
+                <ProtectedRoute>
+                  <MyLearningPage />
+                </ProtectedRoute>
+              }
+            />
+
           </Routes>
         </main>
 
-        <Footer /> {/* 4. Render Footer at the very bottom */}
+        <Footer />
       </div>
     </Router>
   );

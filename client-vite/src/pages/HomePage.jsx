@@ -110,7 +110,7 @@ const HomePage = () => {
 
           <div className="flex flex-wrap gap-4">
             <Link to="/register" className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition transform hover:-translate-y-1 shadow-xl">
-              Get Started Free
+              Get Started 
             </Link>
             <Link to="/about" className="border-2 border-gray-200 text-gray-700 px-10 py-4 rounded-2xl font-bold text-lg hover:bg-gray-50 transition">
               Explore Mission
