@@ -6,38 +6,36 @@ const mongoose = require("mongoose");
 // ✅ CREATE APP FIRST
 const app = express();
 
-// Routes
+// ================= ROUTES =================
 const authRoutes = require("./routes/auth");
 const courseRoutes = require("./routes/courses");
 const userRoutes = require("./routes/users");
 const uploadRoutes = require("./routes/upload");
 
-// PORT
+// ================= PORT =================
 const PORT = process.env.PORT || 5000;
 
-// ✅ MIDDLEWARE
+// ================= CORS FIX =================
+// 🔥 Allow all origins (fixes your issue immediately)
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://edtech-platform-04.vercel.app"
-  ],
-  credentials: true
+  origin: "*",
 }));
 
+// ================= MIDDLEWARE =================
 app.use(express.json());
 
-// ✅ ROUTES (AFTER app is defined)
+// ================= ROUTES =================
 app.use("/api/auth", authRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
 
-// Health check
+// ================= HEALTH CHECK =================
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
 
-// ✅ DB CONNECT
+// ================= DB CONNECT =================
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected ✅");
