@@ -15,13 +15,13 @@ const EditCoursePage = () => {
   });
 
   const [loading, setLoading] = useState(true);
+  const [uploadingIndex, setUploadingIndex] = useState(null);
 
   // ================= FETCH COURSE =================
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const res = await api.get(`/courses/${id}`);
-
         const course = res.data.course || res.data;
 
         setCourseData({
@@ -43,7 +43,7 @@ const EditCoursePage = () => {
     fetchCourse();
   }, [id]);
 
-  // ================= BASIC FIELD CHANGE =================
+  // ================= BASIC CHANGE =================
   const handleChange = (e) => {
     setCourseData({
       ...courseData,
@@ -81,6 +81,38 @@ const EditCoursePage = () => {
       ...courseData,
       lessons: updatedLessons,
     });
+  };
+
+  // ================= VIDEO UPLOAD =================
+  const handleVideoUpload = async (index, file) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    try {
+      setUploadingIndex(index);
+
+      const res = await api.post("/upload/video", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      const updatedLessons = [...courseData.lessons];
+      updatedLessons[index].videoUrl = res.data.url;
+
+      setCourseData({
+        ...courseData,
+        lessons: updatedLessons,
+      });
+
+      alert("Video uploaded successfully 🎉");
+
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed");
+    } finally {
+      setUploadingIndex(null);
+    }
   };
 
   // ================= SUBMIT =================
@@ -146,7 +178,7 @@ const EditCoursePage = () => {
           />
         </div>
 
-        {/* ================= LESSON BUILDER ================= */}
+        {/* LESSON BUILDER */}
         <div>
           <h2 className="text-xl font-bold mb-3">Lessons</h2>
 
@@ -174,20 +206,38 @@ const EditCoursePage = () => {
                 className="w-full border p-2 mb-2 rounded"
               />
 
+              {/* VIDEO URL */}
               <input
                 type="text"
                 name="videoUrl"
                 value={lesson.videoUrl}
                 onChange={(e) => handleLessonChange(index, e)}
-                placeholder="Video URL"
+                placeholder="Paste Video URL (optional)"
                 className="w-full border p-2 mb-2 rounded"
               />
+
+              {/* 🎥 VIDEO UPLOAD */}
+              <input
+                type="file"
+                accept="video/*"
+                className="mb-2"
+                onChange={(e) =>
+                  handleVideoUpload(index, e.target.files[0])
+                }
+              />
+
+              {/* UPLOADING STATUS */}
+              {uploadingIndex === index && (
+                <p className="text-blue-500 text-sm">
+                  Uploading video...
+                </p>
+              )}
 
               {/* DELETE */}
               <button
                 type="button"
                 onClick={() => removeLesson(index)}
-                className="bg-red-500 text-white px-3 py-1 rounded"
+                className="bg-red-500 text-white px-3 py-1 rounded mt-2"
               >
                 Delete Lesson
               </button>

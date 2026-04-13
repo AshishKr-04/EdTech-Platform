@@ -1,9 +1,9 @@
-import ReactPlayer from "react-player";
+
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../utils/api";
-
+import ReactPlayer from "react-player";
 
 const CourseDetailPage = () => {
   const { id } = useParams();
