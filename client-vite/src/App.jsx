@@ -16,6 +16,7 @@ import MyLearningPage from './pages/MyLearningPage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import InstructorDashboard from "./pages/InstructorDashboard";
 
 function App() {
   return (
@@ -86,6 +87,10 @@ function App() {
                   <MyLearningPage />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="/instructor-dashboard"
+              element={<InstructorDashboard />}
             />
 
           </Routes>
