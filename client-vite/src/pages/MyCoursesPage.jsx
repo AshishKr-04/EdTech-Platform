@@ -1,111 +1,102 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
-import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
 const MyCoursesPage = () => {
-  const { auth } = useContext(AuthContext);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
 
+  // ================= FETCH =================
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         let res;
 
-        // ✅ Instructor
+        // 👨‍🏫 Instructor → created courses
         if (auth.user?.role === "Instructor") {
           res = await api.get("/courses/instructor/my-courses");
-        } 
-        // ✅ Student
+        }
+
+        // 🎓 Student → enrolled courses
         else {
-          res = await api.get("/users/enrolled-courses");
+          res = await api.get("/users/my-learning");
         }
 
         setCourses(res.data.courses || []);
-
       } catch (err) {
         console.error(err);
-      } finally {
-        setLoading(false);
       }
     };
 
-    if (!auth.loading) {
-      fetchCourses();
-    }
-  }, [auth]);
+    if (auth.user) fetchCourses();
+  }, [auth.user]);
 
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/courses/${id}`);
-      setCourses(courses.filter(c => c._id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-
+  // ================= UI =================
   return (
-    <div>
+    <div className="max-w-5xl mx-auto p-6">
+
       <h1 className="text-3xl font-bold mb-6">
         {auth.user?.role === "Instructor"
           ? "My Created Courses"
-          : "My Courses"}
+          : "My Learning"}
       </h1>
 
-      {/* ✅ CREATE BUTTON */}
+      {/* ➕ CREATE BUTTON (ONLY INSTRUCTOR) */}
       {auth.user?.role === "Instructor" && (
-        <Link to="/create-course">
-          <button className="mb-6 bg-green-600 text-white px-4 py-2 rounded">
-            + Create Course
-          </button>
-        </Link>
+        <button
+          onClick={() => navigate("/create-course")}
+          className="bg-green-600 text-white px-4 py-2 rounded mb-4"
+        >
+          + Create Course
+        </button>
       )}
 
+      {/* COURSES */}
       {courses.length === 0 ? (
-        <p>No courses found</p>
+        <p>
+          {auth.user?.role === "Instructor"
+            ? "No courses created yet"
+            : "No enrolled courses"}
+        </p>
       ) : (
-        <div className="grid md:grid-cols-3 gap-6">
-          {courses.map(course => (
-            <div key={course._id} className="border p-4 rounded shadow">
+        courses.map((course) => (
+          <div key={course._id} className="border p-4 rounded mb-4">
 
-              <h2 className="font-bold text-lg">{course.title}</h2>
-              <p className="text-gray-600">{course.description}</p>
+            <h3 className="text-xl font-bold">{course.title}</h3>
 
-              {/* ✅ STUDENT */}
-              {auth.user?.role === "Student" && (
-                <Link to={`/my-learning/${course._id}`}>
-                  <button className="mt-3 bg-indigo-600 text-white px-3 py-1 rounded">
-                    Start Learning
-                  </button>
-                </Link>
-              )}
+            {/* 👨‍🏫 INSTRUCTOR ACTIONS */}
+            {auth.user?.role === "Instructor" ? (
+              <div className="flex gap-3 mt-3">
 
-              {/* ✅ INSTRUCTOR */}
-              {auth.user?.role === "Instructor" && (
-                <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => navigate(`/course/${course._id}`)}
+                  className="bg-indigo-600 text-white px-3 py-1 rounded"
+                >
+                  View
+                </button>
 
-                  <Link to={`/edit-course/${course._id}`}>
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded">
-                      Edit
-                    </button>
-                  </Link>
+                <button
+                  onClick={() => navigate(`/edit-course/${course._id}`)}
+                  className="bg-yellow-500 text-white px-3 py-1 rounded"
+                >
+                  Edit
+                </button>
 
-                  <button
-                    onClick={() => handleDelete(course._id)}
-                    className="bg-red-500 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
+              </div>
+            ) : (
+              // 🎓 STUDENT ACTION
+              <button
+                onClick={() => navigate(`/course/${course._id}`)}
+                className="bg-indigo-600 text-white px-3 py-1 rounded mt-3"
+              >
+                Continue Learning
+              </button>
+            )}
 
-                </div>
-              )}
-
-            </div>
-          ))}
-        </div>
+          </div>
+        ))
       )}
     </div>
   );

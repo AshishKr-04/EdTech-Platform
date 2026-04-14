@@ -10,13 +10,12 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import EditCoursePage from './pages/EditCoursePage';
-import MyCoursesPage from './pages/MyCoursesPage';
 import MyLearningPage from './pages/MyLearningPage';
+import InstructorDashboard from "./pages/InstructorDashboard";
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
-import InstructorDashboard from "./pages/InstructorDashboard";
 
 function App() {
   return (
@@ -27,24 +26,28 @@ function App() {
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
 
-            {/* Public Routes */}
+            {/* PUBLIC ROUTES */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/courses" element={<CoursesPage />} />
+            <Route path="/course/:id" element={<CourseDetailPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
 
-            {/* Protected Routes (FIXED) */}
+            {/* PROTECTED ROUTES */}
+
+            {/* 👨‍🏫 DASHBOARD */}
             <Route
-              path="/course/:id"
+              path="/instructor-dashboard"
               element={
                 <ProtectedRoute>
-                  <CourseDetailPage />
+                  <InstructorDashboard />
                 </ProtectedRoute>
               }
             />
 
+            {/* CREATE COURSE */}
             <Route
               path="/create-course"
               element={
@@ -54,6 +57,7 @@ function App() {
               }
             />
 
+            {/* EDIT COURSE */}
             <Route
               path="/edit-course/:id"
               element={
@@ -63,15 +67,7 @@ function App() {
               }
             />
 
-            <Route
-              path="/my-courses"
-              element={
-                <ProtectedRoute>
-                  <MyCoursesPage />
-                </ProtectedRoute>
-              }
-            />
-
+            {/* 🎓 LEARNING */}
             <Route
               path="/my-learning"
               element={
@@ -80,6 +76,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/my-learning/:id"
               element={
@@ -87,10 +84,6 @@ function App() {
                   <MyLearningPage />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path="/instructor-dashboard"
-              element={<InstructorDashboard />}
             />
 
           </Routes>
