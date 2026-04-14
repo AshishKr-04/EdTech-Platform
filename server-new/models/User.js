@@ -9,25 +9,28 @@ const ProgressSchema = new mongoose.Schema({
   time: Number,
 });
 
-const UserSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
-  role: {
-    type: String,
-    enum: ["Student", "Instructor"],
-    default: "Student",
-  },
+const UserSchema = new mongoose.Schema(
+  {
+    name: String,
+    email: String,
+    password: String,
 
-  enrolledCourses: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
+    role: {
+      type: String,
+      enum: ["Student", "Instructor"],
+      default: "Student",
     },
-  ],
 
-  progress: [ProgressSchema], // 🔥 UPDATED
+    enrolledCourses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+    ],
 
-}, { timestamps: true });
+    progress: [ProgressSchema],
+  },
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("User", UserSchema);

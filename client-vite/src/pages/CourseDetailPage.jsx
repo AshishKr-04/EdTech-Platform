@@ -7,21 +7,19 @@ const CourseDetailPage = () => {
   const { id } = useParams();
 
   const [course, setCourse] = useState(null);
-  const [resumeTime, setResumeTime] = useState(0);
+  const [time, setTime] = useState(0);
   const [lessonIndex, setLessonIndex] = useState(0);
 
-  // FETCH COURSE
   useEffect(() => {
-    const fetchData = async () => {
-      const courseRes = await api.get(`/courses/${id}`);
-      setCourse(courseRes.data.course);
+    const load = async () => {
+      const c = await api.get(`/courses/${id}`);
+      setCourse(c.data.course);
 
-      const progressRes = await api.get(`/courses/${id}/progress`);
-      setResumeTime(progressRes.data.time);
-      setLessonIndex(progressRes.data.lessonIndex);
+      const p = await api.get(`/courses/${id}/progress`);
+      setTime(p.data.time);
+      setLessonIndex(p.data.lessonIndex);
     };
-
-    fetchData();
+    load();
   }, [id]);
 
   if (!course) return <p>Loading...</p>;
@@ -29,36 +27,17 @@ const CourseDetailPage = () => {
   const lesson = course.lessons[lessonIndex];
 
   return (
-    <div>
-
-      <h1>{course.title}</h1>
-
-      {/* 🎥 PLAYER */}
-      <ReactPlayer
-        url={lesson.videoUrl}
-        controls
-        width="100%"
-        height="400px"
-
-        onReady={(player) => {
-          if (resumeTime) {
-            player.seekTo(resumeTime);
-          }
-        }}
-
-        onProgress={({ playedSeconds }) => {
-          setResumeTime(playedSeconds);
-        }}
-
-        onPause={async () => {
-          await api.post(`/courses/${id}/progress`, {
-            lessonIndex,
-            time: resumeTime,
-          });
-        }}
-      />
-
-    </div>
+    <ReactPlayer
+      url={lesson.videoUrl}
+      controls
+      width="100%"
+      height="400px"
+      onReady={(p) => p.seekTo(time)}
+      onProgress={({ playedSeconds }) => setTime(playedSeconds)}
+      onPause={() =>
+        api.post(`/courses/${id}/progress`, { lessonIndex, time })
+      }
+    />
   );
 };
 
