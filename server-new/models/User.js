@@ -1,51 +1,33 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+
+const ProgressSchema = new mongoose.Schema({
+  courseId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+  },
+  lessonIndex: Number,
+  time: Number,
+});
 
 const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-
-  password: {
-    type: String,
-    required: true,
-  },
-
+  name: String,
+  email: String,
+  password: String,
   role: {
     type: String,
-    enum: ['Student', 'Instructor'],
-    default: 'Student',
+    enum: ["Student", "Instructor"],
+    default: "Student",
   },
 
-  // ✅ Enrolled Courses
   enrolledCourses: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
+      ref: "Course",
     },
   ],
 
-  // ✅ NEW: Progress Tracking
-  progress: [
-    {
-      courseId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course',
-      },
-      completedLessons: [
-        {
-          type: Number, // lesson index
-        },
-      ],
-    },
-  ],
+  progress: [ProgressSchema], // 🔥 UPDATED
 
 }, { timestamps: true });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model("User", UserSchema);
