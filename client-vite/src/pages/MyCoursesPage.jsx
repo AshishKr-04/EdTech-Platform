@@ -14,13 +14,9 @@ const MyCoursesPage = () => {
       try {
         let res;
 
-        // 👨‍🏫 Instructor → created courses
         if (auth.user?.role === "Instructor") {
           res = await api.get("/courses/instructor/my-courses");
-        }
-
-        // 🎓 Student → enrolled courses
-        else {
+        } else {
           res = await api.get("/users/my-learning");
         }
 
@@ -35,69 +31,95 @@ const MyCoursesPage = () => {
 
   // ================= UI =================
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="bg-gray-50 min-h-screen py-10 px-6">
 
-      <h1 className="text-3xl font-bold mb-6">
-        {auth.user?.role === "Instructor"
-          ? "My Created Courses"
-          : "My Learning"}
-      </h1>
+      <div className="max-w-6xl mx-auto">
 
-      {/* ➕ CREATE BUTTON (ONLY INSTRUCTOR) */}
-      {auth.user?.role === "Instructor" && (
-        <button
-          onClick={() => navigate("/create-course")}
-          className="bg-green-600 text-white px-4 py-2 rounded mb-4"
-        >
-          + Create Course
-        </button>
-      )}
-
-      {/* COURSES */}
-      {courses.length === 0 ? (
-        <p>
+        {/* HEADER */}
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
           {auth.user?.role === "Instructor"
-            ? "No courses created yet"
-            : "No enrolled courses"}
-        </p>
-      ) : (
-        courses.map((course) => (
-          <div key={course._id} className="border p-4 rounded mb-4">
+            ? "My Created Courses"
+            : "My Learning"}
+        </h1>
 
-            <h3 className="text-xl font-bold">{course.title}</h3>
+        {/* ➕ CREATE BUTTON */}
+        {auth.user?.role === "Instructor" && (
+          <button
+            onClick={() => navigate("/create-course")}
+            className="bg-green-600 text-white px-4 py-2 rounded mb-6 hover:bg-green-700"
+          >
+            + Create Course
+          </button>
+        )}
 
-            {/* 👨‍🏫 INSTRUCTOR ACTIONS */}
-            {auth.user?.role === "Instructor" ? (
-              <div className="flex gap-3 mt-3">
+        {/* EMPTY STATE */}
+        {courses.length === 0 ? (
+          <p className="text-gray-500">
+            {auth.user?.role === "Instructor"
+              ? "No courses created yet"
+              : "No enrolled courses"}
+          </p>
+        ) : (
 
-                <button
-                  onClick={() => navigate(`/course/${course._id}`)}
-                  className="bg-indigo-600 text-white px-3 py-1 rounded"
-                >
-                  View
-                </button>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                <button
-                  onClick={() => navigate(`/edit-course/${course._id}`)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
-                >
-                  Edit
-                </button>
+            {courses.map((course) => (
+              <div
+                key={course._id}
+                className="bg-white border rounded-xl shadow-sm hover:shadow-md transition p-5 flex flex-col justify-between"
+              >
+
+                {/* CONTENT */}
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    {course.title}
+                  </h2>
+
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                    {course.description}
+                  </p>
+
+                  <div className="flex gap-4 mt-4 text-sm text-gray-500">
+                    <span>{course.lessons?.length || 0} lessons</span>
+                    <span>{course.duration || "N/A"}</span>
+                  </div>
+                </div>
+
+                {/* ACTIONS */}
+                {auth.user?.role === "Instructor" ? (
+                  <div className="flex gap-2 mt-6">
+
+                    <button
+                      onClick={() => navigate(`/course/${course._id}`)}
+                      className="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                    >
+                      View
+                    </button>
+
+                    <button
+                      onClick={() => navigate(`/edit-course/${course._id}`)}
+                      className="flex-1 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600"
+                    >
+                      Edit
+                    </button>
+
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => navigate(`/learn/${course._id}`)}
+                    className="mt-6 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+                  >
+                    Continue Learning
+                  </button>
+                )}
 
               </div>
-            ) : (
-              // 🎓 STUDENT ACTION
-              <button
-                onClick={() => navigate(`/course/${course._id}`)}
-                className="bg-indigo-600 text-white px-3 py-1 rounded mt-3"
-              >
-                Continue Learning
-              </button>
-            )}
+            ))}
 
           </div>
-        ))
-      )}
+        )}
+
+      </div>
     </div>
   );
 };

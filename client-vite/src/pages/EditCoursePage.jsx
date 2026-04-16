@@ -116,6 +116,25 @@ const EditCoursePage = () => {
           onChange={handleChange}
           className="w-full border p-3 rounded"
         />
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="number"
+            name="price"
+            value={courseData.price || ""}
+            onChange={handleChange}
+            placeholder="Price"
+            className="border p-3 rounded"
+          />
+
+          <input
+            type="text"
+            name="duration"
+            value={courseData.duration || ""}
+            onChange={handleChange}
+            placeholder="Duration"
+            className="border p-3 rounded"
+          />
+        </div>
 
         {courseData.lessons.map((lesson, index) => (
           <div key={index} className="border p-4 mb-4">
