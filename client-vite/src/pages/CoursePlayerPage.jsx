@@ -9,98 +9,46 @@ const CoursePlayerPage = () => {
   const [course, setCourse] = useState(null);
   const [lessonIndex, setLessonIndex] = useState(0);
 
-  // ================= FETCH COURSE + PROGRESS =================
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await api.get(`/courses/${id}`);
-        setCourse(res.data.course);
-
-        const progress = await api.get(`/courses/${id}/progress`);
-        setLessonIndex(progress.data.lessonIndex || 0);
-      } catch (err) {
-        console.error(err);
-      }
+      const res = await api.get(`/courses/${id}`);
+      setCourse(res.data.course);
     };
-
     fetchData();
   }, [id]);
 
-  // ================= SAVE PROGRESS =================
-  useEffect(() => {
-    if (!course) return;
-
-    const lesson = course.lessons[lessonIndex];
-
-    // Only save if video exists
-    if (!lesson?.videoUrl) return;
-
-    const interval = setInterval(() => {
-      if (videoRef.current) {
-        api.post(`/courses/${id}/progress`, {
-          lessonIndex,
-          time: videoRef.current.currentTime,
-        });
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [lessonIndex, course, id]);
-
-  if (!course) return <p className="text-center mt-10">Loading...</p>;
+  if (!course) return <p>Loading...</p>;
 
   const lesson = course.lessons[lessonIndex];
 
   return (
-    <div className="flex max-w-6xl mx-auto p-6 gap-6">
+    <div className="flex p-6">
 
-      {/* ================= LEFT SIDE (LESSONS LIST) ================= */}
-      <div className="w-1/3 border rounded p-4 bg-gray-50">
-
-        <h2 className="font-bold mb-3">Lessons</h2>
-
+      <div className="w-1/3">
         {course.lessons.map((l, i) => (
-          <div
-            key={i}
-            onClick={() => setLessonIndex(i)}
-            className={`p-2 rounded cursor-pointer mb-2 ${
-              i === lessonIndex
-                ? "bg-indigo-200"
-                : "hover:bg-gray-200"
-            }`}
-          >
+          <div key={i} onClick={() => setLessonIndex(i)}>
             {l.title}
           </div>
         ))}
       </div>
 
-      {/* ================= RIGHT SIDE (PLAYER) ================= */}
       <div className="w-2/3">
 
-        <h2 className="text-2xl font-bold">{lesson.title}</h2>
+        <h2>{lesson.title}</h2>
 
-        {/* 🎥 VIDEO */}
         {lesson.videoUrl && (
           <video
             ref={videoRef}
             src={lesson.videoUrl}
             controls
-            className="w-full mt-4 rounded shadow"
+            className="w-full"
           />
         )}
 
-        {/* 📝 TEXT CONTENT */}
-        {lesson.content && (
-          <p className="mt-4 text-gray-700 leading-relaxed">
-            {lesson.content}
-          </p>
-        )}
+        {lesson.content && <p>{lesson.content}</p>}
 
-        {/* ⚠️ EMPTY CASE */}
         {!lesson.videoUrl && !lesson.content && (
-          <p className="text-red-500 mt-4">
-            No content available
-          </p>
+          <p>No content</p>
         )}
       </div>
     </div>

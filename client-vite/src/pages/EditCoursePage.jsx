@@ -14,55 +14,35 @@ const EditCoursePage = () => {
     lessons: [],
   });
 
-  const [loading, setLoading] = useState(true);
-  const [uploadingIndex, setUploadingIndex] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0); // 🔥 NEW
+  const [uploadProgress, setUploadProgress] = useState({});
 
-  // ================= FETCH COURSE =================
   useEffect(() => {
     const fetchCourse = async () => {
-      try {
-        const res = await api.get(`/courses/${id}`);
-        const course = res.data.course || res.data;
+      const res = await api.get(`/courses/${id}`);
+      const course = res.data.course;
 
-        setCourseData({
-          title: course.title,
-          description: course.description,
-          price: course.price,
-          duration: course.duration,
-          lessons: course.lessons || [],
-        });
-      } catch (err) {
-        console.error(err);
-        alert("Failed to load course");
-      } finally {
-        setLoading(false);
-      }
+      setCourseData({
+        title: course.title || "",
+        description: course.description || "",
+        price: course.price || "",
+        duration: course.duration || "",
+        lessons: course.lessons || [],
+      });
     };
 
     fetchCourse();
   }, [id]);
 
-  // ================= BASIC CHANGE =================
   const handleChange = (e) => {
-    setCourseData({
-      ...courseData,
-      [e.target.name]: e.target.value,
-    });
+    setCourseData({ ...courseData, [e.target.name]: e.target.value });
   };
 
-  // ================= LESSON CHANGE =================
   const handleLessonChange = (index, e) => {
-    const updatedLessons = [...courseData.lessons];
-    updatedLessons[index][e.target.name] = e.target.value;
-
-    setCourseData({
-      ...courseData,
-      lessons: updatedLessons,
-    });
+    const updated = [...courseData.lessons];
+    updated[index][e.target.name] = e.target.value || "";
+    setCourseData({ ...courseData, lessons: updated });
   };
 
-  // ================= ADD LESSON =================
   const addLesson = () => {
     setCourseData({
       ...courseData,
@@ -73,206 +53,117 @@ const EditCoursePage = () => {
     });
   };
 
-  // ================= REMOVE LESSON =================
   const removeLesson = (index) => {
-    const updatedLessons = courseData.lessons.filter((_, i) => i !== index);
-
-    setCourseData({
-      ...courseData,
-      lessons: updatedLessons,
-    });
+    const updated = courseData.lessons.filter((_, i) => i !== index);
+    setCourseData({ ...courseData, lessons: updated });
   };
 
-  // ================= VIDEO UPLOAD (WITH PROGRESS) =================
   const handleVideoUpload = async (index, file) => {
     if (!file) return;
-
-    // 🔥 File size check
-    if (file.size > 100 * 1024 * 1024) {
-      alert("Video must be less than 100MB");
-      return;
-    }
 
     const formData = new FormData();
     formData.append("video", file);
 
-    try {
-      setUploadingIndex(index);
-      setUploadProgress(0);
+    const res = await api.post("/upload/video", formData, {
+      onUploadProgress: (e) => {
+        setUploadProgress((prev) => ({
+          ...prev,
+          [index]: Math.round((e.loaded * 100) / e.total),
+        }));
+      },
+    });
 
-      const res = await api.post("/upload/video", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+    const updated = [...courseData.lessons];
+    updated[index].videoUrl = res.data.url;
 
-        // 🔥 PROGRESS TRACKING
-        onUploadProgress: (progressEvent) => {
-          const percent = Math.round(
-            (progressEvent.loaded * 100) / progressEvent.total
-          );
-          setUploadProgress(percent);
-        },
-      });
-
-      const updatedLessons = [...courseData.lessons];
-      updatedLessons[index].videoUrl = res.data.url;
-
-      setCourseData({
-        ...courseData,
-        lessons: updatedLessons,
-      });
-
-      alert("Video uploaded successfully 🎉");
-    } catch (err) {
-      console.error(err);
-      alert("Upload failed");
-    } finally {
-      setUploadingIndex(null);
-      setUploadProgress(0);
-    }
+    setCourseData({ ...courseData, lessons: updated });
   };
 
-  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      await api.put(`/courses/${id}`, courseData);
-      alert("Course updated successfully 🎉");
-      navigate("/my-courses");
-    } catch (err) {
-      console.error(err);
-      alert("Error updating course");
-    }
-  };
+    // ✅ flexible validation
+    const invalid = courseData.lessons.some(
+      (l) => !l.title || (!l.content && !l.videoUrl)
+    );
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
+    if (invalid) {
+      return alert("Each lesson must have title + text OR video");
+    }
+
+    await api.put(`/courses/${id}`, courseData);
+    alert("Course updated 🎉");
+    navigate("/instructor-dashboard");
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
+
       <h1 className="text-3xl font-bold mb-6">Edit Course</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
-        {/* BASIC INFO */}
         <input
-          type="text"
           name="title"
-          value={courseData.title}
+          value={courseData.title || ""}
           onChange={handleChange}
           className="w-full border p-3 rounded"
-          placeholder="Course Title"
         />
 
         <textarea
           name="description"
-          value={courseData.description}
+          value={courseData.description || ""}
           onChange={handleChange}
           className="w-full border p-3 rounded"
-          placeholder="Description"
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="number"
-            name="price"
-            value={courseData.price}
-            onChange={handleChange}
-            className="border p-3 rounded"
-            placeholder="Price"
-          />
+        {courseData.lessons.map((lesson, index) => (
+          <div key={index} className="border p-4 mb-4">
 
-          <input
-            type="text"
-            name="duration"
-            value={courseData.duration}
-            onChange={handleChange}
-            className="border p-3 rounded"
-            placeholder="Duration"
-          />
-        </div>
+            <input
+              name="title"
+              value={lesson.title || ""}
+              onChange={(e) => handleLessonChange(index, e)}
+              className="w-full border p-2 mb-2"
+            />
 
-        {/* LESSON BUILDER */}
-        <div>
-          <h2 className="text-xl font-bold mb-3">Lessons</h2>
+            <textarea
+              name="content"
+              value={lesson.content || ""}
+              onChange={(e) => handleLessonChange(index, e)}
+              className="w-full border p-2 mb-2"
+            />
 
-          {courseData.lessons.map((lesson, index) => (
-            <div key={index} className="border p-4 mb-4 rounded">
+            <input
+              type="file"
+              onChange={(e) =>
+                handleVideoUpload(index, e.target.files[0])
+              }
+            />
 
-              <h3 className="font-semibold mb-2">
-                Lesson {index + 1}
-              </h3>
+            {uploadProgress[index] && (
+              <p>Upload: {uploadProgress[index]}%</p>
+            )}
 
-              <input
-                type="text"
-                name="title"
-                value={lesson.title}
-                onChange={(e) => handleLessonChange(index, e)}
-                className="w-full border p-2 mb-2 rounded"
-              />
+            <button
+              type="button"
+              onClick={() => removeLesson(index)}
+              className="bg-red-500 text-white px-2 py-1 mt-2"
+            >
+              Delete
+            </button>
 
-              <textarea
-                name="content"
-                value={lesson.content}
-                onChange={(e) => handleLessonChange(index, e)}
-                className="w-full border p-2 mb-2 rounded"
-              />
+          </div>
+        ))}
 
-              {/* VIDEO URL */}
-              <input
-                type="text"
-                name="videoUrl"
-                value={lesson.videoUrl}
-                onChange={(e) => handleLessonChange(index, e)}
-                className="w-full border p-2 mb-2 rounded"
-              />
+        <button type="button" onClick={addLesson}>
+          + Add Lesson
+        </button>
 
-              {/* 🎥 FILE UPLOAD */}
-              <input
-                type="file"
-                accept="video/*"
-                onChange={(e) =>
-                  handleVideoUpload(index, e.target.files[0])
-                }
-              />
-
-              {/* 📊 PROGRESS BAR */}
-              {uploadingIndex === index && (
-                <div className="mt-2">
-                  <p className="text-blue-600 text-sm">
-                    Uploading... {uploadProgress}%
-                  </p>
-
-                  <div className="w-full bg-gray-200 h-2 rounded">
-                    <div
-                      className="bg-blue-600 h-2 rounded"
-                      style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-
-              {/* DELETE */}
-              <button
-                type="button"
-                onClick={() => removeLesson(index)}
-                className="bg-red-500 text-white px-3 py-1 mt-2 rounded"
-              >
-                Delete Lesson
-              </button>
-            </div>
-          ))}
-
-          <button
-            type="button"
-            onClick={addLesson}
-            className="bg-green-600 text-white px-4 py-2 rounded"
-          >
-            + Add Lesson
-          </button>
-        </div>
-
-        <button className="w-full bg-indigo-600 text-white py-3 rounded">
+        <button type="submit" className="bg-indigo-600 text-white w-full py-3">
           Save Changes
         </button>
+
       </form>
     </div>
   );

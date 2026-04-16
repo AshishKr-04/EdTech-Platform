@@ -5,7 +5,7 @@ const Course = require("../models/Course");
 const User = require("../models/User");
 const authMiddleware = require("../middleware/auth");
 
-// ================= CREATE COURSE =================
+// ================= CREATE =================
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const course = new Course({
@@ -21,157 +21,94 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// ================= GET ALL COURSES =================
+// ================= GET ALL =================
 router.get("/", async (req, res) => {
-  try {
-    const courses = await Course.find().populate("instructor", "name");
-    res.json({ courses });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
+  const courses = await Course.find().populate("instructor", "name");
+  res.json({ courses });
 });
 
-// ================= INSTRUCTOR COURSES =================
-router.get("/instructor/my-courses", authMiddleware, async (req, res) => {
-  try {
-    const courses = await Course.find({
-      instructor: req.user.id,
-    });
+// ================= GET ONE =================
+router.get("/:id", async (req, res) => {
+  const course = await Course.findById(req.params.id)
+    .populate("instructor", "name email");
 
-    res.json({ courses });
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
-  }
+  if (!course) return res.status(404).json({ message: "Not found" });
+
+  res.json({ course });
 });
 
-// ================= ANALYTICS =================
-router.get("/instructor/analytics", authMiddleware, async (req, res) => {
+// ================= UPDATE COURSE (🔥 FIX) =================
+router.put("/:id", authMiddleware, async (req, res) => {
   try {
-    const courses = await Course.find({ instructor: req.user.id });
-    const courseIds = courses.map((c) => c._id);
+    const course = await Course.findById(req.params.id);
 
-    const users = await User.find({
-      enrolledCourses: { $in: courseIds },
-    });
+    if (!course) {
+      return res.status(404).json({ message: "Course not found" });
+    }
 
-    const totalStudents = users.length;
+    // Only instructor can edit
+    if (course.instructor.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
 
-    const courseStats = courses.map((course) => {
-      const students = users.filter((u) =>
-        u.enrolledCourses.some(
-          (id) => id.toString() === course._id.toString()
-        )
-      ).length;
+    const updatedCourse = await Course.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
-      return {
-        courseId: course._id,
-        title: course.title,
-        lessons: course.lessons.length,
-        students,
-      };
-    });
-
-    res.json({
-      totalCourses: courses.length,
-      totalStudents,
-      courseStats,
-    });
+    res.json(updatedCourse);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
 // ================= ENROLL =================
 router.post("/:id/enroll", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id);
 
-    if (!user.enrolledCourses.includes(req.params.id)) {
-      user.enrolledCourses.push(req.params.id);
-      await user.save();
-    }
-
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ message: "Enrollment failed" });
-  }
-});
-
-// ================= SAVE PROGRESS =================
-router.post("/:id/progress", authMiddleware, async (req, res) => {
-  try {
-    const { lessonIndex, time } = req.body;
-
-    const user = await User.findById(req.user.id);
-
-    let progress = user.progress.find(
-      (p) => p.courseId.toString() === req.params.id
-    );
-
-    if (!progress) {
-      user.progress.push({
-        courseId: req.params.id,
-        lessonIndex,
-        time,
-      });
-    } else {
-      progress.lessonIndex = lessonIndex;
-      progress.time = time;
-    }
-
+  if (!user.enrolledCourses.includes(req.params.id)) {
+    user.enrolledCourses.push(req.params.id);
     await user.save();
-
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ message: "Progress save failed" });
   }
+
+  res.json({ success: true });
 });
 
-// ================= GET PROGRESS =================
+// ================= PROGRESS =================
+router.post("/:id/progress", authMiddleware, async (req, res) => {
+  const { lessonIndex, time } = req.body;
+
+  const user = await User.findById(req.user.id);
+
+  let progress = user.progress.find(
+    (p) => p.courseId.toString() === req.params.id
+  );
+
+  if (!progress) {
+    user.progress.push({ courseId: req.params.id, lessonIndex, time });
+  } else {
+    progress.lessonIndex = lessonIndex;
+    progress.time = time;
+  }
+
+  await user.save();
+
+  res.json({ success: true });
+});
+
 router.get("/:id/progress", authMiddleware, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id);
 
-    const progress = user.progress.find(
-      (p) => p.courseId.toString() === req.params.id
-    );
+  const progress = user.progress.find(
+    (p) => p.courseId.toString() === req.params.id
+  );
 
-    res.json({
-      lessonIndex: progress?.lessonIndex || 0,
-      time: progress?.time || 0,
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch progress" });
-  }
-});
-
-// ================= GET SINGLE COURSE (UPDATED 🔥) =================
-router.get("/:id", authMiddleware, async (req, res) => {
-  try {
-    const course = await Course.findById(req.params.id)
-      .populate("instructor", "name email");
-
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
-
-    // 🔥 Get logged-in user
-    const user = await User.findById(req.user.id);
-
-    // 🔥 Check enrollment
-    const isEnrolled = user.enrolledCourses.some(
-      (courseId) => courseId.toString() === req.params.id
-    );
-
-    res.json({
-      course,
-      isEnrolled,
-    });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
+  res.json({
+    lessonIndex: progress?.lessonIndex || 0,
+    time: progress?.time || 0,
+  });
 });
 
 module.exports = router;
