@@ -28,7 +28,6 @@ const CreateCoursePage = () => {
   const handleLessonChange = (index, e) => {
     const updated = [...courseData.lessons];
     updated[index][e.target.name] = e.target.value;
-
     setCourseData({ ...courseData, lessons: updated });
   };
 
@@ -47,7 +46,6 @@ const CreateCoursePage = () => {
   const handleVideoUpload = async (index, file) => {
     if (!file) return;
 
-    // 🎬 PREVIEW
     const previewUrl = URL.createObjectURL(file);
     setVideoPreview((prev) => ({ ...prev, [index]: previewUrl }));
 
@@ -70,7 +68,6 @@ const CreateCoursePage = () => {
 
       setCourseData({ ...courseData, lessons: updated });
 
-      alert("Video uploaded 🎉");
     } catch (err) {
       console.error(err);
       alert("Upload failed");
@@ -80,6 +77,15 @@ const CreateCoursePage = () => {
   // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // ✅ Only check: lesson must have either text OR video
+    const invalidLesson = courseData.lessons.some(
+      (lesson) => !lesson.title || (!lesson.content && !lesson.videoUrl)
+    );
+
+    if (invalidLesson) {
+      return alert("Each lesson must have title and either content or video");
+    }
 
     try {
       await api.post("/courses", courseData);
@@ -116,26 +122,6 @@ const CreateCoursePage = () => {
           className="w-full border p-3 rounded"
         />
 
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="number"
-            name="price"
-            value={courseData.price}
-            onChange={handleChange}
-            placeholder="Price"
-            className="border p-3 rounded"
-          />
-
-          <input
-            type="text"
-            name="duration"
-            value={courseData.duration}
-            onChange={handleChange}
-            placeholder="Duration"
-            className="border p-3 rounded"
-          />
-        </div>
-
         {/* LESSONS */}
         <div>
           <h2 className="text-xl font-bold mb-3">Lessons</h2>
@@ -156,11 +142,14 @@ const CreateCoursePage = () => {
                 name="content"
                 value={lesson.content}
                 onChange={(e) => handleLessonChange(index, e)}
-                placeholder="Lesson Content"
+                placeholder="Text content (optional)"
                 className="w-full border p-2 mb-2 rounded"
               />
 
-              {/* 🎥 VIDEO UPLOAD */}
+              <p className="text-sm text-gray-500 mb-1">
+                Upload video (optional)
+              </p>
+
               <input
                 type="file"
                 accept="video/*"
@@ -169,7 +158,7 @@ const CreateCoursePage = () => {
                 }
               />
 
-              {/* 🎬 PREVIEW */}
+              {/* PREVIEW */}
               {videoPreview[index] && (
                 <video
                   src={videoPreview[index]}
@@ -178,7 +167,7 @@ const CreateCoursePage = () => {
                 />
               )}
 
-              {/* 📊 PROGRESS */}
+              {/* PROGRESS */}
               {uploadProgress[index] && (
                 <p className="text-blue-500 text-sm mt-1">
                   Upload: {uploadProgress[index]}%
