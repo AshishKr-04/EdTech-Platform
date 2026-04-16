@@ -7,26 +7,38 @@ const CoursePreviewPage = () => {
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // ================= FETCH COURSE =================
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         const res = await api.get(`/courses/${id}`);
+
         setCourse(res.data.course);
+        setIsEnrolled(res.data.isEnrolled);
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCourse();
   }, [id]);
 
+  // ================= ENROLL =================
   const handleEnroll = async () => {
     try {
       await api.post(`/courses/${id}/enroll`);
+
       alert("Enrolled successfully 🎉");
 
-      // 👉 redirect to player
+      // 🔥 update UI instantly
+      setIsEnrolled(true);
+
+      // redirect
       navigate(`/learn/${id}`);
     } catch (err) {
       console.error(err);
@@ -34,7 +46,8 @@ const CoursePreviewPage = () => {
     }
   };
 
-  if (!course) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
+  if (!course) return <p>Course not found</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -51,12 +64,23 @@ const CoursePreviewPage = () => {
         Price: ₹{course.price}
       </p>
 
-      <button
-        onClick={handleEnroll}
-        className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
-      >
-        Enroll Now
-      </button>
+      {/* 🔥 CONDITIONAL BUTTON */}
+      {isEnrolled ? (
+        <button
+          onClick={() => navigate(`/learn/${id}`)}
+          className="mt-6 bg-blue-600 text-white px-6 py-2 rounded"
+        >
+          Continue Learning
+        </button>
+      ) : (
+        <button
+          onClick={handleEnroll}
+          className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
+        >
+          Enroll Now
+        </button>
+      )}
+
     </div>
   );
 };
