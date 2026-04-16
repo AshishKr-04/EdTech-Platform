@@ -1,26 +1,28 @@
+// :contentReference[oaicite:2]{index=2}
 const mongoose = require("mongoose");
 
 const LessonSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  videoUrl: { type: String, default: "" },
+  title: String,
+  content: String,
+  videoUrl: String,
 });
 
 const CourseSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
+    title: String,
+    description: String,
 
     instructor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
 
     lessons: [LessonSchema],
 
-    price: { type: Number, default: 0 },
-    duration: { type: String, default: "0 hours" },
+    price: Number,
+    duration: String,
+
+    thumbnail: { type: String, default: "" }, // 🔥 NEW
   },
   { timestamps: true }
 );

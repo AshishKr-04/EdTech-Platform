@@ -5,12 +5,13 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CoursesPage from './pages/CoursesPage';
-import CourseDetailPage from './pages/CourseDetailPage';
+import CoursePreviewPage from './pages/CoursePreviewPage';   // ✅ NEW
+import CoursePlayerPage from './pages/CoursePlayerPage';     // ✅ NEW
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import EditCoursePage from './pages/EditCoursePage';
-import MyLearningPage from './pages/MyLearningPage';
+import MyCoursesPage from './pages/MyCoursesPage';           // ✅ MAIN PAGE
 import InstructorDashboard from "./pages/InstructorDashboard";
 
 import Navbar from './components/Navbar';
@@ -26,18 +27,36 @@ function App() {
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
 
-            {/* PUBLIC ROUTES */}
+            {/* ================= PUBLIC ROUTES ================= */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/courses" element={<CoursesPage />} />
-            <Route path="/course/:id" element={<CourseDetailPage />} />
+            <Route path="/course/:id" element={<CoursePreviewPage />} /> {/* ✅ PREVIEW */}
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
 
-            {/* PROTECTED ROUTES */}
+            {/* ================= MAIN PAGE ================= */}
+            <Route
+              path="/my-courses"
+              element={
+                <ProtectedRoute>
+                  <MyCoursesPage />
+                </ProtectedRoute>
+              }
+            />
 
-            {/* 👨‍🏫 DASHBOARD */}
+            {/* ================= COURSE PLAYER ================= */}
+            <Route
+              path="/learn/:id"
+              element={
+                <ProtectedRoute>
+                  <CoursePlayerPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= INSTRUCTOR ================= */}
             <Route
               path="/instructor-dashboard"
               element={
@@ -47,7 +66,6 @@ function App() {
               }
             />
 
-            {/* CREATE COURSE */}
             <Route
               path="/create-course"
               element={
@@ -57,31 +75,11 @@ function App() {
               }
             />
 
-            {/* EDIT COURSE */}
             <Route
               path="/edit-course/:id"
               element={
                 <ProtectedRoute>
                   <EditCoursePage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* 🎓 LEARNING */}
-            <Route
-              path="/my-learning"
-              element={
-                <ProtectedRoute>
-                  <MyLearningPage />
-                </ProtectedRoute>
-              }
-            />
-
-            <Route
-              path="/my-learning/:id"
-              element={
-                <ProtectedRoute>
-                  <MyLearningPage />
                 </ProtectedRoute>
               }
             />

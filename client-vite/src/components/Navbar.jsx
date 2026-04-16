@@ -26,45 +26,25 @@ const Navbar = () => {
 
         {auth.isAuthenticated ? (
           <>
-            {/* ================= ROLE BASED ================= */}
-
-            {/* 👨‍🏫 Instructor */}
-            {auth.user?.role === "Instructor" && (
-              <>
-                {/* 🔥 NEW DASHBOARD */}
-                <Link
-                  to="/instructor-dashboard"
-                  className="font-semibold text-indigo-600"
-                >
-                  Dashboard
-                </Link>
-
-                {/* OPTIONAL: My Courses */}
-                <Link to="/my-courses">
-                  My Courses
-                </Link>
-
-                {/* CREATE COURSE */}
-                <Link
-                  to="/create-course"
-                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                >
-                  + Create
-                </Link>
-              </>
-            )}
-
-            {/* 🎓 Student */}
+            {/* 🎓 STUDENT */}
             {auth.user?.role === "Student" && (
-              <Link
-                to="/my-courses"
-                className="font-semibold text-indigo-600"
-              >
-                My Courses
+              <Link to="/my-courses" className="font-semibold text-indigo-600">
+                My Learning
               </Link>
             )}
 
-            {/* ================= COMMON ================= */}
+            {/* 👨‍🏫 INSTRUCTOR */}
+            {auth.user?.role === "Instructor" && (
+              <>
+                <Link to="/my-courses" className="font-semibold text-indigo-600">
+                  My Courses
+                </Link>
+
+                <Link to="/instructor-dashboard">
+                  Dashboard
+                </Link>
+              </>
+            )}
 
             {/* USER INFO */}
             <span className="text-sm text-gray-600">
