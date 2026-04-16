@@ -16,7 +16,61 @@ router.post("/", authMiddleware, async (req, res) => {
     await course.save();
     res.json(course);
   } catch (err) {
-    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ================= INSTRUCTOR ROUTES (🔥 MUST BE BEFORE :id) =================
+
+// 👉 My Courses
+router.get("/instructor/my-courses", authMiddleware, async (req, res) => {
+  try {
+    const courses = await Course.find({
+      instructor: req.user.id,
+    });
+
+    res.json({ courses });
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// 👉 Analytics
+router.get("/instructor/analytics", authMiddleware, async (req, res) => {
+  try {
+    const courses = await Course.find({
+      instructor: req.user.id,
+    });
+
+    const courseIds = courses.map((c) => c._id);
+
+    const users = await User.find({
+      enrolledCourses: { $in: courseIds },
+    });
+
+    const totalStudents = users.length;
+
+    const courseStats = courses.map((course) => {
+      const students = users.filter((u) =>
+        u.enrolledCourses.some(
+          (id) => id.toString() === course._id.toString()
+        )
+      ).length;
+
+      return {
+        courseId: course._id,
+        title: course.title,
+        lessons: course.lessons.length,
+        students,
+      };
+    });
+
+    res.json({
+      totalCourses: courses.length,
+      totalStudents,
+      courseStats,
+    });
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -37,29 +91,25 @@ router.get("/:id", async (req, res) => {
   res.json({ course });
 });
 
-// ================= UPDATE COURSE (🔥 FIX) =================
+// ================= UPDATE =================
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const course = await Course.findById(req.params.id);
 
-    if (!course) {
-      return res.status(404).json({ message: "Course not found" });
-    }
+    if (!course) return res.status(404).json({ message: "Not found" });
 
-    // Only instructor can edit
     if (course.instructor.toString() !== req.user.id) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    const updatedCourse = await Course.findByIdAndUpdate(
+    const updated = await Course.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true }
     );
 
-    res.json(updatedCourse);
-  } catch (err) {
-    console.error(err);
+    res.json(updated);
+  } catch {
     res.status(500).json({ message: "Server error" });
   }
 });
