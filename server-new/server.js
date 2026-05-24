@@ -7,13 +7,28 @@ const mongoose = require("mongoose");
 const app = express();
 
 // ================= CORS =================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://edtech-platform-04.vercel.app",
+  "https://ed-tech-platform-livid.vercel.app",
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",") : []),
+]
+  .map((origin) => origin && origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://edtech-platform-04.vercel.app",
-    ],
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
+    optionsSuccessStatus: 200,
   })
 );
 
