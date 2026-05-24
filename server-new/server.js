@@ -18,10 +18,19 @@ const allowedOrigins = [
   .map((origin) => origin && origin.trim())
   .filter(Boolean);
 
+const allowedOriginPatterns = [
+  /^https:\/\/ed-tech-platform.*\.vercel\.app$/,
+];
+
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      const isAllowed =
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        allowedOriginPatterns.some((pattern) => pattern.test(origin));
+
+      if (isAllowed) {
         return callback(null, true);
       }
 
