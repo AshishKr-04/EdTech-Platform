@@ -16,7 +16,7 @@
 
 ---
 
-EduMind is an **industry-grade, full-stack MERN EdTech platform** engineered to deliver secure, interactive, and high-fidelity online learning. 
+EduMind is an **full-stack MERN EdTech platform** engineered to deliver secure, interactive, and high-fidelity online learning. 
 
 Featuring **production-grade security suites**, **Zod-backed request validations**, **automated cryptographic digital certificates**, a **context-aware AI Study Partner (Gemini API)**, **flexible Stripe & sandbox payment gateways**, and a **23-case automated integration testing suite**, this codebase stands as a premier software engineering benchmark.
 
