@@ -5,14 +5,16 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CoursesPage from './pages/CoursesPage';
-import CoursePreviewPage from './pages/CoursePreviewPage';   // ✅ NEW
-import CoursePlayerPage from './pages/CoursePlayerPage';     // ✅ NEW
+import CoursePreviewPage from './pages/CoursePreviewPage';   
+import CoursePlayerPage from './pages/CoursePlayerPage';     
+import DemoCheckoutPage from './pages/DemoCheckoutPage';     // ✅ NEW
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import EditCoursePage from './pages/EditCoursePage';
-import MyCoursesPage from './pages/MyCoursesPage';           // ✅ MAIN PAGE
+import MyCoursesPage from './pages/MyCoursesPage';           
 import InstructorDashboard from "./pages/InstructorDashboard";
+import ProfilePage from './pages/ProfilePage';
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -32,9 +34,19 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/courses" element={<CoursesPage />} />
-            <Route path="/course/:id" element={<CoursePreviewPage />} /> {/* ✅ PREVIEW */}
+            <Route path="/course/:id" element={<CoursePreviewPage />} /> 
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
+
+            {/* ================= USER PROFILE ================= */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
             {/* ================= MAIN PAGE ================= */}
             <Route
@@ -42,6 +54,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MyCoursesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ================= MOCK STRIPE CHECKOUT ================= */}
+            <Route
+              path="/demo-checkout/:orderId"
+              element={
+                <ProtectedRoute>
+                  <DemoCheckoutPage />
                 </ProtectedRoute>
               }
             />

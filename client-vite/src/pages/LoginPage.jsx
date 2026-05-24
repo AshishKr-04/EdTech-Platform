@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import api from "../utils/api";
+import { useToast } from "../context/ToastContext";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState({
     email: '',
@@ -37,18 +39,18 @@ const LoginPage = () => {
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
       // ✅ Update context
-      login(res.data.token);
+      await login(res.data.token);
 
+      showToast("Logged in successfully! Welcome back.", "success");
       // ✅ Redirect
       navigate('/');
     } catch (err) {
       console.error(err);
 
       // ✅ FIX: use "message" not "msg"
-      setError(
-        err.response?.data?.message ||
-        'Login failed. Please check your credentials or try again.'
-      );
+      const errMsg = err.response?.data?.message || 'Login failed. Please check your credentials or try again.';
+      setError(errMsg);
+      showToast(errMsg, "error");
     } finally {
       setIsLoading(false);
     }

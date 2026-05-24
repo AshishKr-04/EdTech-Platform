@@ -1,30 +1,41 @@
-// :contentReference[oaicite:6]{index=6}
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const cloudinary = require("../config/cloudinary");
 
+const authMiddleware = require("../middleware/auth");
+const restrictTo = require("../middleware/restrictTo");
+const AppError = require("../middleware/AppError");
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-router.post("/video", upload.single("video"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-
-    const stream = cloudinary.uploader.upload_stream(
-      { resource_type: "video" },
-      (error, result) => {
-        if (error) return res.status(500).json({ message: "Upload failed" });
-        res.json({ url: result.secure_url });
+router.post(
+  "/video",
+  authMiddleware,
+  restrictTo("Instructor"),
+  upload.single("video"),
+  async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return next(new AppError("No video file uploaded", 400));
       }
-    );
 
-    stream.end(req.file.buffer);
-  } catch (err) {
-    res.status(500).json({ message: "Server error" });
+      const stream = cloudinary.uploader.upload_stream(
+        { resource_type: "video" },
+        (error, result) => {
+          if (error) {
+            return next(new AppError("Cloudinary media upload failed", 500));
+          }
+          res.json({ url: result.secure_url });
+        }
+      );
+
+      stream.end(req.file.buffer);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 module.exports = router;

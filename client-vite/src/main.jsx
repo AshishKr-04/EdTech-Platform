@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { AuthProvider } from './context/AuthContext.jsx'; 
+import { ToastProvider } from './context/ToastContext.jsx';
 import axios from 'axios';
 
 // IMPORTANT: We use the URL exactly as it is in the .env file.
@@ -17,7 +18,9 @@ console.log("Axios Base URL set to:", axios.defaults.baseURL);
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
-      <App />
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </AuthProvider>
   </React.StrictMode>,
 )

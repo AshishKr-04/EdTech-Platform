@@ -3,8 +3,10 @@ import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, ChevronDown, Loader2 } from 'lucide-react';
 import api from "../utils/api"; // ✅ FIX: use axios instance
+import { useToast } from "../context/ToastContext";
 
 const RegisterPage = () => {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,6 +39,7 @@ const RegisterPage = () => {
         localStorage.setItem('user', JSON.stringify(res.data.user));
       }
 
+      showToast("Account created successfully! Welcome to EduMind.", "success");
       // ✅ Redirect to login
       navigate('/login');
 
@@ -44,10 +47,9 @@ const RegisterPage = () => {
       console.error(err);
 
       // ✅ FIX: use "message"
-      setError(
-        err.response?.data?.message ||
-        'Registration failed! Please try again.'
-      );
+      const errMsg = err.response?.data?.message || 'Registration failed! Please try again.';
+      setError(errMsg);
+      showToast(errMsg, "error");
     } finally {
       setIsLoading(false);
     }

@@ -3,21 +3,22 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
-const authMiddleware = require("../middleware/auth"); // ✅ FIXED
+const authMiddleware = require("../middleware/auth");
+const AppError = require("../middleware/AppError");
+const { validate } = require("../middleware/validate");
+const { registerSchema, loginSchema } = require("../utils/validationSchemas");
 
 const router = express.Router();
 
 // REGISTER
-router.post("/register", async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res, next) => {
   try {
     const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields required" });
-    }
-
     let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "User exists" });
+    if (user) {
+      return next(new AppError("User already exists with this email", 400));
+    }
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -36,23 +37,31 @@ router.post("/register", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ token, user });
+    // Explicitly convert to object and ensure password is removed from register response
+    const userResponse = user.toObject();
+    delete userResponse.password;
 
-  } catch {
-    res.status(500).json({ message: "Server error" });
+    res.status(201).json({ token, user: userResponse });
+  } catch (err) {
+    next(err);
   }
 });
 
 // LOGIN
-router.post("/login", async (req, res) => {
+router.post("/login", validate(loginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    // Explicitly select password field since it is select: false by default
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return next(new AppError("Invalid credentials", 400));
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).json({ message: "Invalid credentials" });
+    if (!match) {
+      return next(new AppError("Invalid credentials", 400));
+    }
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
@@ -60,17 +69,28 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ token, user });
+    // Explicitly delete password from login response
+    const userResponse = user.toObject();
+    delete userResponse.password;
 
-  } catch {
-    res.status(500).json({ message: "Server error" });
+    res.json({ token, user: userResponse });
+  } catch (err) {
+    next(err);
   }
 });
 
 // CURRENT USER
-router.get("/me", authMiddleware, async (req, res) => {
-  const user = await User.findById(req.user.id).select("-password");
-  res.json({ user });
+router.get("/me", authMiddleware, async (req, res, next) => {
+  try {
+    // Queries User WITHOUT password (since select: false is set on password schema)
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(new AppError("User not found", 404));
+    }
+    res.json({ user });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

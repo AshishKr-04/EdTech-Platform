@@ -1,23 +1,27 @@
-// :contentReference[oaicite:1]{index=1}
 const jwt = require("jsonwebtoken");
+const AppError = require("./AppError");
 
 const authMiddleware = (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
-      return res.status(401).json({ msg: "No token provided" });
+      return next(new AppError("No token provided. Please log in first.", 401));
     }
 
-    const token = authHeader.split(" ")[1];
+    const parts = authHeader.split(" ");
+    if (parts.length !== 2 || parts[0] !== "Bearer") {
+      return next(new AppError("Malformed authorization header. Scheme must be Bearer.", 401));
+    }
 
+    const token = parts[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decoded;
-
     next();
   } catch (err) {
-    res.status(401).json({ msg: "Invalid token" });
+    // Forward JWT errors (JsonWebTokenError, TokenExpiredError) directly to the errorHandler
+    next(err);
   }
 };
 
