@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, ChevronDown, Loader2 } from 'lucide-react';
-import api from "../utils/api"; // ✅ FIX: use axios instance
+import api from "../utils/api";
 import { useToast } from "../context/ToastContext";
 
 const RegisterPage = () => {
@@ -30,23 +30,23 @@ const RegisterPage = () => {
     setIsLoading(true);
 
     try {
-      // ✅ API CALL (Render backend)
+      // Register account on backend
       const res = await api.post('/auth/register', formData);
 
-      // ✅ Optional: store token if backend returns it
+      // Store credentials locally if returned
       if (res.data.token) {
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('user', JSON.stringify(res.data.user));
       }
 
       showToast("Account created successfully! Welcome to EduMind.", "success");
-      // ✅ Redirect to login
+      // Redirect to login screen
       navigate('/login');
 
     } catch (err) {
       console.error(err);
 
-      // ✅ FIX: use "message"
+      // Extract and display errors
       const errMsg = err.response?.data?.message || 'Registration failed! Please try again.';
       setError(errMsg);
       showToast(errMsg, "error");

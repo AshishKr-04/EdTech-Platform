@@ -7,7 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import CoursesPage from './pages/CoursesPage';
 import CoursePreviewPage from './pages/CoursePreviewPage';   
 import CoursePlayerPage from './pages/CoursePlayerPage';     
-import DemoCheckoutPage from './pages/DemoCheckoutPage';     // ✅ NEW
+import DemoCheckoutPage from './pages/DemoCheckoutPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import CreateCoursePage from './pages/CreateCoursePage';

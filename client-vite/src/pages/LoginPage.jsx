@@ -31,23 +31,23 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // ✅ API CALL (Render backend)
+      // API call to authenticate user
       const res = await api.post('/auth/login', { email, password });
 
-      // ✅ Save token + user
+      // Cache credential tokens locally
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('user', JSON.stringify(res.data.user));
 
-      // ✅ Update context
+      // Update global context authentication state
       await login(res.data.token);
 
       showToast("Logged in successfully! Welcome back.", "success");
-      // ✅ Redirect
+      // Redirect to landing page
       navigate('/');
     } catch (err) {
       console.error(err);
 
-      // ✅ FIX: use "message" not "msg"
+      // Display parsed error details
       const errMsg = err.response?.data?.message || 'Login failed. Please check your credentials or try again.';
       setError(errMsg);
       showToast(errMsg, "error");

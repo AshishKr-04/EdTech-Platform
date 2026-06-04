@@ -77,7 +77,7 @@ const courseSchema = z.object({
       .default([]),
     thumbnail: z.string().trim().optional(),
     
-    // 🔥 NEW RICH VALIDATIONS
+    // Optional catalog filter fields
     category: z.string().trim().optional().default("General"),
     level: z.enum(["Beginner", "Intermediate", "Advanced"]).optional().default("Beginner"),
     status: z.enum(["Draft", "Published"]).optional().default("Published"),
@@ -113,7 +113,7 @@ const courseUpdateSchema = z.object({
       .optional(),
     thumbnail: z.string().trim().optional(),
     
-    // 🔥 NEW RICH VALIDATIONS
+    // Optional catalog filter fields
     category: z.string().trim().optional(),
     level: z.enum(["Beginner", "Intermediate", "Advanced"]).optional(),
     status: z.enum(["Draft", "Published"]).optional(),

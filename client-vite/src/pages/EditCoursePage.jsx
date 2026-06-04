@@ -82,7 +82,7 @@ const EditCoursePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ flexible validation
+    // Flexible validation: Each lesson must have either text content or video url
     const invalid = courseData.lessons.some(
       (l) => !l.title || (!l.content && !l.videoUrl)
     );

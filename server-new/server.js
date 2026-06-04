@@ -16,13 +16,11 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
-// ================= SECURITY HEADERS =================
 app.use(helmet());
 
-// ================= RATE LIMITING =================
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 300, // Limit each IP to 300 requests per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 300,
   message: {
     status: "fail",
     message: "Too many requests from this IP. Please try again after 15 minutes.",
@@ -32,8 +30,8 @@ const globalLimiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 50, // Limit each IP to 50 login/registration requests per 15 minutes
+  windowMs: 15 * 60 * 1000,
+  max: 50,
   message: {
     status: "fail",
     message: "Too many authentication attempts. Please try again after 15 minutes.",
@@ -44,11 +42,9 @@ const authLimiter = rateLimit({
 
 app.use(globalLimiter);
 
-// ================= CORS =================
 const allowedOrigins = [];
 
 if (process.env.NODE_ENV === "production") {
-  // STRICT env-driven origins in production
   if (process.env.ALLOWED_ORIGINS) {
     allowedOrigins.push(
       ...process.env.ALLOWED_ORIGINS.split(",")
@@ -59,7 +55,6 @@ if (process.env.NODE_ENV === "production") {
   if (process.env.CLIENT_URL) allowedOrigins.push(process.env.CLIENT_URL.trim());
   if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL.trim());
 } else {
-  // Local development allowed origins
   allowedOrigins.push(
     "http://localhost:5173",
     "http://localhost:3000",
@@ -96,7 +91,6 @@ app.use(
   })
 );
 
-// ================= MIDDLEWARE =================
 app.use(
   express.json({
     verify: (req, res, buf) => {
@@ -107,22 +101,18 @@ app.use(
   })
 );
 
-// ================= ROUTES =================
-app.use("/api/auth", authLimiter, authRouter); // 🔥 Auth rate limiter applied
+app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/courses", coursesRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/payments", paymentsRouter);
 
-// ================= HEALTH CHECK =================
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
 });
 
-// ================= ERROR HANDLING =================
 app.use(errorHandler);
 
-// ================= DB CONNECT & LISTEN =================
 if (process.env.NODE_ENV !== "test") {
   mongoose
     .connect(process.env.MONGO_URI)
@@ -141,4 +131,4 @@ if (process.env.NODE_ENV !== "test") {
     });
 }
 
-export default app; // 🔥 Export Express app for integration testing
+export default app;

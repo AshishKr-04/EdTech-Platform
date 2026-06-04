@@ -78,7 +78,7 @@ const CreateCoursePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Only check: lesson must have either text OR video
+    // Validation: Each lesson must have either text content or video url
     const invalidLesson = courseData.lessons.some(
       (lesson) => !lesson.title || (!lesson.content && !lesson.videoUrl)
     );

@@ -4,7 +4,7 @@ const LessonSchema = new mongoose.Schema({
   title: { type: String, required: true },
   content: String,
   videoUrl: String,
-  duration: { type: String, default: "15 mins" }, // 🔥 Added lesson duration
+  duration: { type: String, default: "15 mins" }, // Lesson duration
 });
 
 const CourseSchema = new mongoose.Schema(
@@ -24,7 +24,7 @@ const CourseSchema = new mongoose.Schema(
     duration: { type: String, required: true }, // Total course duration (e.g. '10 weeks')
     thumbnail: { type: String, default: "" },
 
-    // 🔥 NEW RICH DATA MODEL FIELDS
+    // Course metadata fields
     category: {
       type: String,
       default: "General",

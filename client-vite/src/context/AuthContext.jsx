@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import api from '../utils/api'; // ✅ use api instance
+import api from '../utils/api';
 
 export const AuthContext = createContext();
 
@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
     user: null,
   });
 
-  // ✅ Load user (auto login)
+  // Load user (auto login)
   const loadUser = async () => {
     const token = localStorage.getItem('token');
 
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
         token: token,
         isAuthenticated: true,
         loading: false,
-        user: res.data.user, // ✅ FIXED
+        user: res.data.user,
       });
 
     } catch (err) {
@@ -53,13 +53,13 @@ export const AuthProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  // ✅ Login
+  // Login
   const login = async (token) => {
     localStorage.setItem('token', token);
     await loadUser(); // reload user
   };
 
-  // ✅ Logout
+  // Logout
   const logout = () => {
     localStorage.removeItem('token');
 

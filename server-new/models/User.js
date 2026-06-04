@@ -55,7 +55,7 @@ const UserSchema = new mongoose.Schema(
 
     progress: [ProgressSchema],
 
-    // 🔥 NEW RICH USER FIELDS
+    // User progress tracking and digital certificates
     avatar: {
       type: String,
       default: "",

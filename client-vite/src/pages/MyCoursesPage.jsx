@@ -24,7 +24,7 @@ const MyCoursesPage = () => {
         const courseList = res.data.courses || [];
         setCourses(courseList);
 
-        // 🔥 FETCH PROGRESS
+        // Fetch progress for this course
         if (auth.user?.role !== "Instructor") {
           const progressData = {};
 
@@ -70,7 +70,7 @@ const MyCoursesPage = () => {
               const completed = progressMap[course._id] || 0;
               const total = course.lessons?.length || 1;
 
-              // 🔥 FIXED PROGRESS FORMULA
+              // Calculate completed progress percentage
               const percent = Math.floor(((completed + 1) / total) * 100);
 
               return (
