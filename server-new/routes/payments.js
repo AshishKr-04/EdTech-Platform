@@ -1,13 +1,13 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const Stripe = require("stripe");
+import Stripe from "stripe";
 
-const Course = require("../models/Course");
-const User = require("../models/User");
-const Order = require("../models/Order");
-const authMiddleware = require("../middleware/auth");
-const AppError = require("../middleware/AppError");
-const { validateIdParam } = require("../middleware/validate");
+import Course from "../models/Course.js";
+import User from "../models/User.js";
+import Order from "../models/Order.js";
+import authMiddleware from "../middleware/auth.js";
+import AppError from "../middleware/AppError.js";
+import { validateIdParam } from "../middleware/validate.js";
 
 // Initialize Stripe if key is present
 const stripe = process.env.STRIPE_SECRET_KEY
@@ -227,4 +227,4 @@ router.post("/webhook", express.raw({ type: "application/json" }), async (req, r
   res.json({ received: true });
 });
 
-module.exports = router;
+export default router;

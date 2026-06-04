@@ -1,12 +1,12 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const User = require("../models/User");
-const authMiddleware = require("../middleware/auth");
-const AppError = require("../middleware/AppError");
-const { validate } = require("../middleware/validate");
-const { registerSchema, loginSchema } = require("../utils/validationSchemas");
+import User from "../models/User.js";
+import authMiddleware from "../middleware/auth.js";
+import AppError from "../middleware/AppError.js";
+import { validate } from "../middleware/validate.js";
+import { registerSchema, loginSchema } from "../utils/validationSchemas.js";
 
 const router = express.Router();
 
@@ -93,4 +93,4 @@ router.get("/me", authMiddleware, async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

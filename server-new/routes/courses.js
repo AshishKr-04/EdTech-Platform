@@ -1,18 +1,18 @@
-const express = require("express");
-const crypto = require("crypto");
+import express from "express";
+import crypto from "crypto";
 const router = express.Router();
 
-const Course = require("../models/Course");
-const User = require("../models/User");
-const authMiddleware = require("../middleware/auth");
-const restrictTo = require("../middleware/restrictTo");
-const AppError = require("../middleware/AppError");
-const { validate, validateIdParam } = require("../middleware/validate");
-const {
+import Course from "../models/Course.js";
+import User from "../models/User.js";
+import authMiddleware from "../middleware/auth.js";
+import restrictTo from "../middleware/restrictTo.js";
+import AppError from "../middleware/AppError.js";
+import { validate, validateIdParam } from "../middleware/validate.js";
+import {
   courseSchema,
   courseUpdateSchema,
   progressSchema,
-} = require("../utils/validationSchemas");
+} from "../utils/validationSchemas.js";
 
 // ================= CREATE =================
 router.post(
@@ -603,4 +603,4 @@ router.get(
   }
 );
 
-module.exports = router;
+export default router;

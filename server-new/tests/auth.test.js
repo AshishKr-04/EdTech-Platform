@@ -1,7 +1,7 @@
-const request = require("supertest");
-const app = require("../server");
-const db = require("./testSetup");
-const User = require("../models/User");
+import request from "supertest";
+import app from "../server.js";
+import * as db from "./testSetup.js";
+import User from "../models/User.js";
 
 beforeAll(async () => {
   await db.connect();

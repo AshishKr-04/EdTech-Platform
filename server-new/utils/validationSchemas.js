@@ -1,4 +1,4 @@
-const { z } = require("zod");
+import { z } from "zod";
 
 // MongoDB 24-character hex ID validation
 const objectIdSchema = z
@@ -134,7 +134,7 @@ const progressSchema = z.object({
   }),
 });
 
-module.exports = {
+export {
   objectIdSchema,
   registerSchema,
   loginSchema,

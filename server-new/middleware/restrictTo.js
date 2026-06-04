@@ -1,4 +1,4 @@
-const AppError = require("./AppError");
+import AppError from "./AppError.js";
 
 /**
  * Reusable authorization middleware to restrict endpoint access to specific roles.
@@ -15,4 +15,4 @@ const restrictTo = (...allowedRoles) => {
   };
 };
 
-module.exports = restrictTo;
+export default restrictTo;

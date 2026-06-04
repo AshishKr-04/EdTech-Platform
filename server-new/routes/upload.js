@@ -1,11 +1,11 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
-const multer = require("multer");
-const cloudinary = require("../config/cloudinary");
+import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
 
-const authMiddleware = require("../middleware/auth");
-const restrictTo = require("../middleware/restrictTo");
-const AppError = require("../middleware/AppError");
+import authMiddleware from "../middleware/auth.js";
+import restrictTo from "../middleware/restrictTo.js";
+import AppError from "../middleware/AppError.js";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -38,4 +38,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

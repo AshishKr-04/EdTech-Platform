@@ -1,9 +1,9 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const User = require("../models/User");
-const authMiddleware = require("../middleware/auth");
-const AppError = require("../middleware/AppError");
+import User from "../models/User.js";
+import authMiddleware from "../middleware/auth.js";
+import AppError from "../middleware/AppError.js";
 
 // ================= GET MY LEARNING (STUDENT) =================
 router.get("/my-learning", authMiddleware, async (req, res, next) => {
@@ -65,4 +65,4 @@ router.put("/profile", authMiddleware, async (req, res, next) => {
   }
 });
 
-module.exports = router;
+export default router;

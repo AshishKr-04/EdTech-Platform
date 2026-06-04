@@ -1,10 +1,18 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const express = require("express");
-const cors = require("cors");
-const mongoose = require("mongoose");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+import express from "express";
+import cors from "cors";
+import mongoose from "mongoose";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
+
+import authRouter from "./routes/auth.js";
+import coursesRouter from "./routes/courses.js";
+import usersRouter from "./routes/users.js";
+import uploadRouter from "./routes/upload.js";
+import paymentsRouter from "./routes/payments.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -100,11 +108,11 @@ app.use(
 );
 
 // ================= ROUTES =================
-app.use("/api/auth", authLimiter, require("./routes/auth")); // 🔥 Auth rate limiter applied
-app.use("/api/courses", require("./routes/courses"));
-app.use("/api/users", require("./routes/users"));
-app.use("/api/upload", require("./routes/upload"));
-app.use("/api/payments", require("./routes/payments"));
+app.use("/api/auth", authLimiter, authRouter); // 🔥 Auth rate limiter applied
+app.use("/api/courses", coursesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/upload", uploadRouter);
+app.use("/api/payments", paymentsRouter);
 
 // ================= HEALTH CHECK =================
 app.get("/", (req, res) => {
@@ -112,7 +120,7 @@ app.get("/", (req, res) => {
 });
 
 // ================= ERROR HANDLING =================
-app.use(require("./middleware/errorHandler"));
+app.use(errorHandler);
 
 // ================= DB CONNECT & LISTEN =================
 if (process.env.NODE_ENV !== "test") {
@@ -133,4 +141,4 @@ if (process.env.NODE_ENV !== "test") {
     });
 }
 
-module.exports = app; // 🔥 Export Express app for integration testing
+export default app; // 🔥 Export Express app for integration testing

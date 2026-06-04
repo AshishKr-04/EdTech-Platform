@@ -1,5 +1,5 @@
-const AppError = require("./AppError");
-const { objectIdSchema } = require("../utils/validationSchemas");
+import AppError from "./AppError.js";
+import { objectIdSchema } from "../utils/validationSchemas.js";
 
 const validate = (schema) => (req, res, next) => {
   try {
@@ -48,7 +48,7 @@ const validateIdParam = (paramName = "id") => (req, res, next) => {
   next();
 };
 
-module.exports = {
+export {
   validate,
   validateIdParam,
 };
