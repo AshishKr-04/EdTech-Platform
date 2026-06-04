@@ -106,31 +106,31 @@ const DemoCheckoutPage = () => {
       <div className="bg-white max-w-4xl w-full rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-5 border border-gray-100">
         
         {/* LEFT COLUMN: ORDER SUMMARY (40% width) */}
-        <div className="md:col-span-2 bg-gradient-to-br from-indigo-900 to-indigo-950 p-8 text-white flex flex-col justify-between">
+        <div className="md:col-span-2 bg-slate-50 border-r border-slate-200 p-8 text-slate-800 flex flex-col justify-between">
           <div>
-            <span className="bg-white/10 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wider uppercase">
+            <span className="bg-slate-200/60 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase text-slate-700">
               Order Summary
             </span>
             
             <div className="mt-8">
-              <span className="text-[10px] text-indigo-300 uppercase font-semibold block">Purchasing Course</span>
-              <h2 className="text-xl font-bold mt-1 text-white leading-snug">{course.title}</h2>
-              <p className="text-xs text-indigo-200 mt-2 line-clamp-3 leading-relaxed">
+              <span className="text-[10px] text-slate-500 uppercase font-bold block">Purchasing Course</span>
+              <h2 className="text-xl font-black mt-1 text-slate-900 leading-snug">{course.title}</h2>
+              <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
                 {course.description || "Get immediate access to lectures, video lessons, and verifiable certificates."}
               </p>
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-6 mt-8 space-y-4">
-            <div className="flex justify-between text-xs text-indigo-300">
+          <div className="border-t border-slate-200 pt-6 mt-8 space-y-4">
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
               <span>Subtotal</span>
-              <span>₹{course.price || 0}</span>
+              <span className="text-slate-800 font-bold">₹{course.price || 0}</span>
             </div>
-            <div className="flex justify-between text-xs text-indigo-300">
+            <div className="flex justify-between text-xs text-slate-500 font-medium">
               <span>Platform Fee</span>
-              <span className="text-green-400 font-semibold">FREE</span>
+              <span className="text-emerald-650 font-bold">FREE</span>
             </div>
-            <div className="flex justify-between items-center text-sm font-bold border-t border-white/15 pt-4 text-white">
+            <div className="flex justify-between items-center text-sm font-bold border-t border-slate-200 pt-4 text-slate-800">
               <span>Total Bill</span>
               <span className="text-xl text-yellow-400">₹{course.price || 0}</span>
             </div>

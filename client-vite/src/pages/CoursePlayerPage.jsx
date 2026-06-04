@@ -75,6 +75,8 @@ const CoursePlayerPage = () => {
 
   const [course, setCourse] = useState(null);
   const [lessonIndex, setLessonIndex] = useState(0);
+  const [completedLessons, setCompletedLessons] = useState([]);
+  const [showGraduationModal, setShowGraduationModal] = useState(false);
 
   // AI Tutor States
   const [showAiTutor, setShowAiTutor] = useState(false);
@@ -91,6 +93,13 @@ const CoursePlayerPage = () => {
 
         const progress = await api.get(`/courses/${id}/progress`);
         setLessonIndex(progress.data.lessonIndex || 0);
+
+        try {
+          const profile = await api.get("/users/profile");
+          setCompletedLessons(profile.data.completedLessons || []);
+        } catch (err) {
+          console.error("Failed to load user completed lessons:", err);
+        }
       } catch (err) {
         console.error(err);
         alert("Access Denied: You must purchase or enroll in this course to learn!");
@@ -116,6 +125,23 @@ const CoursePlayerPage = () => {
 
     if (course) saveProgress();
   }, [lessonIndex, id, course]);
+
+  // ================= COMPLETE LESSON =================
+  const completeLesson = async (lId) => {
+    try {
+      const res = await api.post(`/courses/${id}/lessons/${lId}/complete`);
+      if (res.data.success) {
+        if (!completedLessons.includes(lId)) {
+          setCompletedLessons((prev) => [...prev, lId]);
+        }
+        if (res.data.certificateIssued || res.data.completedLessonsCount === res.data.totalLessons) {
+          setShowGraduationModal(true);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to complete lesson:", err);
+    }
+  };
 
   // ================= AI TUTOR WELCOME RESET =================
   useEffect(() => {
@@ -203,24 +229,32 @@ Ask me anything, or click one of the quick prompts below:`,
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {course.lessons.map((l, i) => (
-            <div
-              key={i}
-              onClick={() => setLessonIndex(i)}
-              className={`p-4 cursor-pointer border-b text-xs transition flex justify-between items-center ${
-                i === lessonIndex
-                  ? "bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600"
-                  : "hover:bg-gray-50 text-gray-700"
-              }`}
-            >
-              <span className="truncate pr-2">
-                {i + 1}. {l.title}
-              </span>
-              {i === lessonIndex && (
-                <span className="bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded text-[10px]">Active</span>
-              )}
-            </div>
-          ))}
+          {course.lessons.map((l, i) => {
+            const isCompleted = completedLessons.includes(l._id);
+            return (
+              <div
+                key={i}
+                onClick={() => setLessonIndex(i)}
+                className={`p-4 cursor-pointer border-b text-xs transition flex justify-between items-center ${
+                  i === lessonIndex
+                    ? "bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600"
+                    : "hover:bg-gray-50 text-gray-700"
+                }`}
+              >
+                <span className="truncate pr-2 flex items-center gap-1.5">
+                  {isCompleted ? (
+                    <span className="text-emerald-500 font-bold text-xs" title="Completed">✓</span>
+                  ) : (
+                    <span className="text-gray-300">•</span>
+                  )}
+                  <span className="truncate">{i + 1}. {l.title}</span>
+                </span>
+                {i === lessonIndex && (
+                  <span className="bg-indigo-200 text-indigo-800 px-1.5 py-0.5 rounded text-[10px] flex-shrink-0">Active</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -240,7 +274,7 @@ Ask me anything, or click one of the quick prompts below:`,
             onClick={() => setShowAiTutor(!showAiTutor)}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs shadow-md transition transform hover:scale-105 duration-200 ${
               showAiTutor
-                ? "bg-gradient-to-r from-violet-600 to-indigo-600 text-white"
+                ? "bg-slate-800 text-white"
                 : "bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50"
             }`}
           >
@@ -257,7 +291,10 @@ Ask me anything, or click one of the quick prompts below:`,
               src={lesson.videoUrl}
               controls
               autoPlay
-              onEnded={nextLesson}
+              onEnded={async () => {
+                await completeLesson(lesson._id);
+                nextLesson();
+              }}
               className="w-full h-full object-contain"
             />
           ) : (
@@ -280,6 +317,23 @@ Ask me anything, or click one of the quick prompts below:`,
             >
               ◀ Previous
             </button>
+
+            {/* COMPLETE LESSON BUTTON */}
+            {completedLessons.includes(lesson._id) ? (
+              <button
+                disabled
+                className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-lg text-xs font-semibold cursor-default"
+              >
+                Completed ✓
+              </button>
+            ) : (
+              <button
+                onClick={() => completeLesson(lesson._id)}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-semibold shadow-sm transition"
+              >
+                Complete Lesson ✓
+              </button>
+            )}
 
             <button
               onClick={nextLesson}
@@ -306,17 +360,17 @@ Ask me anything, or click one of the quick prompts below:`,
       {showAiTutor && (
         <div className="w-1/4 bg-white border-l flex flex-col h-full shadow-2xl transition-all duration-300 animate-slide-in">
           {/* AI PANEL HEADER */}
-          <div className="p-4 border-b bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex justify-between items-center">
+          <div className="p-4 border-b bg-slate-50 text-slate-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span className="text-xl">🤖</span>
               <div>
                 <h3 className="font-bold text-xs">EduMind AI Tutor</h3>
-                <p className="text-[10px] text-violet-100 animate-pulse">Context: {lesson.title}</p>
+                <p className="text-[10px] text-slate-500 animate-pulse">Context: {lesson.title}</p>
               </div>
             </div>
             <button
               onClick={() => setShowAiTutor(false)}
-              className="text-white hover:text-gray-200 text-sm font-bold p-1 bg-white/10 rounded-full h-6 w-6 flex items-center justify-center"
+              className="text-slate-500 hover:text-slate-900 text-sm font-bold p-1 bg-slate-200/50 rounded-full h-6 w-6 flex items-center justify-center"
             >
               ✕
             </button>
@@ -402,6 +456,44 @@ Ask me anything, or click one of the quick prompts below:`,
                 Send
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* GRADUATION MODAL */}
+      {showGraduationModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 text-center shadow-2xl border border-gray-150 transform transition-all duration-300">
+            <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+              🎓
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Congratulations, Graduate!
+            </h3>
+            <p className="text-sm text-gray-650 mt-2">
+              You have completed all lessons in <span className="font-semibold text-indigo-600">"{course.title}"</span>!
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              Your cryptographic certificate of completion has been successfully issued and stored securely.
+            </p>
+            
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setShowGraduationModal(false);
+                  window.location.href = "/profile?tab=certificates";
+                }}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-100"
+              >
+                View Certificate in Profile
+              </button>
+              <button
+                onClick={() => setShowGraduationModal(false)}
+                className="w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-semibold py-2.5 rounded-xl text-xs transition border border-gray-200"
+              >
+                Keep Learning
+              </button>
+            </div>
           </div>
         </div>
       )}

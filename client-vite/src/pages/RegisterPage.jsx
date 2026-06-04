@@ -56,132 +56,172 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-[90vh] flex items-center justify-center bg-[#f8fafc] px-4 py-10">
+    <div className="min-h-[85vh] flex items-center justify-center py-6 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white rounded-[2rem] shadow-xl p-10 border border-slate-100"
+        className="max-w-4xl w-full bg-white rounded-3xl shadow-sm border border-slate-200 grid md:grid-cols-12 overflow-hidden"
       >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-3">
-            Join EduMind
-          </h1>
-          <p className="text-slate-500 font-medium italic">
-            "A new way to master your future"
-          </p>
+        {/* Left Side: Features Column (hidden on mobile) */}
+        <div className="md:col-span-5 bg-slate-50 border-r border-slate-200 text-slate-800 p-10 flex flex-col justify-between hidden md:flex relative overflow-hidden">
+          {/* Subtle background visual grid */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none text-slate-400">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M 20 0 L 0 0 0 20" fill="none" stroke="currentColor" strokeWidth="1" />
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+          </div>
+          
+          <div className="relative z-10 space-y-6">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{role === 'Student' ? '🎓' : '👨‍🏫'}</span>
+              <span className="font-extrabold tracking-tight text-base text-slate-900">EduMind</span>
+            </div>
+            
+            <div className="space-y-4 pt-12 text-left">
+              <h2 className="text-2xl font-black leading-tight tracking-tight text-slate-900">
+                {role === 'Student' ? 'Embark on Your Tech Journey' : 'Empower the Next Generation'}
+              </h2>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                {role === 'Student'
+                  ? 'Connect with industry leaders, build a verifiable developer profile, and take control of your educational path.'
+                  : 'Publish premium course curricula, track student success metrics, and award cryptographically verifiable graduation certificates.'}
+              </p>
+            </div>
+          </div>
+          
+          <div className="relative z-10 border-t border-slate-200 pt-6 text-left">
+            <p className="text-[10px] text-slate-500 font-mono">
+              {role === 'Student' ? 'EduMind Student Enrollment Portal' : 'EduMind Instructor Onboarding Portal'}
+            </p>
+          </div>
         </div>
 
-        {/* Form */}
-        <form onSubmit={onSubmit} className="space-y-5">
-
-          {/* Name */}
-          <div className="relative group">
-            <User
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
-              size={20}
-            />
-            <input
-              type="text"
-              name="name"
-              value={name}
-              onChange={onChange}
-              required
-              placeholder="Full Name"
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 outline-none transition-all font-medium"
-            />
+        {/* Right Side: Form Column */}
+        <div className="md:col-span-7 p-8 md:p-10 flex flex-col justify-center bg-white">
+          {/* Header */}
+          <div className="mb-6 text-left">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+              Create an Account
+            </h1>
+            <p className="text-xs text-slate-500 mt-1">Get started with a free learning account</p>
           </div>
 
-          {/* Email */}
-          <div className="relative group">
-            <Mail
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
-              size={20}
-            />
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={onChange}
-              required
-              placeholder="Email Address"
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 outline-none transition-all font-medium"
-            />
-          </div>
+          {/* Form */}
+          <form onSubmit={onSubmit} className="space-y-4 text-left">
 
-          {/* Password */}
-          <div className="relative group">
-            <Lock
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors"
-              size={20}
-            />
-            <input
-              type="password"
-              name="password"
-              value={password}
-              onChange={onChange}
-              minLength="6"
-              required
-              placeholder="Password (min. 6 chars)"
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 outline-none transition-all font-medium"
-            />
-          </div>
+            {/* Name */}
+            <div className="relative group">
+              <User
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors"
+                size={18}
+              />
+              <input
+                type="text"
+                name="name"
+                value={name}
+                onChange={onChange}
+                required
+                placeholder="Full Name"
+                className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-500 outline-none transition-all font-medium text-sm text-slate-900"
+              />
+            </div>
 
-          {/* Role */}
-          <div className="relative group">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg">🎓</div>
-            <select
-              name="role"
-              value={role}
-              onChange={onChange}
-              className="w-full pl-12 pr-10 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 outline-none appearance-none font-semibold text-slate-700"
-            >
-              <option value="Student">I am a Student</option>
-              <option value="Instructor">I am an Instructor</option>
-            </select>
-            <ChevronDown
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-              size={20}
-            />
-          </div>
+            {/* Email */}
+            <div className="relative group">
+              <Mail
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors"
+                size={18}
+              />
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={onChange}
+                required
+                placeholder="Email Address"
+                className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-500 outline-none transition-all font-medium text-sm text-slate-900"
+              />
+            </div>
 
-          {/* Error */}
-          {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-red-50 text-red-600 p-3 rounded-xl text-sm text-center font-bold border border-red-100"
-            >
-              {error}
-            </motion.div>
-          )}
+            {/* Password */}
+            <div className="relative group">
+              <Lock
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors"
+                size={18}
+              />
+              <input
+                type="password"
+                name="password"
+                value={password}
+                onChange={onChange}
+                minLength="6"
+                required
+                placeholder="Password (min. 6 chars)"
+                className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-500 outline-none transition-all font-medium text-sm text-slate-900"
+              />
+            </div>
 
-          {/* Button */}
-          <motion.button
-            disabled={isLoading}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            type="submit"
-            className="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl hover:bg-indigo-700 shadow-xl transition-all flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              'Create Account'
+            {/* Role */}
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-sm">🎓</div>
+              <select
+                name="role"
+                value={role}
+                onChange={onChange}
+                className="w-full pl-12 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-500 outline-none appearance-none font-semibold text-slate-700 text-sm"
+              >
+                <option value="Student">I am a Student</option>
+                <option value="Instructor">I am an Instructor</option>
+              </select>
+              <ChevronDown
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+                size={18}
+              />
+            </div>
+
+            {/* Error */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="bg-red-50 text-red-600 p-2.5 rounded-xl text-xs text-center font-bold border border-red-100"
+              >
+                {error}
+              </motion.div>
             )}
-          </motion.button>
-        </form>
 
-        {/* Footer */}
-        <p className="mt-8 text-center text-slate-600 font-medium">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="text-indigo-600 font-bold hover:underline"
-          >
-            Login here
-          </Link>
-        </p>
+            {/* Button */}
+            <motion.button
+              disabled={isLoading}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              type="submit"
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm transition duration-150 text-sm"
+            >
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                'Create Account'
+              )}
+            </motion.button>
+          </form>
+
+          {/* Footer */}
+          <p className="mt-6 text-xs text-center text-slate-500 font-medium">
+            Already have an account?{' '}
+            <Link
+              to="/login"
+              className="text-slate-900 font-bold hover:underline"
+            >
+              Login here
+            </Link>
+          </p>
+        </div>
       </motion.div>
     </div>
   );

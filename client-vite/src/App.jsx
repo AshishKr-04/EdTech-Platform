@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -20,10 +20,20 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// Reset scroll position on page/route navigation
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
+      <ScrollToTop />
+      <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
         <Navbar />
 
         <main className="flex-grow container mx-auto px-4 py-8">

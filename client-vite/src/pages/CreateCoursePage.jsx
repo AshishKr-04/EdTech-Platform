@@ -10,6 +10,7 @@ const CreateCoursePage = () => {
     description: "",
     price: "",
     duration: "",
+    category: "General",
     lessons: [{ title: "", content: "", videoUrl: "" }],
   });
 
@@ -121,7 +122,7 @@ const CreateCoursePage = () => {
           placeholder="Description"
           className="w-full border p-3 rounded"
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <input
             type="number"
             name="price"
@@ -139,6 +140,19 @@ const CreateCoursePage = () => {
             placeholder="Duration (e.g. 10 hours)"
             className="border p-3 rounded"
           />
+
+          <select
+            name="category"
+            value={courseData.category || "General"}
+            onChange={handleChange}
+            className="border p-3 rounded bg-white text-slate-700"
+          >
+            <option value="General">Category: General</option>
+            <option value="Development">Category: Development</option>
+            <option value="Business">Category: Business</option>
+            <option value="Design">Category: Design</option>
+            <option value="Academics">Category: Academics</option>
+          </select>
         </div>
 
         {/* LESSONS */}

@@ -83,11 +83,11 @@ const CoursePreviewPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* ================= HEADER ================= */}
-      <div className="bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+      <div className="bg-slate-100 border-b border-slate-200 text-slate-800">
         <div className="max-w-6xl mx-auto px-6 py-12">
-          <h1 className="text-3xl font-semibold">{course.title}</h1>
-          <p className="mt-2 text-indigo-100">By {course.instructor?.name || "Unknown"}</p>
-          <p className="mt-4 max-w-3xl text-indigo-100">{course.description}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{course.title}</h1>
+          <p className="mt-2 text-slate-600 font-semibold">By {course.instructor?.name || "Unknown"}</p>
+          <p className="mt-4 max-w-3xl text-slate-500 text-sm leading-relaxed">{course.description}</p>
 
           {/* METADATA */}
           <div className="flex flex-wrap gap-6 mt-6 text-sm">

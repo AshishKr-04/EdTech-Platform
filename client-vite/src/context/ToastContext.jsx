@@ -43,13 +43,13 @@ export const ToastProvider = ({ children }) => {
   const getStyles = (type) => {
     switch (type) {
       case 'success':
-        return 'bg-emerald-50/90 border-emerald-200/50 shadow-emerald-100/30 text-emerald-900 dark:bg-emerald-950/95 dark:border-emerald-900/50 dark:text-emerald-50';
+        return 'bg-emerald-50/90 border-emerald-200/50 shadow-emerald-100/30 text-emerald-900';
       case 'error':
-        return 'bg-rose-50/90 border-rose-200/50 shadow-rose-100/30 text-rose-900 dark:bg-rose-950/95 dark:border-rose-900/50 dark:text-rose-50';
+        return 'bg-rose-50/90 border-rose-200/50 shadow-rose-100/30 text-rose-900';
       case 'warning':
-        return 'bg-amber-50/90 border-amber-200/50 shadow-amber-100/30 text-amber-900 dark:bg-amber-950/95 dark:border-amber-900/50 dark:text-amber-50';
+        return 'bg-amber-50/90 border-amber-200/50 shadow-amber-100/30 text-amber-900';
       default:
-        return 'bg-blue-50/90 border-blue-200/50 shadow-blue-100/30 text-blue-900 dark:bg-blue-950/95 dark:border-blue-900/50 dark:text-blue-50';
+        return 'bg-blue-50/90 border-blue-200/50 shadow-blue-100/30 text-blue-900';
     }
   };
 
@@ -71,7 +71,7 @@ export const ToastProvider = ({ children }) => {
             <div className="flex-grow text-sm font-medium leading-5">{toast.message}</div>
             <button
               onClick={() => removeToast(toast.id)}
-              className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg p-0.5 transition-colors"
+              className="flex-shrink-0 text-gray-400 hover:text-gray-600 rounded-lg p-0.5 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
