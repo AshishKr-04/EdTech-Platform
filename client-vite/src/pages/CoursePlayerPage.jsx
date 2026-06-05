@@ -83,6 +83,7 @@ const CoursePlayerPage = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isThinking, setIsThinking] = useState(false);
+  const [activeMobileTab, setActiveMobileTab] = useState("player");
 
   // ================= FETCH COURSE & PROGRESS =================
   useEffect(() => {
@@ -220,9 +221,44 @@ Ask me anything, or click one of the quick prompts below:`,
   };
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden -m-8">
-      {/* 1. LEFT SIDEBAR: LESSONS (20% or 25% width) */}
-      <div className={`${showAiTutor ? "w-1/5" : "w-1/4"} bg-white border-r flex flex-col h-full transition-all duration-300`}>
+    <div className="flex flex-col lg:flex-row lg:h-screen bg-gray-50 lg:overflow-hidden lg:-m-8 h-auto min-h-[90vh]">
+      
+      {/* MOBILE TABS BAR (visible on mobile only, hidden on desktop) */}
+      <div className="lg:hidden flex bg-white border-b border-slate-200 sticky top-0 z-50">
+        <button
+          onClick={() => setActiveMobileTab("syllabus")}
+          className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 text-center ${
+            activeMobileTab === "syllabus"
+              ? "border-indigo-600 text-indigo-600 font-extrabold"
+              : "border-transparent text-gray-500 font-semibold"
+          }`}
+        >
+          Syllabus
+        </button>
+        <button
+          onClick={() => setActiveMobileTab("player")}
+          className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 text-center ${
+            activeMobileTab === "player"
+              ? "border-indigo-600 text-indigo-600 font-extrabold"
+              : "border-transparent text-gray-500 font-semibold"
+          }`}
+        >
+          Player & Notes
+        </button>
+        <button
+          onClick={() => setActiveMobileTab("ai")}
+          className={`flex-1 py-3 text-xs font-bold transition-all border-b-2 text-center ${
+            activeMobileTab === "ai"
+              ? "border-indigo-600 text-indigo-600 font-extrabold"
+              : "border-transparent text-gray-500 font-semibold"
+          }`}
+        >
+          AI Tutor ✨
+        </button>
+      </div>
+
+      {/* 1. LEFT SIDEBAR: LESSONS (Syllabus List) */}
+      <div className={`${activeMobileTab === "syllabus" ? "flex" : "hidden"} lg:flex ${showAiTutor ? "lg:w-1/5" : "lg:w-1/4"} bg-white lg:border-r flex-col h-[65vh] lg:h-full transition-all duration-300 w-full`}>
         <div className="p-4 border-b">
           <h2 className="font-bold text-gray-800 text-base truncate">{course.title}</h2>
           <p className="text-xs text-gray-500 mt-1">{course.lessons?.length || 0} lessons</p>
@@ -234,7 +270,12 @@ Ask me anything, or click one of the quick prompts below:`,
             return (
               <div
                 key={i}
-                onClick={() => setLessonIndex(i)}
+                onClick={() => {
+                  setLessonIndex(i);
+                  if (window.innerWidth < 1024) {
+                    setActiveMobileTab("player");
+                  }
+                }}
                 className={`p-4 cursor-pointer border-b text-xs transition flex justify-between items-center ${
                   i === lessonIndex
                     ? "bg-indigo-50 text-indigo-700 font-bold border-l-4 border-indigo-600"
@@ -258,8 +299,8 @@ Ask me anything, or click one of the quick prompts below:`,
         </div>
       </div>
 
-      {/* 2. CENTER SECTION: VIDEO PLAYER & NOTES (55% or 75% width) */}
-      <div className="flex-1 flex flex-col h-full bg-gray-100 overflow-y-auto p-6 transition-all duration-300">
+      {/* 2. CENTER SECTION: VIDEO PLAYER & NOTES */}
+      <div className={`${activeMobileTab === "player" ? "flex" : "hidden"} lg:flex flex-1 flex-col h-full bg-gray-100 overflow-y-auto p-4 lg:p-6 transition-all duration-300 w-full pb-16 lg:pb-6 text-left`}>
         {/* HEADER & TOGGLE */}
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -271,15 +312,21 @@ Ask me anything, or click one of the quick prompts below:`,
 
           {/* AI TOGGLE BUTTON */}
           <button
-            onClick={() => setShowAiTutor(!showAiTutor)}
+            onClick={() => {
+              if (window.innerWidth < 1024) {
+                setActiveMobileTab("ai");
+              } else {
+                setShowAiTutor(!showAiTutor);
+              }
+            }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg font-semibold text-xs shadow-md transition transform hover:scale-105 duration-200 ${
-              showAiTutor
+              showAiTutor || activeMobileTab === "ai"
                 ? "bg-slate-800 text-white"
                 : "bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50"
             }`}
           >
             <span className="animate-pulse">✨</span>
-            {showAiTutor ? "Close AI Tutor" : "Ask AI Tutor"}
+            {showAiTutor || activeMobileTab === "ai" ? "Close AI Tutor" : "Ask AI Tutor"}
           </button>
         </div>
 
@@ -356,20 +403,25 @@ Ask me anything, or click one of the quick prompts below:`,
         </div>
       </div>
 
-      {/* 3. RIGHT SIDEBAR: AI TUTOR PANEL (25% width, slides in) */}
-      {showAiTutor && (
-        <div className="w-1/4 bg-white border-l flex flex-col h-full shadow-2xl transition-all duration-300 animate-slide-in">
+      {/* 3. RIGHT SIDEBAR: AI TUTOR PANEL */}
+      {(showAiTutor || activeMobileTab === "ai") && (
+        <div className={`${showAiTutor ? "lg:flex" : "lg:hidden"} ${activeMobileTab === "ai" ? "flex" : "hidden"} lg:w-1/4 bg-white lg:border-l flex-col h-[75vh] lg:h-full shadow-2xl transition-all duration-300 animate-slide-in w-full`}>
           {/* AI PANEL HEADER */}
           <div className="p-4 border-b bg-slate-50 text-slate-800 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span className="text-xl">🤖</span>
-              <div>
+              <div className="text-left">
                 <h3 className="font-bold text-xs">EduMind AI Tutor</h3>
                 <p className="text-[10px] text-slate-500 animate-pulse">Context: {lesson.title}</p>
               </div>
             </div>
             <button
-              onClick={() => setShowAiTutor(false)}
+              onClick={() => {
+                setShowAiTutor(false);
+                if (window.innerWidth < 1024) {
+                  setActiveMobileTab("player");
+                }
+              }}
               className="text-slate-500 hover:text-slate-900 text-sm font-bold p-1 bg-slate-200/50 rounded-full h-6 w-6 flex items-center justify-center"
             >
               ✕
@@ -377,7 +429,7 @@ Ask me anything, or click one of the quick prompts below:`,
           </div>
 
           {/* CHAT BUBBLES AREA */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 flex flex-col min-h-[200px]">
             {chatHistory.map((msg, i) => (
               <div
                 key={i}

@@ -19,6 +19,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -44,130 +45,268 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white/80 border-b border-gray-100 backdrop-blur-md sticky top-0 z-[1000] px-6 py-4 flex justify-between items-center transition-colors duration-300">
-      
-      {/* BRAND LOGO */}
-      <Link to="/" className="flex items-center gap-2 group">
-        <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
-          <GraduationCap className="h-6 w-6" />
-        </div>
-        <span className="text-xl font-bold text-slate-900 tracking-tight">
-          EduMind
-        </span>
-      </Link>
-
-      {/* NAVIGATION LINKS */}
-      <div className="flex items-center gap-4">
-        
-        {/* PUBLIC */}
-        <Link to="/courses" className={linkClass("/courses")}>
-          <BookOpen className="h-4 w-4" />
-          <span>Explore</span>
+    <nav className="bg-white/80 border-b border-gray-100 backdrop-blur-md sticky top-0 z-[1000] px-6 py-4 transition-colors duration-300">
+      <div className="flex justify-between items-center max-w-7xl mx-auto">
+        {/* BRAND LOGO */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
+            <GraduationCap className="h-6 w-6" />
+          </div>
+          <span className="text-xl font-bold text-slate-900 tracking-tight">
+            EduMind
+          </span>
         </Link>
 
-        {auth.isAuthenticated ? (
-          <>
-            {/* 🎓 STUDENT NAVIGATION */}
-            {auth.user?.role === "Student" && (
-              <Link to="/my-courses" className={linkClass("/my-courses")}>
-                <Sparkles className="h-4 w-4 text-indigo-500" />
-                <span>My Learning</span>
-              </Link>
-            )}
+        {/* DESKTOP NAVIGATION LINKS (hidden on mobile) */}
+        <div className="hidden md:flex items-center gap-4">
+          
+          {/* PUBLIC */}
+          <Link to="/courses" className={linkClass("/courses")}>
+            <BookOpen className="h-4 w-4" />
+            <span>Explore</span>
+          </Link>
 
-            {/* 👨‍🏫 INSTRUCTOR NAVIGATION */}
-            {auth.user?.role === "Instructor" && (
-              <div className="flex items-center gap-2 border-r border-slate-100 pr-2">
+          {auth.isAuthenticated ? (
+            <>
+              {/* 🎓 STUDENT NAVIGATION */}
+              {auth.user?.role === "Student" && (
                 <Link to="/my-courses" className={linkClass("/my-courses")}>
-                  <span>My Courses</span>
+                  <Sparkles className="h-4 w-4 text-indigo-500" />
+                  <span>My Learning</span>
                 </Link>
-                <Link to="/instructor-dashboard" className={linkClass("/instructor-dashboard")}>
-                  <LayoutDashboard className="h-4 w-4" />
-                  <span>Dashboard</span>
-                </Link>
-                <Link to="/create-course" className={linkClass("/create-course")}>
-                  <PlusCircle className="h-4 w-4" />
-                  <span>New Course</span>
-                </Link>
-              </div>
-            )}
+              )}
 
-            {/* USER SETTINGS / PROFILE DROPDOWN */}
-            <div className="relative">
-              <button 
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-2 pl-2 hover:opacity-90 transition-opacity focus:outline-none"
-              >
-                <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-sm font-semibold shadow-inner">
-                  {auth.user?.avatar ? (
-                    <img 
-                      src={auth.user.avatar} 
-                      alt={auth.user.name} 
-                      className="h-full w-full object-cover rounded-full" 
-                    />
-                  ) : getInitials()}
+              {/* 👨‍🏫 INSTRUCTOR NAVIGATION */}
+              {auth.user?.role === "Instructor" && (
+                <div className="flex items-center gap-2 border-r border-slate-100 pr-2">
+                  <Link to="/my-courses" className={linkClass("/my-courses")}>
+                    <span>My Courses</span>
+                  </Link>
+                  <Link to="/instructor-dashboard" className={linkClass("/instructor-dashboard")}>
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                  <Link to="/create-course" className={linkClass("/create-course")}>
+                    <PlusCircle className="h-4 w-4" />
+                    <span>New Course</span>
+                  </Link>
                 </div>
-                <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+              )}
 
-              {/* DROPDOWN MENU */}
-              {dropdownOpen && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-10" 
-                    onClick={() => setDropdownOpen(false)}
-                  />
-                  <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl z-20 py-2 transition-all duration-300 animate-slide-up-subtle">
-                    <div className="px-4 py-2 border-b border-gray-50 mb-1 text-left">
-                      <p className="text-sm font-semibold text-gray-800">{auth.user?.name || "Student"}</p>
-                      <p className="text-xs text-gray-500 truncate">{auth.user?.email}</p>
-                      <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">
-                        {auth.user?.role}
-                      </span>
-                    </div>
-
-                    <Link 
-                      to="/profile" 
-                      onClick={() => setDropdownOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-colors"
-                    >
-                      <UserIcon className="h-4 w-4" />
-                      <span>My Profile</span>
-                    </Link>
-
-                    <button 
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        handleLogout();
-                      }}
-                      className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50/50 transition-colors text-left"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>Logout</span>
-                    </button>
+              {/* USER SETTINGS / PROFILE DROPDOWN */}
+              <div className="relative">
+                <button 
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 pl-2 hover:opacity-90 transition-opacity focus:outline-none"
+                >
+                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-sm font-semibold shadow-inner">
+                    {auth.user?.avatar ? (
+                      <img 
+                        src={auth.user.avatar} 
+                        alt={auth.user.name} 
+                        className="h-full w-full object-cover rounded-full" 
+                      />
+                    ) : getInitials()}
                   </div>
+                  <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* DROPDOWN MENU */}
+                {dropdownOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl z-20 py-2 transition-all duration-300 animate-slide-up-subtle">
+                      <div className="px-4 py-2 border-b border-gray-50 mb-1 text-left">
+                        <p className="text-sm font-semibold text-gray-800">{auth.user?.name || "Student"}</p>
+                        <p className="text-xs text-gray-500 truncate">{auth.user?.email}</p>
+                        <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 bg-indigo-50 text-indigo-600 rounded-full">
+                          {auth.user?.role}
+                        </span>
+                      </div>
+
+                      <Link 
+                        to="/profile" 
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-indigo-600 hover:bg-indigo-50/50 transition-colors"
+                      >
+                        <UserIcon className="h-4 w-4" />
+                        <span>My Profile</span>
+                      </Link>
+
+                      <button 
+                        onClick={() => {
+                          setDropdownOpen(false);
+                          handleLogout();
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50/50 transition-colors text-left"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 pl-2">
+              <Link 
+                to="/login" 
+                className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+              >
+                Login
+              </Link>
+              <Link 
+                to="/register" 
+                className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition duration-150"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* MOBILE MENU TOGGLE BUTTON (visible on mobile only) */}
+        <div className="flex md:hidden items-center">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-xl text-gray-600 hover:text-indigo-600 hover:bg-slate-50 focus:outline-none transition-all duration-200"
+          >
+            {mobileMenuOpen ? (
+              <span className="text-xl font-bold font-sans block w-6 h-6 flex items-center justify-center">✕</span>
+            ) : (
+              <span className="text-xl font-bold font-sans block w-6 h-6 flex items-center justify-center">☰</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* MOBILE NAVIGATION DRAWER (visible on mobile only when open) */}
+      {mobileMenuOpen && (
+        <div className="md:hidden mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2 animate-slide-up-subtle text-left">
+          <Link 
+            to="/courses" 
+            onClick={() => setMobileMenuOpen(false)}
+            className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+              isActive("/courses") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+            }`}
+          >
+            <BookOpen className="h-4 w-4" />
+            Explore Courses
+          </Link>
+
+          {auth.isAuthenticated ? (
+            <>
+              {/* Student learning link */}
+              {auth.user?.role === "Student" && (
+                <Link 
+                  to="/my-courses" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                    isActive("/my-courses") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <Sparkles className="h-4 w-4 text-indigo-500" />
+                  My Learning
+                </Link>
+              )}
+
+              {/* Instructor management links */}
+              {auth.user?.role === "Instructor" && (
+                <>
+                  <Link 
+                    to="/my-courses" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                      isActive("/my-courses") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    My Courses
+                  </Link>
+                  <Link 
+                    to="/instructor-dashboard" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                      isActive("/instructor-dashboard") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                  <Link 
+                    to="/create-course" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                      isActive("/create-course") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                    New Course
+                  </Link>
                 </>
               )}
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center gap-2 pl-2">
-            <Link 
-              to="/login" 
-              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
-            >
-              Login
-            </Link>
-            <Link 
-              to="/register" 
-              className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition duration-150"
-            >
-              Sign Up
-            </Link>
-          </div>
-        )}
 
-      </div>
+              {/* Divider and personal account details */}
+              <div className="border-t border-slate-100 my-2 pt-2 flex flex-col gap-2">
+                <div className="px-3 py-1 flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-xs font-semibold">
+                    {auth.user?.avatar ? (
+                      <img src={auth.user.avatar} alt={auth.user.name} className="h-full w-full object-cover rounded-full" />
+                    ) : getInitials()}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-800 leading-none">{auth.user?.name}</p>
+                    <p className="text-[10px] text-slate-500 truncate leading-none mt-1">{auth.user?.email}</p>
+                  </div>
+                </div>
+
+                <Link 
+                  to="/profile" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
+                    isActive("/profile") ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <UserIcon className="h-4 w-4" />
+                  My Profile
+                </Link>
+
+                <button 
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50/50 transition-colors text-left"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+              <Link 
+                to="/login" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+              >
+                Login
+              </Link>
+              <Link 
+                to="/register" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-sm"
+              >
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       <style>{`
         @keyframes slideUpSubtle {

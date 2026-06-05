@@ -317,7 +317,7 @@ const ProfilePage = () => {
       </div>
 
       {/* 3. TABS SELECTOR */}
-      <div className="border-b border-slate-200 flex gap-2">
+      <div className="border-b border-slate-200 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
         <button
           onClick={() => setActiveTab("courses")}
           className={`pb-3 px-4 font-semibold text-sm transition-all border-b-2 ${

@@ -106,7 +106,7 @@ const DemoCheckoutPage = () => {
       <div className="bg-white max-w-4xl w-full rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-5 border border-gray-100">
         
         {/* LEFT COLUMN: ORDER SUMMARY (40% width) */}
-        <div className="md:col-span-2 bg-slate-50 border-r border-slate-200 p-8 text-slate-800 flex flex-col justify-between">
+        <div className="md:col-span-2 bg-slate-50 border-b md:border-b-0 md:border-r border-slate-200 p-8 text-slate-800 flex flex-col justify-between">
           <div>
             <span className="bg-slate-200/60 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase text-slate-700">
               Order Summary
