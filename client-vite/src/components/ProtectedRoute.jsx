@@ -2,15 +2,24 @@ import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const { auth } = useContext(AuthContext);
 
   if (auth.loading) {
-    return <p className="text-center mt-10">Loading...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
   }
 
   if (!auth.isAuthenticated) {
     return <Navigate to="/login" />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(auth.user?.role)) {
+    const fallbackPath = auth.user?.role === "Instructor" ? "/instructor-dashboard" : "/courses";
+    return <Navigate to={fallbackPath} />;
   }
 
   return children;

@@ -89,7 +89,11 @@ const CreateCoursePage = () => {
     }
 
     try {
-      await api.post("/courses", courseData);
+      const payload = {
+        ...courseData,
+        price: Number(courseData.price) || 0,
+      };
+      await api.post("/courses", payload);
       alert("Course created 🎉");
       navigate("/instructor-dashboard");
     } catch (err) {

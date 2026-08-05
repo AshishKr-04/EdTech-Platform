@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import { useToast } from "../context/ToastContext";
+import { AuthContext } from "../context/AuthContext";
 
 const DemoCheckoutPage = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { loadUser } = useContext(AuthContext);
 
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,7 @@ const DemoCheckoutPage = () => {
       return;
     }
 
-    const [month, year] = expiry.split("/").map(Number);
+    const [month] = expiry.split("/").map(Number);
     if (month < 1 || month > 12) {
       showToast("Invalid expiry month (must be 01-12).", "error");
       return;
@@ -78,6 +80,7 @@ const DemoCheckoutPage = () => {
     // Phase 2: Complete payment locally
     try {
       await api.post("/payments/demo-complete", { orderId });
+      await loadUser();
       
       // Phase 3: Transition to successful checkmark screen (1500ms)
       setStep("success");

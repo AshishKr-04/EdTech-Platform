@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AboutPage = () => {
+  const navigate = useNavigate();
+
   const stats = [
     { label: 'Active Students', value: '10K+' },
     { label: 'Expert Instructors', value: '500+' },
@@ -81,8 +84,18 @@ const AboutPage = () => {
       <section className="py-20 text-center container mx-auto px-4">
         <h2 className="text-4xl font-bold mb-6 text-gray-900">Ready to start your journey?</h2>
         <div className="flex justify-center space-x-4">
-          <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg">Explore Courses</button>
-          <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg font-bold hover:bg-indigo-50 transition">Join as Instructor</button>
+          <button 
+            onClick={() => navigate('/courses')}
+            className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg"
+          >
+            Explore Courses
+          </button>
+          <button 
+            onClick={() => navigate('/register?role=Instructor')}
+            className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg"
+          >
+            Join as Instructor/Student
+          </button>
         </div>
       </section>
     </div>

@@ -37,7 +37,6 @@ const LoginPage = () => {
 
       // Cache credential tokens locally
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
 
       // Update global context authentication state
       await login(res.data.token);
@@ -49,7 +48,7 @@ const LoginPage = () => {
       if (actualRole === "Instructor") {
         navigate('/instructor-dashboard');
       } else {
-        navigate('/courses');
+        navigate('/');
       }
     } catch (err) {
       console.error(err);

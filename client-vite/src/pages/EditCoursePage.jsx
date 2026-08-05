@@ -93,7 +93,11 @@ const EditCoursePage = () => {
       return alert("Each lesson must have title + text OR video");
     }
 
-    await api.put(`/courses/${id}`, courseData);
+    const payload = {
+      ...courseData,
+      price: Number(courseData.price) || 0,
+    };
+    await api.put(`/courses/${id}`, payload);
     alert("Course updated 🎉");
     navigate("/instructor-dashboard");
   };

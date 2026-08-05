@@ -26,7 +26,7 @@ const RenderMarkdown = ({ text }) => {
         // 2. Handle inline/block lists e.g. starting with "* " or "- "
         if (cleanText.includes("\n* ") || cleanText.startsWith("* ") || cleanText.includes("\n- ") || cleanText.startsWith("- ")) {
           // split lines
-          const lines = cleanText.split(/\n\s*[\*\-]\s*/);
+          const lines = cleanText.split(/\n\s*[*-]\s*/);
           let firstLine = "";
           // Check if first line starts with a list bullet
           if (cleanText.startsWith("* ") || cleanText.startsWith("- ")) {
@@ -40,7 +40,7 @@ const RenderMarkdown = ({ text }) => {
               {firstLine && <p className="mb-1 font-medium" dangerouslySetInnerHTML={{ __html: parseBold(firstLine) }} />}
               <ul className="list-disc list-inside pl-1 space-y-1">
                 {lines.map((line, j) => {
-                  let cleanLine = line.replace(/^[\*\-]\s*/, "").trim();
+                  let cleanLine = line.replace(/^[*-]\s*/, "").trim();
                   return (
                     <li
                       key={j}

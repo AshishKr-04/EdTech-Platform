@@ -8,10 +8,14 @@ const MyCoursesPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [progressMap, setProgressMap] = useState({});
-  const { auth } = useContext(AuthContext);
+  const { auth, loadUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // ================= FETCH =================
+  useEffect(() => {
+    loadUser();
+  }, [loadUser]);
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -110,7 +114,7 @@ const MyCoursesPage = () => {
                       <img 
                         src={course.thumbnail} 
                         alt={course.title}
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-102"
+                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                       />
                     ) : (
                       <div className="h-full w-full bg-slate-150 text-slate-400 flex items-center justify-center">

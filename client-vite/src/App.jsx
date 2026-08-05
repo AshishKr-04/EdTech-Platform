@@ -36,7 +36,7 @@ function App() {
       <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900">
         <Navbar />
 
-        <main className="flex-grow container mx-auto px-4 py-8">
+        <main className="flex-grow min-w-0">
           <Routes>
 
             {/* ================= PUBLIC ROUTES ================= */}
@@ -92,7 +92,7 @@ function App() {
             <Route
               path="/instructor-dashboard"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['Instructor']}>
                   <InstructorDashboard />
                 </ProtectedRoute>
               }
@@ -101,7 +101,7 @@ function App() {
             <Route
               path="/create-course"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['Instructor']}>
                   <CreateCoursePage />
                 </ProtectedRoute>
               }
@@ -110,7 +110,7 @@ function App() {
             <Route
               path="/edit-course/:id"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowedRoles={['Instructor']}>
                   <EditCoursePage />
                 </ProtectedRoute>
               }

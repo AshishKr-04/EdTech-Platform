@@ -101,16 +101,7 @@ const CoursesPage = () => {
     return (b.studentsCount || 0) - (a.studentsCount || 0);
   });
 
-  const getLevelBadgeStyles = (level) => {
-    switch (level) {
-      case 'Advanced':
-        return 'bg-rose-50 text-rose-600 border border-rose-100';
-      case 'Intermediate':
-        return 'bg-amber-50 text-amber-700 border border-amber-100';
-      default:
-        return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
-    }
-  };
+
 
   // 1. Loading Skeleton Grid
   const renderLoadingSkeletons = () => (
@@ -146,7 +137,7 @@ const CoursesPage = () => {
         <p className="text-slate-600 mb-6">{error}</p>
         <button 
           onClick={fetchAllCourses}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-semibold shadow-md shadow-indigo-100 transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white shadow-md shadow-blue-100 transition-colors hover:bg-blue-600"
         >
           <RefreshCw className="h-4 w-4" />
           Retry Connection
@@ -162,7 +153,7 @@ const CoursesPage = () => {
       <div className="text-center max-w-2xl mx-auto space-y-3">
         {auth.isAuthenticated && auth.user?.role === "Student" ? (
           <>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-xs font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
               <Sparkles className="h-3 w-3" />
               Welcome Back, {auth.user?.name || "Student"}!
             </span>
@@ -197,23 +188,23 @@ const CoursesPage = () => {
           
           {/* Search bar */}
           <div className="md:col-span-2 relative">
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-slate-450 pointer-events-none" />
+            <Search className="absolute left-4 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search course title, syllabus topic, skills..."
-              className="w-full bg-slate-100/60 border border-slate-200 rounded-2xl pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all text-slate-850"
+              className="w-full rounded-2xl border border-slate-200 bg-slate-100/60 py-3 pl-12 pr-4 text-sm text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           {/* Sort selection */}
           <div className="relative">
-            <ArrowUpDown className="absolute left-4 top-3.5 h-4 w-4 text-slate-450 pointer-events-none" />
+            <ArrowUpDown className="absolute left-4 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full bg-slate-100/60 border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 transition-all text-slate-850 appearance-none cursor-pointer font-medium"
+              className="w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-100/60 py-3 pl-10 pr-4 text-sm font-medium text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600"
             >
               <option value="popular">Popularity (Most Enrolled)</option>
               <option value="rating">Highest Rated</option>
@@ -225,11 +216,11 @@ const CoursesPage = () => {
         </div>
 
         {/* Filter Badges & Categories */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-150 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
           
           {/* Category Filters */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-450 uppercase tracking-wider block">Category</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Category</span>
             <div className="flex flex-wrap gap-2">
               {categories.map(cat => (
                 <button
@@ -238,7 +229,7 @@ const CoursesPage = () => {
                   className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     selectedCategory === cat
                       ? "bg-slate-900 text-white shadow-md shadow-slate-100"
-                      : "bg-slate-150/70 text-slate-700 hover:bg-slate-200"
+                      : "bg-slate-100/70 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
                   {cat}
@@ -249,7 +240,7 @@ const CoursesPage = () => {
 
           {/* Level Filters */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-450 uppercase tracking-wider block">Expertise Level</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Expertise Level</span>
             <div className="flex flex-wrap gap-2">
               {['All', 'Beginner', 'Intermediate', 'Advanced'].map(lvl => (
                 <button
@@ -258,7 +249,7 @@ const CoursesPage = () => {
                   className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     selectedLevel === lvl
                       ? "bg-slate-900 text-white shadow-md shadow-slate-100"
-                      : "bg-slate-150/70 text-slate-700 hover:bg-slate-200"
+                      : "bg-slate-100/70 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
                   {lvl}
@@ -289,7 +280,7 @@ const CoursesPage = () => {
               setSelectedCategory('All');
               setSelectedLevel('All');
             }}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+            className="rounded-xl bg-blue-700 px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-600"
           >
             Clear Filters
           </button>
@@ -317,10 +308,10 @@ const CoursesPage = () => {
                     <img 
                       src={course.thumbnail} 
                       alt={course.title}
-                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-102"
+                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="h-full w-full bg-slate-200 text-slate-450 flex items-center justify-center">
+                    <div className="h-full w-full bg-slate-200 text-slate-400 flex items-center justify-center">
                       <GraduationCap className="h-12 w-12" />
                     </div>
                   )}

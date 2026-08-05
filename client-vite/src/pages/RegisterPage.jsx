@@ -1,17 +1,24 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { User, Mail, Lock, ChevronDown, Loader2 } from 'lucide-react';
 import api from "../utils/api";
 import { useToast } from "../context/ToastContext";
+import { AuthContext } from '../context/AuthContext';
 
 const RegisterPage = () => {
   const { showToast } = useToast();
+  const { login } = useContext(AuthContext);
+  const location = useLocation();
+  
+  const queryParams = new URLSearchParams(location.search);
+  const initialRole = location.state?.role || queryParams.get('role') || 'Student';
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'Student',
+    role: initialRole,
   });
 
   const [error, setError] = useState('');
@@ -33,15 +40,19 @@ const RegisterPage = () => {
       // Register account on backend
       const res = await api.post('/auth/register', formData);
 
-      // Store credentials locally if returned
+      // Auto-login upon successful registration
       if (res.data.token) {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
+        await login(res.data.token);
       }
 
       showToast("Account created successfully! Welcome to EduMind.", "success");
-      // Redirect to login screen
-      navigate('/login');
+      
+      const actualRole = res.data.user?.role;
+      if (actualRole === "Instructor") {
+        navigate('/instructor-dashboard');
+      } else {
+        navigate('/');
+      }
 
     } catch (err) {
       console.error(err);

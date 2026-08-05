@@ -22,7 +22,7 @@ import {
 import { Link } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { auth, login } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const { showToast } = useToast();
   
   const [profile, setProfile] = useState(null);
@@ -518,7 +518,7 @@ const ProfilePage = () => {
               <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 text-left">
                 <h4 className="font-bold text-slate-800 text-sm mb-2">Registry of Finished Lectures</h4>
                 <div className="divide-y divide-slate-100">
-                  {profile.completedLessons.map((lessonId, idx) => (
+                  {profile.completedLessons.map((lessonId) => (
                     <div key={lessonId} className="flex items-center justify-between py-3">
                       <div className="flex items-center gap-2.5">
                         <span className="h-6 w-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-[11px] font-bold">
