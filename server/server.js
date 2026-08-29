@@ -117,7 +117,7 @@ app.use(errorHandler);
 
 if (process.env.NODE_ENV !== "test") {
   mongoose
-    .connect(process.env.MONGO_URI)
+    .connect(process.env.MONGO_URI || process.env.MONGODB_URL)
     .then(() => {
       console.log("MongoDB connected ✅");
 
