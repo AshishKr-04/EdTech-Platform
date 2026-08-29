@@ -1,30 +1,46 @@
 # 🎓 EduMind — Multi-Role EdTech Platform (Monorepo)
 
+---
+
+## 1. Introduction
 EduMind is an industry-standard, portfolio-grade EdTech platform architected as a Node.js/React monorepo. It features strict role-based access control (RBAC) separating **Students**, **Teachers**, and **Administrators** into three specialized frontends sharing a unified backend database API.
 
 ---
 
-## 📷 App Workspaces
+## 2. Tech Use
 
-### 1. 🛡️ Administrator Command Center
-*Manage user roles, moderate catalog courses, inspect cryptographic certificate ledgers, and monitor live platform diagnostics.*
-![Admin Homepage](./assets/screenshots/admin-homepage.png)
+### Frontend (Apps)
+* **React 19** & **Vite**: Ultra-fast build toolchain and rendering.
+* **Tailwind CSS**: Utility-first styling for premium dark-themed layouts.
+* **Lucide React**: Modern, scalable icon sets.
+* **Axios**: Promised-based HTTP client with automatic base URL self-correction.
+
+### Backend (Server)
+* **Node.js** & **Express**: Highly modular REST API router.
+* **Mongoose** & **MongoDB Atlas**: Document schema validation and cloud database storage.
+* **JWT (JsonWebToken)**: Encrypted stateless user authentication.
+* **Bcrypt.js**: Cryptographic password hashing.
+* **Zod**: Runtime type checking and schema validation.
+* **Multer** & **Cloudinary**: High-definition video and thumbnail upload handling.
+* **Stripe**: Developer-ready payment processing flow.
+* **Helmet** & **Express Rate Limit**: API protection and request limiting.
+
+### Testing & Tooling
+* **Vitest**: 23-test integration suite for authentication, courses, and middleware operations.
+* **ESLint**: Standard JS clean code syntax checks.
 
 ---
 
-### 2. 👨‍🏫 Instructor Workspace Console
-*Design rich curricula, upload video lectures, manage draft/published courses, and view student progress rosters.*
-![Teacher Homepage](./assets/screenshots/teacher-homepage.png)
+## 3. Live Link
+
+* **🎓 Student Learning Portal**: [https://ed-tech-platform-phi.vercel.app/](https://ed-tech-platform-phi.vercel.app/)
+* **👨‍🏫 Instructor Workspace Console**: [https://ed-tech-platform-teacherapp.vercel.app/](https://ed-tech-platform-teacherapp.vercel.app/)
+* **🛡️ Admin Command Center**: [https://ed-tech-platform-adminapp.vercel.app/](https://ed-tech-platform-adminapp.vercel.app/)
+* **🌐 Shared Backend API Server**: [https://edtech-platform-qu5n.onrender.com](https://edtech-platform-qu5n.onrender.com)
 
 ---
 
-### 3. 🎓 Student Learning Portal
-*Explore public course catalogs, view interactive video lessons, track completion progress, and share cryptographically verifiable certificates.*
-![Student Homepage](./assets/screenshots/student-homepage.png)
-
----
-
-## 📂 Project Directory Structure
+## 4. Project Structure
 
 The repository is structured as a clean monorepo:
 
@@ -41,7 +57,7 @@ edtech-platform/
 ├── apps/                      # Specialized Role-Specific Frontend Portals
 │   ├── student/               # Student Learning Portal (Port 5173)
 │   ├── teacher/               # Teacher Workspace Console (Port 5174)
-│   └── admin/                 # Admin Control Center Dashboard (Port 5175)
+│   └── admin/                 # Admin Control Panel Dashboard (Port 5175)
 │
 ├── packages/                  # Modular shared packages (placeholders)
 │   ├── ui/
@@ -55,7 +71,7 @@ edtech-platform/
 
 ---
 
-## 🚀 Key Production Features
+## 5. Key Production Features
 
 ### 🔐 Multi-App Role Isolation & Login Guards
 * **Cross-App Defense**: Access is blocked if a Student tries to sign into the Admin workspace or vice versa. The login gates check role validation claims upon authentication.
@@ -76,7 +92,7 @@ edtech-platform/
 
 ---
 
-## 🛠️ Environment Variables Configuration
+## 6. Environment Variables Configuration
 
 Create a `.env` file inside the `server/` directory:
 
@@ -97,12 +113,12 @@ STRIPE_SECRET_KEY=your_stripe_secret_key
 
 Add this variable to your frontend applications during development or build:
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=https://edtech-platform-qu5n.onrender.com/api
 ```
 
 ---
 
-## ⚡ Running the Applications Locally
+## 7. Running the Applications Locally
 
 You can launch all services simultaneously in separate terminals:
 
@@ -133,3 +149,23 @@ cd apps/admin
 npm install
 npm run dev
 ```
+
+---
+
+## 8. Screenshots
+
+### 🛡️ Administrator Command Center
+*Manage user roles, moderate catalog courses, inspect cryptographic certificate ledgers, and monitor live platform diagnostics.*
+![Admin Homepage](./assets/screenshots/admin-homepage.png)
+
+---
+
+### 👨‍🏫 Instructor Workspace Console
+*Design rich curricula, upload video lectures, manage draft/published courses, and view student progress rosters.*
+![Teacher Homepage](./assets/screenshots/teacher-homepage.png)
+
+---
+
+### 🎓 Student Learning Portal
+*Explore public course catalogs, view interactive video lessons, track completion progress, and share cryptographically verifiable certificates.*
+![Student Homepage](./assets/screenshots/student-homepage.png)
