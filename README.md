@@ -11,8 +11,10 @@
 
 > [!TIP]
 > Click any of the interactive deployment links below to inspect the production gates instantly:
-> * 💻 **Frontend Live App:** [https://ed-tech-platform-livid.vercel.app/](https://ed-tech-platform-livid.vercel.app/)
-> * ⚙️ **Backend API Service:** [https://edtech-platform-w9sg.onrender.com](https://edtech-platform-w9sg.onrender.com)
+> * 💻 **Frontend Student App:** [https://ed-tech-platform-phi.vercel.app/](https://ed-tech-platform-phi.vercel.app/)
+> * 💻 **Frontend Teacher App:** [https://ed-tech-platform-teacherapp.vercel.app/](https://ed-tech-platform-teacherapp.vercel.app/)
+> * 💻 **Frontend Admin App:**   [https://ed-tech-platform-adminapp.vercel.app/](https://ed-tech-platform-adminapp.vercel.app/)
+> * ⚙️ **Backend API Service:**  [https://edtech-platform-qu5n.onrender.com](https://edtech-platform-qu5n.onrender.com)
 
 ---
 
