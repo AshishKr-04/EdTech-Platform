@@ -104,7 +104,7 @@ const AdminDashboard = () => {
   };
 
   const studentCount = users.filter(u => u.role === "Student").length;
-  const teacherCount = users.filter(u => u.role === "Teacher").length;
+  const teacherCount = users.filter(u => u.role === "Teacher" || u.role === "Instructor").length;
   const totalLessons = courses.reduce((acc, c) => acc + (c.lessons?.length || 0), 0);
 
   return (
@@ -189,6 +189,110 @@ const AdminDashboard = () => {
             </div>
             <div className="h-10 w-10 bg-amber-950/40 text-amber-400 border border-amber-900/30 rounded-xl flex items-center justify-center">
               <Layers className="h-5 w-5" />
+            </div>
+          </div>
+        </div>
+
+        {/* WEBSITES METRICS & CHARTS GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Revenue and Goal Tracking */}
+          <div className="bg-[#0d1222]/80 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Monthly Revenue Goal</span>
+                <span className="text-xs font-semibold text-indigo-400">72.3% achieved</span>
+              </div>
+              <div className="mt-4 flex items-baseline gap-2">
+                <span className="text-3xl font-black text-white">₹72,400</span>
+                <span className="text-xs font-medium text-emerald-400">+12.4% MoM</span>
+              </div>
+              {/* Progress bar */}
+              <div className="mt-4 h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full w-[72.3%] bg-indigo-500 rounded-full transition-all duration-500" />
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-4 border-t border-slate-850 pt-4 text-xs text-slate-400">
+              <div>
+                <span className="block text-[10px] text-slate-500 uppercase font-bold">Target</span>
+                <span className="font-semibold text-slate-300">₹1,00,000</span>
+              </div>
+              <div>
+                <span className="block text-[10px] text-slate-500 uppercase font-bold">Avg Order Value</span>
+                <span className="font-semibold text-slate-300">₹1,450</span>
+              </div>
+            </div>
+          </div>
+
+          {/* User Signups Trend (SVG Chart) */}
+          <div className="bg-[#0d1222]/80 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Signups Trend (6m)</span>
+                <span className="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-bold uppercase">Live</span>
+              </div>
+              {/* Sparkline Chart */}
+              <div className="h-16 w-full mt-2">
+                <svg className="w-full h-full" viewBox="0 0 300 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  {/* Filled area */}
+                  <path
+                    d="M0 60 L10 40 L50 48 L100 25 L150 35 L200 12 L250 20 L300 5 L300 60 Z"
+                    fill="url(#chartGrad)"
+                  />
+                  {/* Line */}
+                  <path
+                    d="M0 60 L10 40 L50 48 L100 25 L150 35 L200 12 L250 20 L300 5"
+                    fill="none"
+                    stroke="#6366f1"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* Points */}
+                  <circle cx="200" cy="12" r="3.5" fill="#818cf8" stroke="#0d1222" strokeWidth="1.5" />
+                  <circle cx="300" cy="5" r="3.5" fill="#818cf8" stroke="#0d1222" strokeWidth="1.5" />
+                </svg>
+              </div>
+            </div>
+            <div className="mt-4 flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+              <span>Jan</span>
+              <span>Mar</span>
+              <span>May</span>
+              <span>Jul</span>
+              <span>Aug</span>
+            </div>
+          </div>
+
+          {/* System Health / API Diagnostics */}
+          <div className="bg-[#0d1222]/80 border border-slate-800 p-6 rounded-2xl flex flex-col justify-between shadow-lg relative overflow-hidden">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">System Health Index</span>
+                <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Optimal
+                </span>
+              </div>
+              <div className="mt-5 grid grid-cols-2 gap-4">
+                <div className="bg-slate-900/40 border border-slate-850 p-3 rounded-xl">
+                  <span className="block text-[10px] text-slate-500 uppercase font-bold">API Latency</span>
+                  <span className="text-base font-black text-white mt-1 block">142 ms</span>
+                </div>
+                <div className="bg-slate-900/40 border border-slate-850 p-3 rounded-xl">
+                  <span className="block text-[10px] text-slate-500 uppercase font-bold">Memory Load</span>
+                  <span className="text-base font-black text-white mt-1 block">34.2%</span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between text-[10px] text-slate-500 border-t border-slate-850 pt-3">
+              <span className="font-bold uppercase">DB Uptime: <span className="text-slate-350">99.99%</span></span>
+              <span className="font-bold uppercase">Cache hit: <span className="text-slate-350">94.1%</span></span>
             </div>
           </div>
         </div>

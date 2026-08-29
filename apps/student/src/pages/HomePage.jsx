@@ -75,12 +75,6 @@ const featureHighlights = [
   },
 ];
 
-const stackItems = [
-  { label: "Frontend", value: "React, Vite, Tailwind CSS, Axios" },
-  { label: "Backend", value: "Express, JWT, Zod, Helmet, Rate Limiting" },
-  { label: "Database", value: "MongoDB with Mongoose models" },
-  { label: "Integrations", value: "Cloudinary, Stripe, Gemini-ready AI tutor" },
-];
 
 const CourseCard = ({ course, compact = false }) => {
   const lessons = Array.isArray(course.lessons) ? course.lessons : [];
@@ -223,10 +217,6 @@ const HomePage = () => {
     [courses]
   );
 
-  const totalLessons = useMemo(
-    () => courses.reduce((sum, course) => sum + (course.lessons?.length || 0), 0),
-    [courses]
-  );
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
@@ -276,95 +266,57 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-[#070a13] text-slate-100 antialiased font-sans selection:bg-indigo-500/30 transition-colors duration-300">
-      <section className="border-b border-slate-900 bg-slate-950/20">
-        <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="space-y-7 text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              Learn practical, job-ready skills
+      <section className="border-b border-slate-900 bg-slate-950/20 py-16">
+        <div className="mx-auto max-w-4xl px-6 text-center space-y-7">
+          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-300 mx-auto">
+            <Sparkles className="h-3.5 w-3.5" />
+            Learn practical, job-ready skills
+          </div>
+
+          <div className="space-y-4">
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
+              Learn job-ready skills from practical online courses
+            </h1>
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-400">
+              Explore structured courses with video lessons, secure enrollment,
+              progress tracking, and certificates of completion.
+            </p>
+          </div>
+
+          <form onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl">
+            <div className="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-2 shadow-inner sm:flex-row">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="What do you want to learn?"
+                  className="h-12 w-full rounded-xl border-0 bg-slate-950/60 pl-12 pr-4 text-sm font-medium text-white outline-none focus:ring-1 focus:ring-indigo-500"
+                />
+              </div>
+              <button
+                type="submit"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white transition hover:bg-indigo-500 shadow-md shadow-indigo-600/20"
+              >
+                Search
+                <ArrowRight className="h-4 w-4" />
+              </button>
             </div>
 
-            <div className="space-y-4">
-              <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white sm:text-5xl">
-                Learn job-ready skills from practical online courses
-              </h1>
-              <p className="max-w-2xl text-sm leading-relaxed text-slate-400">
-                Explore structured courses with video lessons, secure enrollment,
-                progress tracking, and certificates of completion.
-              </p>
-            </div>
-
-            <form onSubmit={handleSearchSubmit} className="max-w-2xl">
-              <div className="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-2 shadow-inner sm:flex-row">
-                <div className="relative flex-1">
-                  <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="What do you want to learn?"
-                    className="h-12 w-full rounded-xl border-0 bg-slate-950/60 pl-12 pr-4 text-sm font-medium text-white outline-none focus:ring-1 focus:ring-indigo-500"
-                  />
-                </div>
+            <div className="mt-3 flex flex-wrap gap-2 justify-center">
+              {popularSearches.map((term) => (
                 <button
-                  type="submit"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white transition hover:bg-indigo-500 shadow-md shadow-indigo-600/20"
+                  key={term}
+                  type="button"
+                  onClick={() => setSearchQuery(term)}
+                  className="rounded-full border border-slate-850 bg-slate-900/50 px-3 py-1 text-xs font-semibold text-slate-450 text-slate-400 transition hover:border-indigo-500/30 hover:bg-indigo-950/20 hover:text-indigo-300"
                 >
-                  Search
-                  <ArrowRight className="h-4 w-4" />
+                  {term}
                 </button>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {popularSearches.map((term) => (
-                  <button
-                    key={term}
-                    type="button"
-                    onClick={() => setSearchQuery(term)}
-                    className="rounded-full border border-slate-850 bg-slate-900/50 px-3 py-1 text-xs font-semibold text-slate-450 text-slate-400 transition hover:border-indigo-500/30 hover:bg-indigo-950/20 hover:text-indigo-300"
-                  >
-                    {term}
-                  </button>
-                ))}
-              </div>
-            </form>
-          </div>
-
-          <div className="rounded-2xl border border-slate-800 bg-[#0d1222] p-6 text-left text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
-            <div className="mb-5 flex items-center justify-between border-b border-slate-800/80 pb-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-indigo-400">
-                  Marketplace Snapshot
-                </p>
-                <h2 className="mt-1 text-lg font-bold">EduMind Course Platform</h2>
-              </div>
-              <ShieldCheck className="h-6 w-6 text-emerald-400" />
+              ))}
             </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-xl border border-slate-850 bg-slate-900/30 p-4">
-                <BookOpen className="h-5 w-5 text-indigo-300" />
-                <p className="mt-3 text-2xl font-black">{loading ? "-" : courses.length}</p>
-                <p className="text-xs font-semibold text-slate-400">Courses listed</p>
-              </div>
-              <div className="rounded-xl border border-slate-850 bg-slate-900/30 p-4">
-                <Code2 className="h-5 w-5 text-indigo-300" />
-                <p className="mt-3 text-2xl font-black">{loading ? "-" : totalLessons}</p>
-                <p className="text-xs font-semibold text-slate-400">Lessons tracked</p>
-              </div>
-              <div className="rounded-xl border border-slate-850 bg-slate-900/30 p-4">
-                <Users className="h-5 w-5 text-indigo-300" />
-                <p className="mt-3 text-2xl font-black">2</p>
-                <p className="text-xs font-semibold text-slate-400">User roles</p>
-              </div>
-              <div className="rounded-xl border border-slate-850 bg-slate-900/30 p-4">
-                <CreditCard className="h-5 w-5 text-indigo-300" />
-                <p className="mt-3 text-2xl font-black">Live</p>
-                <p className="text-xs font-semibold text-slate-400">Checkout flow</p>
-              </div>
-            </div>
-          </div>
+          </form>
         </div>
       </section>
 
@@ -520,34 +472,6 @@ const HomePage = () => {
 
 
 
-      <section className="bg-[#070a13]">
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="text-left">
-            <p className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
-              Technical credibility
-            </p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight text-white">
-              Built with a production-style MERN architecture
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-400">
-              Implementation behind the marketplace UI.
-            </p>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            {stackItems.map((item) => (
-              <div key={item.label} className="rounded-xl border border-slate-850 bg-[#0d1222]/80 p-5 text-left">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-sm font-semibold leading-relaxed text-slate-300">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

@@ -2,9 +2,42 @@ import express from "express";
 const router = express.Router();
 
 import User from "../models/User.js";
+import Course from "../models/Course.js";
 import authMiddleware from "../middleware/auth.js";
 import restrictTo from "../middleware/restrictTo.js";
 import AppError from "../middleware/AppError.js";
+
+// ================= PUBLIC: PLATFORM GLOBAL ANALYTICS STATS =================
+router.get("/public-stats", async (req, res, next) => {
+  try {
+    const totalCourses = await Course.countDocuments({ 
+      $or: [{ status: "Published" }, { status: { $exists: false } }] 
+    });
+    const totalStudents = await User.countDocuments({ role: "Student" });
+    const totalTeachers = await User.countDocuments({ 
+      role: { $in: ["Teacher", "Instructor"] } 
+    });
+
+    const mostFollowed = await Course
+      .findOne({ $or: [{ status: "Published" }, { status: { $exists: false } }] })
+      .sort({ studentsCount: -1 })
+      .select("title studentsCount thumbnail");
+
+    res.json({
+      success: true,
+      totalCourses,
+      totalStudents,
+      totalTeachers,
+      mostFollowedCourse: mostFollowed ? {
+        title: mostFollowed.title,
+        studentsCount: mostFollowed.studentsCount,
+        thumbnail: mostFollowed.thumbnail || "",
+      } : null
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // ================= PUBLIC: VERIFY CERTIFICATE =================
 router.get("/verify-certificate/:certId", async (req, res, next) => {

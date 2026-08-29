@@ -1,6 +1,7 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import api from "../utils/api";
 import { 
   ArrowRight, 
   ShieldAlert, 
@@ -8,18 +9,39 @@ import {
   BookOpen, 
   FileCheck, 
   Activity, 
-  Lock
+  Lock,
+  TrendingUp,
+  Award,
+  BookOpenCheck
 } from "lucide-react";
 
 const HomePage = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!auth.loading && auth.isAuthenticated && auth.user?.role === "Admin") {
       navigate("/admin-dashboard");
     }
   }, [auth.loading, auth.isAuthenticated, auth.user, navigate]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await api.get("/users/public-stats");
+        if (res.data.success) {
+          setStats(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch public stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#070a13] text-slate-100 relative overflow-hidden flex flex-col justify-between">
@@ -118,6 +140,81 @@ const HomePage = () => {
             </p>
           </div>
 
+        </div>
+
+        {/* LIVE PLATFORM METRICS SUMMARY */}
+        <div className="mt-20 border-t border-slate-800/60 pt-16 text-left space-y-8">
+          <div>
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-indigo-400" />
+              Live Platform Analytics Summary
+            </h3>
+            <p className="text-slate-400 text-sm mt-1">
+              Current database indices for courses, learners, and platform engagement.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Numeric Counters */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-[#0d1222]/80 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Courses</span>
+                {loading ? (
+                  <span className="h-6 w-8 bg-slate-800 rounded animate-pulse mt-2 block" />
+                ) : (
+                  <h4 className="text-2xl font-black text-white mt-1">{stats?.totalCourses || 0}</h4>
+                )}
+              </div>
+              <div className="bg-[#0d1222]/80 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Learners</span>
+                {loading ? (
+                  <span className="h-6 w-8 bg-slate-800 rounded animate-pulse mt-2 block" />
+                ) : (
+                  <h4 className="text-2xl font-black text-white mt-1">{stats?.totalStudents || 0}</h4>
+                )}
+              </div>
+              <div className="bg-[#0d1222]/80 border border-slate-800 p-5 rounded-2xl flex flex-col justify-center">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Teachers</span>
+                {loading ? (
+                  <span className="h-6 w-8 bg-slate-800 rounded animate-pulse mt-2 block" />
+                ) : (
+                  <h4 className="text-2xl font-black text-white mt-1">{stats?.totalTeachers || 0}</h4>
+                )}
+              </div>
+            </div>
+
+            {/* Most Followed Course */}
+            <div className="bg-[#0d1222]/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between gap-4">
+              <div className="space-y-2 flex-1">
+                <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block flex items-center gap-1.5">
+                  <Award className="h-3.5 w-3.5 text-indigo-400" />
+                  Most Followed Course
+                </span>
+                {loading ? (
+                  <div className="space-y-2">
+                    <span className="h-4 w-40 bg-slate-800 rounded animate-pulse block" />
+                    <span className="h-3 w-24 bg-slate-800 rounded animate-pulse block" />
+                  </div>
+                ) : stats?.mostFollowedCourse ? (
+                  <div>
+                    <h5 className="font-bold text-white text-sm line-clamp-1">{stats.mostFollowedCourse.title}</h5>
+                    <p className="text-slate-400 text-xs mt-1">
+                      {stats.mostFollowedCourse.studentsCount} enrolled learners
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-slate-550 text-xs">No course enrollments tracked yet.</p>
+                )}
+              </div>
+              <div className="h-16 w-16 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center overflow-hidden shrink-0">
+                {stats?.mostFollowedCourse?.thumbnail ? (
+                  <img src={stats.mostFollowedCourse.thumbnail} alt="thumbnail" className="h-full w-full object-cover" />
+                ) : (
+                  <BookOpenCheck className="h-6 w-6 text-indigo-400" />
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
