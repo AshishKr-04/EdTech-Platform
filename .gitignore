@@ -1,14 +1,22 @@
 # Dependencies
 /node_modules
-/client-vite/node_modules
-/server-new/node_modules
+/apps/student/node_modules
+/apps/teacher/node_modules
+/apps/admin/node_modules
+/server/node_modules
+**/node_modules
 
 # Build folder
-/client-vite/dist
+/apps/student/dist
+/apps/teacher/dist
+/apps/admin/dist
+**/dist
 
 # Environment files (VERY IMPORTANT FOR SECURITY)
 .env
-/server-new/.env
+/server/.env
+**/.env
+**/.env.local
 
 # Logs
 npm-debug.log*

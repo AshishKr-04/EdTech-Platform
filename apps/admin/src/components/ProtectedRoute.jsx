@@ -1,0 +1,27 @@
+import { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { auth } = useContext(AuthContext);
+
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (!auth.isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(auth.user?.role)) {
+    return <Navigate to="/admin-dashboard" />;
+  }
+
+  return children;
+};
+
+export default ProtectedRoute;
