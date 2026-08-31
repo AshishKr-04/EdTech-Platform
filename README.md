@@ -53,7 +53,82 @@ EduMind is an industry-standard, portfolio-grade EdTech platform architected as 
 
 ---
 
-## 4. Project Structure
+## 4. System Architecture
+
+EduMind follows a **role-based multi-application architecture** where three independent frontend applications communicate with a centralized backend API.
+
+```text
+                         ┌───────────────────────────┐
+                         │       EduMind Platform    │
+                         │     Role-Based System     │
+                         └─────────────┬─────────────┘
+                                       │
+                 ┌─────────────────────┼─────────────────────┐
+                 │                     │                     │
+                 ▼                     ▼                     ▼
+        ┌────────────────┐   ┌────────────────┐   ┌────────────────┐
+        │ Student App    │   │ Instructor App │   │   Admin App    │
+        │   React + Vite │   │   React + Vite │   │   React + Vite │
+        └───────┬────────┘   └───────┬────────┘   └───────┬────────┘
+                │                    │                    │
+                └────────────────────┼────────────────────┘
+                                     │
+                                     ▼
+                         ┌────────────────────────┐
+                         │   Backend API Layer    │
+                         │                        │
+                         │ Node.js + Express.js  │
+                         │     RESTful APIs       │
+                         └────────────┬───────────┘
+                                      │
+                  ┌───────────────────┼───────────────────┐
+                  │                   │                   │
+                  ▼                   ▼                   ▼
+          ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+          │ Authentication│    │   Business   │    │    Data      │
+          │  JWT + RBAC  │    │    Logic     │    │   Access     │
+          └──────────────┘    └──────────────┘    └──────┬───────┘
+                                                         │
+                                                         ▼
+                                                ┌────────────────┐
+                                                │    MongoDB     │
+                                                │   Database     │
+                                                └────────────────┘
+```
+
+### Authentication & Authorization Flow
+
+```text
+User Login
+    │
+    ▼
+Backend Authentication
+    │
+    ▼
+JWT Token Generated
+    │
+    ▼
+Frontend Stores Token
+    │
+    ▼
+API Request + JWT
+    │
+    ▼
+Authentication Middleware
+    │
+    ▼
+Role Verification
+    │
+    ├── Student ──────► Student APIs
+    │
+    ├── Instructor ───► Instructor APIs
+    │
+    └── Admin ────────► Admin APIs
+```
+
+---
+
+## 5. Project Structure
 
 The repository is structured as a clean monorepo:
 
@@ -84,7 +159,7 @@ edtech-platform/
 
 ---
 
-## 5. Key Production Features
+## 6. Key Production Features
 
 ### 🔐 Multi-App Role Isolation & Login Guards
 * **Cross-App Defense**: Access is blocked if a Student tries to sign into the Admin workspace or vice versa. The login gates check role validation claims upon authentication.
@@ -105,7 +180,7 @@ edtech-platform/
 
 ---
 
-## 6. Environment Variables Configuration
+## 7. Environment Variables Configuration
 
 Create a `.env` file inside the `server/` directory:
 
@@ -131,7 +206,7 @@ VITE_API_URL=https://edtech-platform-qu5n.onrender.com/api
 
 ---
 
-## 7. Running the Applications Locally
+## 8. Running the Applications Locally
 
 You can launch all services simultaneously in separate terminals:
 
@@ -165,7 +240,7 @@ npm run dev
 
 ---
 
-## 8. Screenshots
+## 9. Screenshots
 
 ### 🛡️ Administrator Command Center
 *Manage user roles, moderate catalog courses, inspect cryptographic certificate ledgers, and monitor live platform diagnostics.*
