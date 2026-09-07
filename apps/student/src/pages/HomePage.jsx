@@ -328,8 +328,8 @@ const HomePage = () => {
                 key={category}
                 onClick={() => setActiveCategory(category)}
                 className={`whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition border border-slate-800/60 ${activeCategory === category
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 border-transparent"
-                    : "bg-slate-900/40 text-slate-400 hover:bg-slate-850 hover:text-slate-200"
+                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 border-transparent"
+                  : "bg-slate-900/40 text-slate-400 hover:bg-slate-850 hover:text-slate-200"
                   }`}
               >
                 {category}
@@ -373,7 +373,7 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Learning paths"
           title="Start with a career goal"
-          description="Guide learners toward outcomes instead of leaving them with only a course grid."
+
         />
 
         <div className="grid gap-5 md:grid-cols-3">
@@ -411,7 +411,7 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Popular courses"
           title={activeCategory === "All" ? "Popular on EduMind" : `Popular in ${activeCategory}`}
-          description="Marketplace-style course discovery powered by your backend course records."
+
           action={
             <Link
               to="/courses"
@@ -430,7 +430,7 @@ const HomePage = () => {
           <SectionHeader
             eyebrow="Beginner friendly"
             title="Recommended for new learners"
-            description="A focused row for first-time learners, similar to a marketplace recommendation module."
+
           />
           {renderCourseGrid(beginnerCourses.length ? beginnerCourses : courses.slice(0, 4))}
         </div>
@@ -440,7 +440,7 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Recently added"
           title="Fresh courses from instructors"
-          description="Highlight new content so the homepage feels active and marketplace-driven."
+
         />
         {renderCourseGrid(recentCourses)}
       </section>
@@ -450,7 +450,7 @@ const HomePage = () => {
           <SectionHeader
             eyebrow="Why EduMind"
             title="A practical learning experience"
-            description="Keep the value proposition clear: students learn, instructors publish, and the platform manages the workflow."
+
           />
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
