@@ -180,7 +180,71 @@ edtech-platform/
 
 ---
 
-## 7. Environment Variables Configuration
+## 7. Payment Gateway
+
+EduMind integrates **Stripe** as its payment processing engine to handle secure course purchases.
+
+<p align="left">
+  <img src="https://img.shields.io/badge/Stripe-5433FF?style=for-the-badge&logo=stripe&logoColor=white" alt="Stripe" />
+  <img src="https://img.shields.io/badge/Webhook-Verified-brightgreen?style=for-the-badge&logo=stripe&logoColor=white" alt="Webhook" />
+</p>
+
+### 💳 How It Works
+
+```text
+Student clicks "Enroll Now"
+        │
+        ▼
+Frontend requests Checkout Session
+  POST /api/payments/create-checkout-session
+        │
+        ▼
+Stripe Checkout Page (hosted by Stripe)
+  Student enters card details securely
+        │
+        ▼
+Payment Success / Failure
+        │
+        ├── Success ──► Stripe fires Webhook Event
+        │                     │
+        │                     ▼
+        │              POST /api/payments/webhook
+        │                     │
+        │                     ▼
+        │           Server verifies Stripe signature
+        │                     │
+        │                     ▼
+        │           Student enrolled in course (DB updated)
+        │                     │
+        │                     ▼
+        │           Redirect to /payment-success page
+        │
+        └── Failure ──► Redirect to /payment-cancel page
+```
+
+### 🔑 Key Integration Points
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/payments/create-checkout-session` | `POST` | Creates a Stripe hosted checkout session for a course |
+| `/api/payments/webhook` | `POST` | Receives and verifies signed Stripe webhook events |
+
+### ⚙️ Stripe Setup Requirements
+
+1. Create a free account at [stripe.com](https://stripe.com)
+2. Get your **Secret Key** from the Stripe Dashboard → Developers → API Keys
+3. Set up a **Webhook** endpoint in Stripe Dashboard → Developers → Webhooks pointing to:
+   ```
+   https://edtech-platform-qu5n.onrender.com/api/payments/webhook
+   ```
+4. Listen for the `checkout.session.completed` event
+5. Copy the **Webhook Signing Secret** and add it to your environment variables
+
+> **Note**: In test mode, use Stripe's test card `4242 4242 4242 4242` with any future expiry and any CVC to simulate payments.
+
+---
+
+## 8. Environment Variables Configuration
 
 Create a `.env` file inside the `server/` directory:
 
@@ -206,7 +270,7 @@ VITE_API_URL=https://edtech-platform-qu5n.onrender.com/api
 
 ---
 
-## 8. Running the Applications Locally
+## 9. Running the Applications Locally
 
 You can launch all services simultaneously in separate terminals:
 
@@ -240,7 +304,7 @@ npm run dev
 
 ---
 
-## 9. Screenshots
+## 10. Screenshots
 
 ### 🛡️ Administrator Command Center
 *Manage user roles, moderate catalog courses, inspect cryptographic certificate ledgers, and monitor live platform diagnostics.*

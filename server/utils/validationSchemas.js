@@ -21,8 +21,8 @@ const registerSchema = z.object({
       .string({ required_error: "Password is required" })
       .min(6, "Password must be at least 6 characters long"),
     role: z
-      .enum(["Student", "Teacher", "Admin"], {
-        errorMap: () => ({ message: "Role must be either Student, Teacher or Admin" }),
+      .enum(["Student", "Teacher", "Instructor", "Admin"], {
+        errorMap: () => ({ message: "Role must be either Student, Teacher, Instructor or Admin" }),
       })
       .optional(),
     avatar: z.string().trim().url("Please provide a valid avatar URL").optional().or(z.literal("")),

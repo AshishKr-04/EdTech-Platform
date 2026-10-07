@@ -36,7 +36,7 @@ const LoginPage = () => {
 
       // Dynamic Redirect based on database user role
       const actualRole = res.data.user?.role;
-      if (actualRole !== "Teacher") {
+      if (actualRole !== "Teacher" && actualRole !== "Instructor") {
         setError("Access denied. This portal is for Teachers only.");
         showToast("Access denied. This portal is for Teachers only.", "error");
         setIsLoading(false);

@@ -13,7 +13,7 @@ const upload = multer({ storage });
 router.post(
   "/video",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   upload.single("video"),
   async (req, res, next) => {
     try {

@@ -18,7 +18,7 @@ import {
 router.post(
   "/",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   validate(courseSchema),
   async (req, res, next) => {
     try {
@@ -41,7 +41,7 @@ router.post(
 router.get(
   "/instructor/my-courses",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   async (req, res, next) => {
     try {
       const courses = await Course.find({
@@ -59,7 +59,7 @@ router.get(
 router.get(
   "/instructor/analytics",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   async (req, res, next) => {
     try {
       const courses = await Course.find({
@@ -104,7 +104,7 @@ router.get(
 router.get(
   "/instructor/courses/:id/roster",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   async (req, res, next) => {
     try {
       const course = await Course.findById(req.params.id);
@@ -231,7 +231,7 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   validateIdParam("id"),
   validate(courseUpdateSchema),
   async (req, res, next) => {
@@ -659,7 +659,7 @@ router.get(
 router.delete(
   "/:id",
   authMiddleware,
-  restrictTo("Teacher", "Admin"),
+  restrictTo("Teacher", "Instructor", "Admin"),
   validateIdParam("id"),
   async (req, res, next) => {
     try {

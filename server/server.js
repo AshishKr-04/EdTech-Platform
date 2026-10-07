@@ -31,7 +31,7 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 50,
+  max: 200,  // Raised from 50 — enough for development and testing without hitting 429
   message: {
     status: "fail",
     message: "Too many authentication attempts. Please try again after 15 minutes.",
@@ -42,7 +42,14 @@ const authLimiter = rateLimit({
 
 app.use(globalLimiter);
 
-const allowedOrigins = [];
+// Always allow these hardcoded Vercel deployment URLs regardless of NODE_ENV
+const hardcodedOrigins = [
+  "https://ed-tech-platform-phi.vercel.app",
+  "https://ed-tech-platform-teacherapp.vercel.app",
+  "https://ed-tech-platform-adminapp.vercel.app",
+];
+
+const allowedOrigins = [...hardcodedOrigins];
 
 if (process.env.NODE_ENV === "production") {
   if (process.env.ALLOWED_ORIGINS) {
@@ -61,8 +68,6 @@ if (process.env.NODE_ENV === "production") {
     "http://localhost:5175",
     "http://localhost:3000",
     "http://localhost:5000",
-    process.env.CLIENT_URL,
-    process.env.FRONTEND_URL
   );
 }
 
@@ -70,6 +75,7 @@ const cleanAllowedOrigins = allowedOrigins
   .map((origin) => origin && origin.trim())
   .filter(Boolean);
 
+// Also match any preview/branch Vercel deployments dynamically
 const allowedOriginPatterns = [
   /^https:\/\/ed-tech-platform.*\.vercel\.app$/,
 ];
