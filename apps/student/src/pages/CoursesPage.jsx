@@ -105,21 +105,15 @@ const CoursesPage = () => {
 
   // 1. Loading Skeleton Grid
   const renderLoadingSkeletons = () => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      {[1, 2, 3, 4].map(idx => (
-        <div key={idx} className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm animate-pulse space-y-4 p-4">
-          <div className="w-full h-44 bg-slate-100 rounded-2xl" />
-          <div className="space-y-2">
-            <div className="h-5 bg-slate-100 rounded w-2/3" />
-            <div className="h-4 bg-slate-100 rounded w-1/2" />
-          </div>
-          <div className="flex gap-2">
-            <div className="h-4 bg-slate-100 rounded w-1/4" />
-            <div className="h-4 bg-slate-100 rounded w-1/4" />
-          </div>
-          <div className="pt-2 flex justify-between items-center border-t border-slate-100">
-            <div className="h-6 bg-slate-100 rounded w-1/3" />
-            <div className="h-8 bg-slate-100 rounded-lg w-1/4" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {[1, 2, 3, 4, 5, 6, 7, 8].map(idx => (
+        <div key={idx} className="bg-zinc-900/40 border border-zinc-800/80 rounded-xl overflow-hidden p-4 animate-pulse space-y-3">
+          <div className="w-full aspect-video bg-zinc-800 rounded-lg" />
+          <div className="h-4 bg-zinc-800 rounded w-3/4" />
+          <div className="h-3 bg-zinc-800 rounded w-1/2" />
+          <div className="pt-3 border-t border-zinc-800/60 flex justify-between items-center">
+            <div className="h-4 bg-zinc-800 rounded w-1/4" />
+            <div className="h-3 bg-zinc-800 rounded w-1/4" />
           </div>
         </div>
       ))}
@@ -130,14 +124,14 @@ const CoursesPage = () => {
   if (error) {
     return (
       <div className="max-w-md mx-auto text-center py-20 px-4">
-        <div className="inline-flex items-center justify-center p-4 bg-rose-50 rounded-full text-rose-500 mb-4">
-          <AlertCircle className="h-12 w-12" />
+        <div className="inline-flex items-center justify-center p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-full text-rose-400 mb-4">
+          <AlertCircle className="h-8 w-8" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Failed to load courses</h2>
-        <p className="text-slate-600 mb-6">{error}</p>
+        <h2 className="text-xl font-bold text-zinc-100 mb-2">Failed to load courses</h2>
+        <p className="text-zinc-400 text-sm mb-6">{error}</p>
         <button 
           onClick={fetchAllCourses}
-          className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-semibold text-white shadow-md shadow-blue-100 transition-colors hover:bg-blue-600"
+          className="bg-white text-zinc-950 font-medium hover:bg-zinc-200 transition-colors px-4 py-2 rounded-lg text-sm inline-flex items-center gap-2"
         >
           <RefreshCw className="h-4 w-4" />
           Retry Connection
@@ -147,64 +141,64 @@ const CoursesPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl space-y-8">
+    <div className="container mx-auto px-4 py-8 max-w-7xl space-y-8 bg-[#09090b] text-zinc-100 min-h-screen">
       
       {/* HEADER SECTION */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
         {auth.isAuthenticated && auth.user?.role === "Student" ? (
           <>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-700">
-              <Sparkles className="h-3 w-3" />
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-300">
+              <Sparkles className="h-3 w-3 text-indigo-400" />
               Welcome Back, {auth.user?.name || "Student"}!
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
-              Explore new courses to uplift yourself
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Explore new courses to level up your career
             </h1>
-            <p className="text-slate-500 text-base">
-              Dive into our premium, hand-crafted lessons, complete interactive challenges, and continue upgrading your skills today.
+            <p className="text-zinc-400 text-sm">
+              Hands-on lessons, interactive code challenges, and industry-recognized graduation credentials.
             </p>
           </>
         ) : (
           <>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-800 rounded-full text-xs font-bold uppercase tracking-wider">
-              <Sparkles className="h-3 w-3" />
-              World-Class Catalog
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/60 px-3 py-1 text-xs font-medium text-zinc-300">
+              <Sparkles className="h-3 w-3 text-indigo-400" />
+              Course Catalog
             </span>
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">
-              Unlock Your True Potential
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Unlock Your Engineering Potential
             </h1>
-            <p className="text-slate-500 text-base">
-              Join thousands of learners worldwide mastering core technologies under the industry's highest certified experts.
+            <p className="text-zinc-400 text-sm">
+              Explore production-grade courses authored by verified industry leaders.
             </p>
           </>
         )}
       </div>
 
       {/* SEARCH AND FILTERS BAR */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col gap-6">
+      <div className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 flex flex-col gap-5">
         
         {/* Search & Sort Panel */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           
           {/* Search bar */}
           <div className="md:col-span-2 relative">
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search course title, syllabus topic, skills..."
-              className="w-full rounded-2xl border border-slate-200 bg-slate-100/60 py-3 pl-12 pr-4 text-sm text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600"
+              placeholder="Search course title, curriculum topic, skills..."
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition"
             />
           </div>
 
           {/* Sort selection */}
           <div className="relative">
-            <ArrowUpDown className="absolute left-4 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
+            <ArrowUpDown className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 pointer-events-none" />
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-slate-100/60 py-3 pl-10 pr-4 text-sm font-medium text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full cursor-pointer appearance-none rounded-lg border border-zinc-800 bg-zinc-900/60 py-2 pl-9 pr-8 text-sm font-medium text-zinc-200 transition focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
             >
               <option value="popular">Popularity (Most Enrolled)</option>
               <option value="rating">Highest Rated</option>
@@ -216,20 +210,20 @@ const CoursesPage = () => {
         </div>
 
         {/* Filter Badges & Categories */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-200 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-zinc-800/60 pt-4">
           
           {/* Category Filters */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Category</span>
-            <div className="flex flex-wrap gap-2">
+            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">Category</span>
+            <div className="flex flex-wrap gap-1.5">
               {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
                     selectedCategory === cat
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-100"
-                      : "bg-slate-100/70 text-slate-700 hover:bg-slate-200"
+                      ? "bg-zinc-800 text-white border border-zinc-700"
+                      : "bg-zinc-900/40 text-zinc-400 border border-zinc-800/80 hover:border-zinc-700 hover:text-zinc-200"
                   }`}
                 >
                   {cat}
@@ -240,16 +234,16 @@ const CoursesPage = () => {
 
           {/* Level Filters */}
           <div className="space-y-2">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Expertise Level</span>
-            <div className="flex flex-wrap gap-2">
+            <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-wider block">Expertise Level</span>
+            <div className="flex flex-wrap gap-1.5">
               {['All', 'Beginner', 'Intermediate', 'Advanced'].map(lvl => (
                 <button
                   key={lvl}
                   onClick={() => setSelectedLevel(lvl)}
-                  className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition ${
                     selectedLevel === lvl
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-100"
-                      : "bg-slate-100/70 text-slate-700 hover:bg-slate-200"
+                      ? "bg-zinc-800 text-white border border-zinc-700"
+                      : "bg-zinc-900/40 text-zinc-400 border border-zinc-800/80 hover:border-zinc-700 hover:text-zinc-200"
                   }`}
                 >
                   {lvl}
@@ -266,12 +260,10 @@ const CoursesPage = () => {
       {loading ? (
         renderLoadingSkeletons()
       ) : filteredCourses.length === 0 ? (
-        
-        // 3. Empty State Card
-        <div className="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200 max-w-md mx-auto">
-          <FolderOpen className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-slate-800 mb-1">No courses found</h3>
-          <p className="text-sm text-slate-500 mb-6">
+        <div className="text-center py-16 bg-zinc-900/20 rounded-2xl border border-dashed border-zinc-800 p-8 max-w-md mx-auto">
+          <FolderOpen className="h-10 w-10 text-zinc-600 mx-auto mb-3" />
+          <h3 className="text-base font-semibold text-zinc-200 mb-1">No courses found</h3>
+          <p className="text-xs text-zinc-500 mb-5">
             We couldn't find any courses matching your search criteria. Try modifying your search or filter tags.
           </p>
           <button 
@@ -280,107 +272,55 @@ const CoursesPage = () => {
               setSelectedCategory('All');
               setSelectedLevel('All');
             }}
-            className="rounded-xl bg-blue-700 px-5 py-2.5 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-blue-600"
+            className="rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 px-4 py-2 text-xs font-medium transition"
           >
             Clear Filters
           </button>
         </div>
-
       ) : (
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredCourses.map((course) => {
-            const lessons = Array.isArray(course.lessons) ? course.lessons : [];
-            const reviewsCount = Math.floor(((course.studentsCount || 0) * 3.7) + 8);
-            const originalPrice = course.price > 0 ? course.price * 5 : 0;
-            const isBestseller = course.rating >= 4.5 || (course.studentsCount && course.studentsCount > 5);
-
-            return (
-              <Link 
-                to={`/course/${course._id}`} 
-                key={course._id} 
-                className="group block bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg text-left flex flex-col h-full"
-              >
-                
-                {/* Course Thumbnail */}
-                <div className="w-full h-44 bg-slate-100 relative overflow-hidden flex-shrink-0 border-b border-slate-100">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredCourses.map((course) => (
+            <Link
+              to={`/course/${course._id}`} 
+              key={course._id} 
+              className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/80 text-left flex flex-col justify-between"
+            >
+              <div>
+                <div className="aspect-video w-full rounded-lg bg-zinc-800 overflow-hidden mb-3 relative">
                   {course.thumbnail ? (
                     <img 
                       src={course.thumbnail} 
                       alt={course.title}
-                      className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="h-full w-full bg-slate-200 text-slate-400 flex items-center justify-center">
-                      <GraduationCap className="h-12 w-12" />
+                    <div className="h-full w-full bg-zinc-850 text-zinc-500 flex items-center justify-center">
+                      <GraduationCap className="h-8 w-8" />
                     </div>
                   )}
-
-                  {/* Level Tag Overlay */}
-                  <span className="absolute top-3 left-3 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/95 text-slate-800 backdrop-blur-sm border border-slate-100 shadow-sm">
+                  <span className="absolute top-2 left-2 px-2.5 py-0.5 text-xs font-medium rounded-full bg-zinc-950/70 backdrop-blur-md text-zinc-300 border border-zinc-800">
                     {course.level || "Beginner"}
                   </span>
                 </div>
 
-                {/* Content Container */}
-                <div className="p-4 flex-grow flex flex-col justify-between space-y-1">
-                  <div className="space-y-1">
-                    <span className="text-[9px] uppercase font-bold tracking-widest text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                      {course.category || 'General'}
-                    </span>
-                    <h2 className="text-sm font-bold text-slate-900 line-clamp-2 leading-tight group-hover:text-slate-700 transition-colors">
-                      {course.title}
-                    </h2>
-                    <p className="text-[11px] text-slate-500 truncate">
-                      By {course.instructor?.name || 'Professor'}
-                    </p>
+                <h3 className="font-medium text-zinc-100 line-clamp-1 group-hover:text-indigo-400 transition-colors text-sm">
+                  {course.title}
+                </h3>
+                <p className="text-xs text-zinc-400 mt-1 truncate">
+                  By {course.instructor?.name || course.instructor || "Instructor"}
+                </p>
+              </div>
 
-                    {/* Rating Row */}
-                    <div className="flex items-center gap-1 text-xs">
-                      <span className="font-extrabold text-amber-700">{course.rating?.toFixed(1) || "4.5"}</span>
-                      <div className="flex text-amber-500">
-                        {"★".repeat(Math.round(course.rating || 4.5))}
-                        {"☆".repeat(5 - Math.round(course.rating || 4.5))}
-                      </div>
-                      <span className="text-[11px] text-slate-500">({reviewsCount})</span>
-                    </div>
-
-                    {/* Pricing Row */}
-                    <div className="flex items-baseline gap-2 pt-1">
-                      <span className="text-sm font-extrabold text-slate-900">
-                        {course.price === 0 ? "Free" : `₹${course.price}`}
-                      </span>
-                      {course.price > 0 && (
-                        <span className="text-[11px] text-slate-400 line-through">
-                          ₹{originalPrice}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Bestseller Badge & Stats */}
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <div>
-                      {isBestseller ? (
-                        <span className="bg-[#eceb98] text-[#3d3c0a] font-bold text-[9px] px-2 py-0.5 rounded-sm uppercase tracking-wider">
-                          Bestseller
-                        </span>
-                      ) : (
-                        <span className="text-[9px] text-slate-500 uppercase font-semibold">
-                          {lessons.length} lessons
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[9px] text-slate-400 font-semibold">
-                      {course.studentsCount || 0} enrolled
-                    </span>
-                  </div>
-
-                </div>
-
-              </Link>
-            );
-          })}
+              <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between">
+                <span className="font-semibold text-zinc-100 text-sm">
+                  {Number(course.price) === 0 ? "Free" : `₹${course.price}`}
+                </span>
+                <span className="text-xs text-indigo-400 font-medium group-hover:translate-x-0.5 transition-transform">
+                  Explore &rarr;
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       )}
 

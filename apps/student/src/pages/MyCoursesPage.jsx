@@ -2,12 +2,13 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import { AuthContext } from "../context/AuthContext";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, ArrowRight, BookOpen, Award } from "lucide-react";
 
 const MyCoursesPage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [courses, setCourses] = useState([]);
   const [progressMap, setProgressMap] = useState({});
+  const [loading, setLoading] = useState(true);
   const { auth, loadUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -19,6 +20,7 @@ const MyCoursesPage = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
+        setLoading(true);
         let res;
 
         if (auth.user?.role === "Instructor") {
@@ -30,7 +32,6 @@ const MyCoursesPage = () => {
         const courseList = res.data.courses || [];
         setCourses(courseList);
 
-        // Fetch progress and user profile for progress calculations
         if (auth.user?.role !== "Instructor") {
           const progressData = {};
 
@@ -54,9 +55,10 @@ const MyCoursesPage = () => {
 
           setProgressMap(progressData);
         }
-
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -64,21 +66,56 @@ const MyCoursesPage = () => {
   }, [auth.user]);
 
   return (
-    <div className="bg-slate-50 min-h-screen py-10 px-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="bg-[#09090b] text-zinc-100 min-h-screen py-10 px-6">
+      <div className="max-w-6xl mx-auto space-y-6">
 
-         <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-6">
-          {auth.user?.role === "Instructor"
-            ? "My Created Courses"
-            : "My Learning"}
-        </h1>
+        <div className="flex justify-between items-center border-b border-zinc-800/80 pb-5">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">
+              {auth.user?.role === "Instructor"
+                ? "My Created Courses"
+                : "My Learning"}
+            </h1>
+            <p className="text-xs text-zinc-400 mt-1">
+              {auth.user?.role === "Instructor"
+                ? "Manage your published courses and curriculum content"
+                : "Continue your enrolled programs and track syllabus completion"}
+            </p>
+          </div>
+          
+          <button
+            onClick={() => navigate("/courses")}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-300 bg-zinc-900 hover:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-800 transition"
+          >
+            Browse Catalog <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-        {courses.length === 0 ? (
-          <p>No courses found</p>
-        ) : (
-
+        {loading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 space-y-3">
+                <div className="aspect-video w-full rounded-lg bg-zinc-800" />
+                <div className="h-4 bg-zinc-800 rounded w-3/4" />
+                <div className="h-3 bg-zinc-800 rounded w-1/2" />
+                <div className="h-2 bg-zinc-800 rounded w-full mt-4" />
+              </div>
+            ))}
+          </div>
+        ) : courses.length === 0 ? (
+          <div className="text-center py-20 rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/20 max-w-md mx-auto">
+            <BookOpen className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
+            <h3 className="text-sm font-semibold text-zinc-200">No courses enrolled yet</h3>
+            <p className="text-xs text-zinc-500 mt-1 mb-5">Explore available courses to jumpstart your career.</p>
+            <button
+              onClick={() => navigate("/courses")}
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-medium transition"
+            >
+              Explore Courses
+            </button>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {courses.map((course) => {
               let percent = 0;
               let isCompleted = false;
@@ -92,7 +129,6 @@ const MyCoursesPage = () => {
 
                 percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-                // Check if user has a certificate for this course or reached 100%
                 const hasCertificate = userProfile.certificates?.some(
                   (c) => (c.courseId?._id?.toString() || c.courseId?.toString() || c.courseId) === course._id
                 );
@@ -106,97 +142,92 @@ const MyCoursesPage = () => {
               return (
                 <div 
                   key={course._id} 
-                  className="group block bg-white border border-slate-200 rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg text-left flex flex-col h-full relative p-0"
+                  className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/80 text-left flex flex-col justify-between"
                 >
-                  {/* Course Thumbnail */}
-                  <div className="w-full h-36 bg-slate-100 relative overflow-hidden flex-shrink-0 border-b border-slate-100">
-                    {course.thumbnail ? (
-                      <img 
-                        src={course.thumbnail} 
-                        alt={course.title}
-                        className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-slate-150 text-slate-400 flex items-center justify-center">
-                        <GraduationCap className="h-10 w-10" />
+                  <div>
+                    {/* Course Thumbnail (16:9 ratio) */}
+                    <div className="aspect-video w-full rounded-lg bg-zinc-800 overflow-hidden mb-3 relative flex items-center justify-center">
+                      {course.thumbnail ? (
+                        <img 
+                          src={course.thumbnail} 
+                          alt={course.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <GraduationCap className="w-10 h-10 text-zinc-600" />
+                      )}
+                      {isCompleted && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 text-[10px] font-medium rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 inline-flex items-center gap-1">
+                          Completed
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="font-medium text-zinc-100 line-clamp-1 group-hover:text-indigo-400 transition-colors">
+                      {course.title}
+                    </h3>
+                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                      {course.description}
+                    </p>
+
+                    {/* PROGRESS */}
+                    {auth.user?.role !== "Instructor" && (
+                      <div className="mt-4">
+                        <div className="flex justify-between text-[11px] font-medium text-zinc-400 mb-1.5">
+                          <span>Syllabus Progress</span>
+                          <span className="text-zinc-200">{percent}%</span>
+                        </div>
+                        <div className="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${isCompleted ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {/* Card Content */}
-                  <div className="p-4 flex-grow flex flex-col justify-between space-y-2">
-                    <div className="space-y-1">
-                      <h2 className="font-bold text-sm text-slate-900 group-hover:text-slate-700 transition-colors line-clamp-1 leading-tight">
-                        {course.title}
-                      </h2>
-
-                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
-                        {course.description}
-                      </p>
-
-                      {/* PROGRESS */}
-                      {auth.user?.role !== "Instructor" && (
-                        <div className="mt-3">
-                          <div className="flex justify-between text-[11px] font-semibold text-slate-600">
-                            <span>Syllabus Progress</span>
-                            <span>{percent}%</span>
-                          </div>
-
-                          <div className="w-full bg-slate-100 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                            <div
-                               className="bg-slate-900 h-full rounded-full transition-all duration-300"
-                               style={{ width: `${percent}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex flex-col gap-1.5 pt-2 border-t border-slate-100">
-                      {auth.user?.role === "Instructor" ? (
-                        <>
+                  <div className="mt-5 pt-3 border-t border-zinc-800/60 flex flex-col gap-2">
+                    {auth.user?.role === "Instructor" ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => navigate(`/edit-course/${course._id}`)}
+                          className="w-full text-center py-1.5 rounded-lg text-xs font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 transition"
+                        >
+                          Edit Course
+                        </button>
+                        <button
+                          onClick={() => navigate(`/course/${course._id}`)}
+                          className="w-full text-center py-1.5 rounded-lg text-xs font-medium text-zinc-300 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition"
+                        >
+                          Preview
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => navigate(`/learn/${course._id}`)}
+                          className="w-full inline-flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white py-1.5 rounded-lg text-xs font-medium transition shadow-sm"
+                        >
+                          {isCompleted ? "Review Syllabus" : percent > 0 ? "Resume Learning" : "Start Course"}
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                        {isCompleted && (
                           <button
-                            onClick={() => navigate(`/edit-course/${course._id}`)}
-                            className="w-full bg-slate-900 text-white py-1.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition shadow-sm"
+                            onClick={() => navigate("/profile?tab=certificates")}
+                            className="w-full inline-flex items-center justify-center gap-1.5 bg-zinc-800/80 hover:bg-zinc-700/80 text-emerald-400 py-1.5 rounded-lg text-xs font-medium border border-zinc-700/50 transition"
                           >
-                            Edit Course 📝
+                            <Award className="w-3.5 h-3.5" /> View Certificate
                           </button>
-                          <button
-                            onClick={() => navigate(`/course/${course._id}`)}
-                            className="w-full border border-slate-200 text-slate-700 py-1.5 rounded-xl text-xs font-bold hover:bg-slate-50 transition"
-                          >
-                            View Syllabus Preview 👁️
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => navigate(`/learn/${course._id}`)}
-                            className="w-full bg-slate-900 text-white py-1.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition shadow-sm"
-                          >
-                            {isCompleted ? "Review Course" : percent > 0 ? "Resume Learning" : "Start Course"}
-                          </button>
-                          {isCompleted && (
-                            <button
-                              onClick={() => navigate("/profile?tab=certificates")}
-                              className="w-full bg-emerald-600 text-white py-1.5 rounded-xl text-xs font-bold hover:bg-emerald-700 transition flex items-center justify-center gap-1 shadow-sm"
-                            >
-                              View Certificate 🎓
-                            </button>
-                          )}
-                        </>
-                      )}
-                    </div>
-
+                        )}
+                      </>
+                    )}
                   </div>
-
                 </div>
               );
             })}
-
           </div>
         )}
-
       </div>
     </div>
   );

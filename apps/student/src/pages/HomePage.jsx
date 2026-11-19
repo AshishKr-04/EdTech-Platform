@@ -77,54 +77,42 @@ const featureHighlights = [
 
 
 const CourseCard = ({ course, compact = false }) => {
-  const lessons = Array.isArray(course.lessons) ? course.lessons : [];
-
   return (
     <Link
       to={`/course/${course._id}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400 hover:shadow-lg hover:shadow-slate-200/60 ${
-        compact ? "min-w-[250px] max-w-[250px]" : ""
+      className={`group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4 transition-all duration-200 hover:border-zinc-700 hover:bg-zinc-900/80 text-left block ${
+        compact ? "min-w-[260px] max-w-[260px]" : ""
       }`}
     >
-      <div className="relative h-40 border-b border-slate-100 bg-slate-100 overflow-hidden">
+      <div className="aspect-video w-full rounded-lg bg-zinc-800 overflow-hidden mb-3 relative">
         {course.thumbnail ? (
           <img
             src={course.thumbnail}
             alt={course.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-400">
-            <GraduationCap className="h-10 w-10" />
+          <div className="flex h-full w-full items-center justify-center text-zinc-500">
+            <GraduationCap className="h-8 w-8" />
           </div>
         )}
-        <span className="absolute left-3 top-3 rounded-md bg-white/95 backdrop-blur-sm border border-slate-200/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm">
+        <span className="absolute top-2 left-2 px-2.5 py-0.5 text-xs font-medium rounded-full bg-zinc-950/70 backdrop-blur-md text-zinc-300 border border-zinc-800">
           {course.level || "Beginner"}
         </span>
       </div>
-
-      <div className="flex flex-1 flex-col justify-between p-5 bg-white">
-        <div className="space-y-2">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">
-            {course.category || "General"}
-          </p>
-          <h3 className="line-clamp-2 text-base font-bold leading-snug text-slate-900 group-hover:text-indigo-600 transition-colors">
-            {course.title}
-          </h3>
-          <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
-            {course.description}
-          </p>
-          <p className="text-xs font-medium text-slate-500">
-            By {course.instructor?.name || "Instructor"}
-          </p>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-          <span>{lessons.length} lessons</span>
-          <span className="font-extrabold text-indigo-600 text-sm">
-            {Number(course.price) === 0 ? "Free" : `₹ ${course.price}`}
-          </span>
-        </div>
+      <h3 className="font-medium text-zinc-100 line-clamp-1 group-hover:text-indigo-400 transition-colors text-sm">
+        {course.title}
+      </h3>
+      <p className="text-xs text-zinc-400 mt-1 truncate">
+        By {course.instructor?.name || course.instructor || "Instructor"}
+      </p>
+      <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between">
+        <span className="font-semibold text-zinc-100 text-sm">
+          {Number(course.price) === 0 ? "Free" : `₹${course.price}`}
+        </span>
+        <span className="text-xs text-indigo-400 font-medium group-hover:translate-x-0.5 transition-transform">
+          Explore &rarr;
+        </span>
       </div>
     </Link>
   );
@@ -134,15 +122,15 @@ const SectionHeader = ({ eyebrow, title, description, action }) => (
   <div className="mb-6 flex flex-col justify-between gap-4 text-left md:flex-row md:items-end">
     <div>
       {eyebrow && (
-        <p className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">
+        <p className="text-xs font-medium uppercase tracking-wider text-indigo-400 mb-1">
           {eyebrow}
         </p>
       )}
-      <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">
+      <h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl">
         {title}
       </h2>
       {description && (
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+        <p className="mt-1.5 max-w-2xl text-xs text-zinc-400 leading-relaxed">
           {description}
         </p>
       )}
@@ -232,12 +220,11 @@ const HomePage = () => {
           {[1, 2, 3, 4].map((item) => (
             <div
               key={item}
-              className="h-72 animate-pulse rounded-lg border border-slate-200 bg-white p-4"
+              className="h-64 animate-pulse rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-4"
             >
-              <div className="h-32 rounded-md bg-slate-100" />
-              <div className="mt-4 h-4 w-3/4 rounded bg-slate-100" />
-              <div className="mt-2 h-3 w-full rounded bg-slate-100" />
-              <div className="mt-2 h-3 w-2/3 rounded bg-slate-100" />
+              <div className="aspect-video rounded-lg bg-zinc-800" />
+              <div className="mt-4 h-4 w-3/4 rounded bg-zinc-800" />
+              <div className="mt-2 h-3 w-1/2 rounded bg-zinc-800" />
             </div>
           ))}
         </div>
@@ -246,11 +233,11 @@ const HomePage = () => {
 
     if (!items.length) {
       return (
-        <div className="rounded-lg border border-dashed border-slate-300 bg-white p-10 text-center">
-          <Cloud className="mx-auto h-10 w-10 text-slate-300" />
-          <h3 className="mt-4 text-lg font-bold text-slate-900">No courses found</h3>
-          <p className="mt-2 text-sm text-slate-500">
-            Try another category or publish a course from the instructor dashboard.
+        <div className="rounded-xl border border-dashed border-zinc-800 bg-zinc-900/20 p-10 text-center">
+          <Cloud className="mx-auto h-10 w-10 text-zinc-600" />
+          <h3 className="mt-4 text-base font-medium text-zinc-200">No courses found</h3>
+          <p className="mt-1 text-xs text-zinc-500">
+            Try another category or search term to discover lessons.
           </p>
         </div>
       );
@@ -266,39 +253,38 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 antialiased font-sans selection:bg-indigo-500/30 transition-colors duration-300">
-      <section className="border-b border-slate-200 bg-gradient-to-b from-white via-slate-50 to-slate-50 py-16">
-        <div className="mx-auto max-w-4xl px-6 text-center space-y-7">
-          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-bold tracking-wide text-indigo-700 mx-auto shadow-sm">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
-            Learn practical, job-ready skills
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 antialiased font-sans">
+      <section className="border-b border-zinc-800/60 bg-gradient-to-b from-zinc-900/20 to-transparent py-16">
+        <div className="mx-auto max-w-4xl px-6 text-center space-y-6">
+          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-3 py-1 text-xs font-medium text-zinc-300 mx-auto">
+            <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+            Practical, Job-Ready Developer Skills
           </div>
 
-          <div className="space-y-4">
-            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
-              Learn job-ready skills from practical online courses
+          <div className="space-y-3">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+              Master core technology with structured online courses
             </h1>
-            <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600">
-              Explore structured courses with video lessons, secure enrollment,
-              progress tracking, and cryptographically verified certificates.
+            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-400">
+              Interactive video lessons, code challenges, progress checkpoints, and verifiable graduation certificates.
             </p>
           </div>
 
           <form onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl">
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-sm sm:flex-row">
+            <div className="flex flex-col gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 p-2 sm:flex-row">
               <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="What do you want to learn? (e.g. React, Node.js, AI)"
-                  className="h-12 w-full rounded-xl border-0 bg-slate-50 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="What do you want to learn? (React, Node.js, DSA...)"
+                  className="w-full px-3.5 py-2 pl-10 rounded-lg bg-zinc-900/60 border border-zinc-800 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition"
                 />
               </div>
               <button
                 type="submit"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-sm"
+                className="bg-white text-zinc-950 font-medium hover:bg-zinc-200 transition-colors px-5 py-2 rounded-lg text-sm flex items-center justify-center gap-2"
               >
                 Search
                 <ArrowRight className="h-4 w-4" />
@@ -311,7 +297,7 @@ const HomePage = () => {
                   key={term}
                   type="button"
                   onClick={() => setSearchQuery(term)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 shadow-2xs"
+                  className="rounded-full border border-zinc-800 bg-zinc-900/40 px-3 py-1 text-xs font-medium text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
                 >
                   {term}
                 </button>
@@ -321,17 +307,18 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="border-b border-slate-200 bg-white py-4 shadow-2xs">
+      {/* Category Pills Bar */}
+      <section className="border-b border-zinc-800/60 bg-zinc-900/20 py-3.5">
         <div className="mx-auto max-w-7xl px-6">
           <div className="flex gap-2 overflow-x-auto pb-1">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition border ${
+                className={`whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-medium transition border ${
                   activeCategory === category
-                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    ? "bg-zinc-800 text-white border-zinc-700"
+                    : "bg-zinc-900/40 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200"
                 }`}
               >
                 {category}
@@ -342,27 +329,27 @@ const HomePage = () => {
       </section>
 
       {auth.isAuthenticated && (
-        <section className="mx-auto max-w-7xl px-6 py-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 text-left shadow-sm">
-            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+        <section className="mx-auto max-w-7xl px-6 py-6">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 text-left">
+            <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-                  Student Workspace
+                <p className="text-xs font-medium uppercase tracking-wider text-indigo-400">
+                  Student Dashboard
                 </p>
-                <h2 className="mt-2 text-2xl font-black text-slate-900">
-                  Welcome back, {auth.user?.name || "learner"}
+                <h2 className="mt-1 text-xl font-semibold text-white">
+                  Welcome back, {auth.user?.name || "Learner"}
                 </h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Continue learning, track completion, and collect certificates from your profile.
+                <p className="mt-1 text-xs text-zinc-400">
+                  Pick up where you left off or access your issued graduation credentials.
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <Link
                   to="/my-courses"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition"
+                  className="bg-white text-zinc-950 font-medium hover:bg-zinc-200 transition-colors px-4 py-2 rounded-lg text-sm inline-flex items-center justify-center gap-2"
                 >
-                  Open Dashboard
+                  My Learning
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
@@ -371,109 +358,74 @@ const HomePage = () => {
         </section>
       )}
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
+      {/* Popular Courses */}
+      <section className="mx-auto max-w-7xl px-6 py-10">
         <SectionHeader
-          eyebrow="Learning paths"
-          title="Start with a career goal"
-          description="Curated learning tracks designed to guide you step-by-step from foundations to advanced production skills."
-        />
-
-        <div className="grid gap-5 md:grid-cols-3">
-          {learningPaths.map((path) => (
-            <Link
-              key={path.title}
-              to="/courses"
-              className="group rounded-2xl border border-slate-200/90 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-md"
-            >
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-2xs">
-                <GraduationCap className="h-6 w-6" />
-              </div>
-              <h3 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors">
-                {path.title}
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
-                {path.description}
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                {path.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="rounded-full bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-              <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-indigo-600">
-                Explore path
-                <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-12">
-        <SectionHeader
-          eyebrow="Popular courses"
-          title={activeCategory === "All" ? "Popular on EduMind" : `Popular in ${activeCategory}`}
-          description="Explore top-enrolled lessons rated highest by fellow students."
+          eyebrow="Popular catalog"
+          title={activeCategory === "All" ? "Featured Courses" : `Courses in ${activeCategory}`}
+          description="Curated courses with practical project-driven curriculum."
           action={
             <Link
               to="/courses"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-2xs"
+              className="text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/40 px-3 py-1.5 rounded-lg text-sm inline-flex items-center gap-1.5 border border-zinc-800/80 transition"
             >
               View All Courses
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           }
         />
         {renderCourseGrid(popularCourses)}
       </section>
 
-      <section className="border-y border-slate-200/80 bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-12">
+      {/* Learning Paths */}
+      <section className="border-y border-zinc-800/60 bg-zinc-900/20 py-12">
+        <div className="mx-auto max-w-7xl px-6">
           <SectionHeader
-            eyebrow="Beginner friendly"
-            title="Recommended for new learners"
-            description="Start building right away with accessible, zero-prerequisite foundational courses."
-          />
-          {renderCourseGrid(beginnerCourses.length ? beginnerCourses : courses.slice(0, 4))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-12">
-        <SectionHeader
-          eyebrow="Recently added"
-          title="Fresh courses from instructors"
-          description="Latest courses and updated syllabus modules published to the platform."
-        />
-        {renderCourseGrid(recentCourses)}
-      </section>
-
-      <section className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-12">
-          <SectionHeader
-            eyebrow="Why EduMind"
-            title="A practical learning experience"
-            description="Built to help developers learn with real projects, verified credentials, and interactive tools."
+            eyebrow="Career Roadmaps"
+            title="Step-by-Step Learning Paths"
+            description="End-to-end curriculums structured for modern engineering roles."
           />
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {featureHighlights.map((feature) => (
-              <div
-                key={feature.title}
-                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-left shadow-2xs"
+          <div className="grid gap-5 md:grid-cols-3">
+            {learningPaths.map((path) => (
+              <Link
+                key={path.title}
+                to="/courses"
+                className="group rounded-xl border border-zinc-800/80 bg-zinc-900/40 p-5 text-left transition hover:border-zinc-700 hover:bg-zinc-900/80"
               >
-                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
-                  {React.createElement(feature.icon, { className: "h-5 w-5" })}
+                <div className="mb-3.5 flex h-10 w-10 items-center justify-center rounded-lg bg-zinc-800 text-indigo-400 border border-zinc-700/60">
+                  <GraduationCap className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">{feature.title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-slate-600">{feature.description}</p>
-              </div>
+                <h3 className="text-base font-semibold text-zinc-100 group-hover:text-indigo-400 transition-colors">
+                  {path.title}
+                </h3>
+                <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
+                  {path.description}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
+                  {path.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="rounded-full bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.5 text-[10px] font-medium text-zinc-300"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </Link>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* Recently Added */}
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <SectionHeader
+          eyebrow="Latest Releases"
+          title="Recently Published Courses"
+          description="Newly updated modules and courses by certified industry instructors."
+        />
+        {renderCourseGrid(recentCourses)}
       </section>
     </div>
   );

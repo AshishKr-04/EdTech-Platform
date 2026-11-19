@@ -30,10 +30,10 @@ const Navbar = () => {
   const isActive = (path) => location.pathname === path;
 
   const linkClass = (path) => `
-    px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5
+    px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5
     ${isActive(path) 
-      ? "bg-blue-50 text-blue-700" 
-      : "text-slate-600 hover:bg-slate-50 hover:text-blue-700"}
+      ? "bg-zinc-800/90 text-zinc-100 border border-zinc-700/60" 
+      : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100"}
   `;
 
   // Get initials for profile fallback
@@ -45,16 +45,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-[1000] border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur-md transition-colors duration-300 sm:px-6 sm:py-4">
-      <div className="mx-auto flex max-w-7xl min-w-0 items-center justify-between gap-3">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-[#09090b]/80 border-b border-zinc-800/60">
+      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* BRAND LOGO */}
-        <Link to="/" className="group flex min-w-0 items-center gap-2">
-          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-200">
-            <GraduationCap className="h-6 w-6" />
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-sm group-hover:bg-indigo-500 transition-colors">
+            E
           </div>
-          <span className="truncate text-xl font-bold tracking-tight text-slate-900">
-            EduMind
-          </span>
+          <span className="font-semibold text-zinc-100 tracking-tight text-lg">EduMind</span>
         </Link>
 
         {/* DESKTOP NAVIGATION LINKS (hidden on mobile) */}
@@ -71,12 +69,10 @@ const Navbar = () => {
               {/* 🎓 STUDENT NAVIGATION */}
               {auth.user?.role === "Student" && (
                 <Link to="/my-courses" className={linkClass("/my-courses")}>
-                    <Sparkles className="h-4 w-4 text-blue-600" />
+                  <Sparkles className="h-4 w-4 text-indigo-400" />
                   <span>My Learning</span>
                 </Link>
               )}
-
-              {/* Student features only */}
 
               {/* USER SETTINGS / PROFILE DROPDOWN */}
               <div className="relative">
@@ -84,7 +80,7 @@ const Navbar = () => {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center gap-2 pl-2 hover:opacity-90 transition-opacity focus:outline-none"
                 >
-                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-sm font-semibold shadow-inner">
+                  <div className="h-8 w-8 rounded-full bg-zinc-800 border border-zinc-700/80 flex items-center justify-center text-zinc-200 text-xs font-semibold shadow-inner">
                     {auth.user?.avatar ? (
                       <img 
                         src={auth.user.avatar} 
@@ -93,7 +89,7 @@ const Navbar = () => {
                       />
                     ) : getInitials()}
                   </div>
-                  <ChevronDown className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {/* DROPDOWN MENU */}
@@ -103,11 +99,11 @@ const Navbar = () => {
                       className="fixed inset-0 z-10" 
                       onClick={() => setDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl z-20 py-2 transition-all duration-300 animate-slide-up-subtle">
-                      <div className="px-4 py-2 border-b border-gray-50 mb-1 text-left">
-                        <p className="text-sm font-semibold text-slate-800">{auth.user?.name || "Student"}</p>
-                        <p className="text-xs text-gray-500 truncate">{auth.user?.email}</p>
-                        <span className="inline-block mt-1 rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700">
+                    <div className="absolute right-0 mt-3 w-56 bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl z-20 py-2 transition-all duration-200 animate-slide-up-subtle">
+                      <div className="px-4 py-2 border-b border-zinc-800 mb-1 text-left">
+                        <p className="text-sm font-semibold text-zinc-100">{auth.user?.name || "Student"}</p>
+                        <p className="text-xs text-zinc-400 truncate">{auth.user?.email}</p>
+                        <span className="inline-block mt-1 rounded-full bg-zinc-800 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-300 border border-zinc-700/50">
                           {auth.user?.role}
                         </span>
                       </div>
@@ -115,9 +111,9 @@ const Navbar = () => {
                       <Link 
                         to="/profile" 
                         onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-700"
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-zinc-800/60 hover:text-white"
                       >
-                        <UserIcon className="h-4 w-4" />
+                        <UserIcon className="h-4 w-4 text-zinc-400" />
                         <span>My Profile</span>
                       </Link>
 
@@ -126,7 +122,7 @@ const Navbar = () => {
                           setDropdownOpen(false);
                           handleLogout();
                         }}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50/50 transition-colors text-left"
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-400 hover:bg-rose-950/20 transition-colors text-left"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Logout</span>
@@ -137,16 +133,16 @@ const Navbar = () => {
               </div>
             </>
           ) : (
-            <div className="flex items-center gap-2 pl-2">
+            <div className="flex items-center gap-3 pl-2">
               <Link 
                 to="/login" 
-                className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-blue-700"
+                className="text-zinc-400 hover:text-zinc-100 text-sm font-medium transition-colors"
               >
                 Login
               </Link>
               <Link 
                 to="/register" 
-                className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 shadow-md transition duration-150"
+                className="bg-white text-zinc-950 font-medium hover:bg-zinc-200 transition-colors px-4 py-2 rounded-lg text-sm shadow-sm"
               >
                 Sign Up
               </Link>
@@ -159,7 +155,7 @@ const Navbar = () => {
           <div className="flex items-center lg:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 text-slate-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none"
+              className="rounded-lg p-2 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 focus:outline-none transition-colors"
             >
               {mobileMenuOpen ? (
                 <span className="text-xl font-bold font-sans block w-6 h-6 flex items-center justify-center">✕</span>
@@ -169,16 +165,16 @@ const Navbar = () => {
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-1.5 lg:hidden">
+          <div className="flex items-center gap-2 lg:hidden">
             <Link 
               to="/courses" 
-              className="px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 transition"
             >
               Explore
             </Link>
             <Link 
               to="/login" 
-              className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 transition shadow-sm"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition shadow-sm"
             >
               Login
             </Link>
@@ -186,14 +182,14 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* MOBILE NAVIGATION DRAWER (visible on mobile only when open) */}
+      {/* MOBILE NAVIGATION DRAWER */}
       {mobileMenuOpen && (
-        <div className="mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 text-left animate-slide-up-subtle lg:hidden">
+        <div className="px-6 pb-4 pt-2 flex flex-col gap-2 border-t border-zinc-800/80 bg-[#09090b]/95 text-left animate-slide-up-subtle lg:hidden">
           <Link 
             to="/courses" 
             onClick={() => setMobileMenuOpen(false)}
-            className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
-              isActive("/courses") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+            className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${
+              isActive("/courses") ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100"
             }`}
           >
             <BookOpen className="h-4 w-4" />
@@ -202,44 +198,40 @@ const Navbar = () => {
 
           {auth.isAuthenticated ? (
             <>
-              {/* Student learning link */}
               {auth.user?.role === "Student" && (
                 <Link 
                   to="/my-courses" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
-                    isActive("/my-courses") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${
+                    isActive("/my-courses") ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100"
                   }`}
                 >
-                  <Sparkles className="h-4 w-4 text-blue-600" />
+                  <Sparkles className="h-4 w-4 text-indigo-400" />
                   My Learning
                 </Link>
               )}
 
-              {/* Student features only */}
-
-              {/* Divider and personal account details */}
-              <div className="border-t border-slate-100 my-2 pt-2 flex flex-col gap-2">
+              <div className="border-t border-zinc-800 my-2 pt-2 flex flex-col gap-2">
                 <div className="px-3 py-1 flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-slate-800 flex items-center justify-center text-white text-xs font-semibold">
+                  <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-200 text-xs font-semibold">
                     {auth.user?.avatar ? (
                       <img src={auth.user.avatar} alt={auth.user.name} className="h-full w-full object-cover rounded-full" />
                     ) : getInitials()}
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-slate-800 leading-none">{auth.user?.name}</p>
-                    <p className="text-[10px] text-slate-500 truncate leading-none mt-1">{auth.user?.email}</p>
+                    <p className="text-xs font-semibold text-zinc-200 leading-none">{auth.user?.name}</p>
+                    <p className="text-[10px] text-zinc-500 truncate leading-none mt-1">{auth.user?.email}</p>
                   </div>
                 </div>
 
                 <Link 
                   to="/profile" 
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 ${
-                    isActive("/profile") ? "bg-blue-50 text-blue-700" : "text-slate-600 hover:bg-slate-50"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 ${
+                    isActive("/profile") ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-800/40 hover:text-zinc-100"
                   }`}
                 >
-                  <UserIcon className="h-4 w-4" />
+                  <UserIcon className="h-4 w-4 text-zinc-400" />
                   My Profile
                 </Link>
 
@@ -248,7 +240,7 @@ const Navbar = () => {
                     setMobileMenuOpen(false);
                     handleLogout();
                   }}
-                  className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50/50 transition-colors text-left"
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-rose-400 hover:bg-rose-950/20 transition-colors text-left"
                 >
                   <LogOut className="h-4 w-4" />
                   Logout
@@ -256,18 +248,18 @@ const Navbar = () => {
               </div>
             </>
           ) : (
-            <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800">
               <Link 
                 to="/login" 
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors"
+                className="w-full text-center py-2 rounded-lg text-sm font-medium text-zinc-300 bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 transition"
               >
                 Login
               </Link>
               <Link 
                 to="/register" 
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-center py-2.5 rounded-xl text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 transition-all shadow-sm"
+                className="w-full text-center py-2 rounded-lg text-sm font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition shadow-sm"
               >
                 Sign Up
               </Link>
@@ -280,7 +272,7 @@ const Navbar = () => {
         @keyframes slideUpSubtle {
           from {
             opacity: 0;
-            transform: translateY(10px);
+            transform: translateY(6px);
           }
           to {
             opacity: 1;
@@ -288,10 +280,10 @@ const Navbar = () => {
           }
         }
         .animate-slide-up-subtle {
-          animation: slideUpSubtle 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: slideUpSubtle 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
-    </nav>
+    </header>
   );
 };
 
