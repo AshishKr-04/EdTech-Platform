@@ -27,3 +27,10 @@ yarn-error.log*
 .vscode
 .idea
 .DS_Store
+
+# Temporary and generated output folders (PDF reports, rendered images, scripts)
+/output/
+/tmp/
+**/tmp/
+**/output/
+*.pdf
