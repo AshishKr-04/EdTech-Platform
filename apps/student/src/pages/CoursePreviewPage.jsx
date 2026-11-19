@@ -81,7 +81,7 @@ const CoursePreviewPage = () => {
   if (!course) return <p className="text-center mt-10">Loading course syllabus...</p>;
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-slate-50 min-h-screen">
       {/* ================= HEADER ================= */}
       <div className="bg-slate-100 border-b border-slate-200 text-slate-800">
         <div className="max-w-6xl mx-auto px-6 py-12">

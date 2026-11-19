@@ -82,10 +82,11 @@ const CourseCard = ({ course, compact = false }) => {
   return (
     <Link
       to={`/course/${course._id}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-xl border border-slate-800/80 bg-[#0d1222]/80 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-500/40 hover:shadow-indigo-500/10 ${compact ? "min-w-[250px] max-w-[250px]" : ""
-        }`}
+      className={`group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-indigo-400 hover:shadow-lg hover:shadow-slate-200/60 ${
+        compact ? "min-w-[250px] max-w-[250px]" : ""
+      }`}
     >
-      <div className="relative h-36 border-b border-slate-800/60 bg-slate-900">
+      <div className="relative h-40 border-b border-slate-100 bg-slate-100 overflow-hidden">
         {course.thumbnail ? (
           <img
             src={course.thumbnail}
@@ -93,34 +94,34 @@ const CourseCard = ({ course, compact = false }) => {
             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-slate-555 text-slate-500">
+          <div className="flex h-full w-full items-center justify-center text-slate-400">
             <GraduationCap className="h-10 w-10" />
           </div>
         )}
-        <span className="absolute left-3 top-3 rounded bg-slate-950/80 border border-slate-800 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-300">
+        <span className="absolute left-3 top-3 rounded-md bg-white/95 backdrop-blur-sm border border-slate-200/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700 shadow-sm">
           {course.level || "Beginner"}
         </span>
       </div>
 
-      <div className="flex flex-1 flex-col justify-between p-4 bg-[#0d1222]/40">
+      <div className="flex flex-1 flex-col justify-between p-5 bg-white">
         <div className="space-y-2">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-400">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-indigo-600">
             {course.category || "General"}
           </p>
-          <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white group-hover:text-indigo-300 transition-colors">
+          <h3 className="line-clamp-2 text-base font-bold leading-snug text-slate-900 group-hover:text-indigo-600 transition-colors">
             {course.title}
           </h3>
-          <p className="line-clamp-2 text-xs leading-relaxed text-slate-400">
+          <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">
             {course.description}
           </p>
-          <p className="text-[11px] font-medium text-slate-500">
+          <p className="text-xs font-medium text-slate-500">
             By {course.instructor?.name || "Instructor"}
           </p>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-slate-800/60 pt-3 text-xs text-slate-450 text-slate-400">
+        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
           <span>{lessons.length} lessons</span>
-          <span className="font-extrabold text-indigo-400">
+          <span className="font-extrabold text-indigo-600 text-sm">
             {Number(course.price) === 0 ? "Free" : `₹ ${course.price}`}
           </span>
         </div>
@@ -133,15 +134,15 @@ const SectionHeader = ({ eyebrow, title, description, action }) => (
   <div className="mb-6 flex flex-col justify-between gap-4 text-left md:flex-row md:items-end">
     <div>
       {eyebrow && (
-        <p className="text-[10px] font-black uppercase tracking-wider text-indigo-400">
+        <p className="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600">
           {eyebrow}
         </p>
       )}
-      <h2 className="mt-1 text-2xl font-black tracking-tight text-white md:text-3xl">
+      <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-900 md:text-3xl">
         {title}
       </h2>
       {description && (
-        <p className="mt-2 max-w-2xl text-xs leading-relaxed text-slate-400">
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
           {description}
         </p>
       )}
@@ -265,39 +266,39 @@ const HomePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#070a13] text-slate-100 antialiased font-sans selection:bg-indigo-500/30 transition-colors duration-300">
-      <section className="border-b border-slate-900 bg-slate-950/20 py-16">
+    <div className="min-h-screen bg-slate-50 text-slate-900 antialiased font-sans selection:bg-indigo-500/30 transition-colors duration-300">
+      <section className="border-b border-slate-200 bg-gradient-to-b from-white via-slate-50 to-slate-50 py-16">
         <div className="mx-auto max-w-4xl px-6 text-center space-y-7">
-          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-indigo-300 mx-auto">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center justify-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3.5 py-1.5 text-xs font-bold tracking-wide text-indigo-700 mx-auto shadow-sm">
+            <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
             Learn practical, job-ready skills
           </div>
 
           <div className="space-y-4">
-            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
+            <h1 className="text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
               Learn job-ready skills from practical online courses
             </h1>
-            <p className="mx-auto max-w-2xl text-sm leading-relaxed text-slate-400">
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600">
               Explore structured courses with video lessons, secure enrollment,
-              progress tracking, and certificates of completion.
+              progress tracking, and cryptographically verified certificates.
             </p>
           </div>
 
           <form onSubmit={handleSearchSubmit} className="mx-auto max-w-2xl">
-            <div className="flex flex-col gap-3 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-2 shadow-inner sm:flex-row">
+            <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-sm sm:flex-row">
               <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(event) => setSearchQuery(event.target.value)}
-                  placeholder="What do you want to learn?"
-                  className="h-12 w-full rounded-xl border-0 bg-slate-950/60 pl-12 pr-4 text-sm font-medium text-white outline-none focus:ring-1 focus:ring-indigo-500"
+                  placeholder="What do you want to learn? (e.g. React, Node.js, AI)"
+                  className="h-12 w-full rounded-xl border-0 bg-slate-50 pl-12 pr-4 text-sm font-medium text-slate-900 outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <button
                 type="submit"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-bold text-white transition hover:bg-indigo-500 shadow-md shadow-indigo-600/20"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-sm"
               >
                 Search
                 <ArrowRight className="h-4 w-4" />
@@ -310,7 +311,7 @@ const HomePage = () => {
                   key={term}
                   type="button"
                   onClick={() => setSearchQuery(term)}
-                  className="rounded-full border border-slate-850 bg-slate-900/50 px-3 py-1 text-xs font-semibold text-slate-450 text-slate-400 transition hover:border-indigo-500/30 hover:bg-indigo-950/20 hover:text-indigo-300"
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 transition hover:border-indigo-400 hover:bg-indigo-50 hover:text-indigo-700 shadow-2xs"
                 >
                   {term}
                 </button>
@@ -320,17 +321,18 @@ const HomePage = () => {
         </div>
       </section>
 
-      <section className="border-b border-slate-900 bg-slate-950/40">
-        <div className="mx-auto max-w-7xl px-6 py-5">
+      <section className="border-b border-slate-200 bg-white py-4 shadow-2xs">
+        <div className="mx-auto max-w-7xl px-6">
           <div className="flex gap-2 overflow-x-auto pb-1">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition border border-slate-800/60 ${activeCategory === category
-                  ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10 border-transparent"
-                  : "bg-slate-900/40 text-slate-400 hover:bg-slate-850 hover:text-slate-200"
-                  }`}
+                className={`whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold transition border ${
+                  activeCategory === category
+                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                }`}
               >
                 {category}
               </button>
@@ -341,16 +343,16 @@ const HomePage = () => {
 
       {auth.isAuthenticated && (
         <section className="mx-auto max-w-7xl px-6 py-8">
-          <div className="rounded-xl border border-slate-800 bg-[#0d1222]/80 p-6 text-left shadow-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 text-left shadow-sm">
             <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                   Student Workspace
                 </p>
-                <h2 className="mt-2 text-2xl font-black text-white">
+                <h2 className="mt-2 text-2xl font-black text-slate-900">
                   Welcome back, {auth.user?.name || "learner"}
                 </h2>
-                <p className="mt-1 text-sm text-slate-350">
+                <p className="mt-1 text-sm text-slate-600">
                   Continue learning, track completion, and collect certificates from your profile.
                 </p>
               </div>
@@ -358,7 +360,7 @@ const HomePage = () => {
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link
                   to="/my-courses"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#070a13] hover:bg-slate-900 border border-slate-800 px-4 py-2.5 text-sm font-bold text-white shadow shadow-slate-900/40"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 hover:bg-slate-800 px-5 py-3 text-sm font-bold text-white shadow-sm transition"
                 >
                   Open Dashboard
                   <ArrowRight className="h-4 w-4" />
@@ -373,7 +375,7 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Learning paths"
           title="Start with a career goal"
-
+          description="Curated learning tracks designed to guide you step-by-step from foundations to advanced production skills."
         />
 
         <div className="grid gap-5 md:grid-cols-3">
@@ -381,24 +383,28 @@ const HomePage = () => {
             <Link
               key={path.title}
               to="/courses"
-              className="group rounded-xl border border-slate-800/80 bg-[#0d1222]/80 p-5 text-left shadow-sm transition hover:-translate-y-1 hover:border-indigo-500/30 hover:shadow-indigo-500/5"
+              className="group rounded-2xl border border-slate-200/90 bg-white p-6 text-left shadow-sm transition hover:-translate-y-1 hover:border-indigo-400 hover:shadow-md"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-indigo-400 border border-slate-850">
-                <GraduationCap className="h-5 w-5" />
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-2xs">
+                <GraduationCap className="h-6 w-6" />
               </div>
-              <h3 className="text-lg font-black text-white">{path.title}</h3>
-              <p className="mt-2 text-xs leading-relaxed text-slate-400">{path.description}</p>
+              <h3 className="text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors">
+                {path.title}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600 font-normal">
+                {path.description}
+              </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {path.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="rounded-full bg-indigo-950/40 border border-indigo-500/10 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-indigo-300"
+                    className="rounded-full bg-slate-100 border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-700"
                   >
                     {skill}
                   </span>
                 ))}
               </div>
-              <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-indigo-400">
+              <div className="mt-5 inline-flex items-center gap-1 text-xs font-bold text-indigo-600">
                 Explore path
                 <ChevronRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
               </div>
@@ -411,11 +417,11 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Popular courses"
           title={activeCategory === "All" ? "Popular on EduMind" : `Popular in ${activeCategory}`}
-
+          description="Explore top-enrolled lessons rated highest by fellow students."
           action={
             <Link
               to="/courses"
-              className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-800 bg-slate-900/60 px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-2xs"
             >
               View All Courses
               <ArrowRight className="h-4 w-4" />
@@ -425,12 +431,12 @@ const HomePage = () => {
         {renderCourseGrid(popularCourses)}
       </section>
 
-      <section className="border-y border-slate-900 bg-[#0a0d17]">
+      <section className="border-y border-slate-200/80 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <SectionHeader
             eyebrow="Beginner friendly"
             title="Recommended for new learners"
-
+            description="Start building right away with accessible, zero-prerequisite foundational courses."
           />
           {renderCourseGrid(beginnerCourses.length ? beginnerCourses : courses.slice(0, 4))}
         </div>
@@ -440,38 +446,35 @@ const HomePage = () => {
         <SectionHeader
           eyebrow="Recently added"
           title="Fresh courses from instructors"
-
+          description="Latest courses and updated syllabus modules published to the platform."
         />
         {renderCourseGrid(recentCourses)}
       </section>
 
-      <section className="border-y border-slate-900 bg-[#090c16]">
+      <section className="border-t border-slate-200 bg-white">
         <div className="mx-auto max-w-7xl px-6 py-12">
           <SectionHeader
             eyebrow="Why EduMind"
             title="A practical learning experience"
-
+            description="Built to help developers learn with real projects, verified credentials, and interactive tools."
           />
 
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {featureHighlights.map((feature) => (
               <div
                 key={feature.title}
-                className="rounded-xl border border-slate-800 bg-slate-900/30 p-5 text-left"
+                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-6 text-left shadow-2xs"
               >
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-indigo-400 border border-slate-850">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
                   {React.createElement(feature.icon, { className: "h-5 w-5" })}
                 </div>
-                <h3 className="text-base font-bold text-white">{feature.title}</h3>
-                <p className="mt-2 text-xs leading-relaxed text-slate-400">{feature.description}</p>
+                <h3 className="text-base font-bold text-slate-900">{feature.title}</h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-600">{feature.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-
-
-
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 // --- CUSTOM LIGHTWEIGHT MARKDOWN RENDER COMPONENT ---
@@ -70,6 +70,7 @@ const parseBold = (str) => {
 
 const CoursePlayerPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const videoRef = useRef();
   const chatEndRef = useRef();
 
@@ -104,7 +105,7 @@ const CoursePlayerPage = () => {
       } catch (err) {
         console.error(err);
         alert("Access Denied: You must purchase or enroll in this course to learn!");
-        window.location.href = `/course/${id}`;
+        navigate(`/course/${id}`);
       }
     };
 
@@ -533,7 +534,7 @@ Ask me anything, or click one of the quick prompts below:`,
               <button
                 onClick={() => {
                   setShowGraduationModal(false);
-                  window.location.href = "/profile?tab=certificates";
+                  navigate("/profile?tab=certificates");
                 }}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-100"
               >

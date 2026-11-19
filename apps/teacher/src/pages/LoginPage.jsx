@@ -63,6 +63,42 @@ const LoginPage = () => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const res = await api.post('/auth/demo-login', { role: 'Teacher' });
+      localStorage.setItem('token', res.data.token);
+      await login(res.data.token);
+      showToast('Logged in with Demo Instructor account! Welcome, recruiter.', 'success');
+      navigate('/instructor-dashboard');
+    } catch {
+      try {
+        const res = await api.post('/auth/login', {
+          email: 'demo.teacher@edumind.com',
+          password: 'Demo@123',
+        });
+        localStorage.setItem('token', res.data.token);
+        await login(res.data.token);
+        showToast('Logged in with Demo Instructor account! Welcome, recruiter.', 'success');
+        navigate('/instructor-dashboard');
+      } catch (err) {
+        console.error(err);
+        setError('Demo login failed. Please try registering or entering credentials.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFillDemo = () => {
+    setFormData({
+      email: 'demo.teacher@edumind.com',
+      password: 'Demo@123',
+    });
+    showToast('Demo Instructor credentials pre-filled!', 'info');
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-6 px-4">
       <motion.div
@@ -117,9 +153,42 @@ const LoginPage = () => {
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Teacher Portal
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm text-slate-600 font-medium mt-1">
               Sign in to your teacher workspace
             </p>
+          </div>
+
+          {/* Recruiter One-Click Access Card */}
+          <div className="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 text-left shadow-2xs">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Recruiter Fast-Track Access</span>
+              </div>
+              <span className="text-[10px] font-bold text-indigo-700 bg-white border border-indigo-200 px-2 py-0.5 rounded-full">
+                Instant Access
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+              Explore instructor course authoring, video uploads, rosters, and analytics in 1 click.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={isLoading}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm"
+              >
+                ⚡ One-Click Instructor Login
+              </button>
+              <button
+                type="button"
+                onClick={handleFillDemo}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 px-3 py-2.5 text-xs font-semibold transition"
+              >
+                Fill Credentials
+              </button>
+            </div>
           </div>
 
           {/* Form */}

@@ -63,6 +63,42 @@ const LoginPage = () => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      const res = await api.post('/auth/demo-login', { role: 'Admin' });
+      localStorage.setItem('token', res.data.token);
+      await login(res.data.token);
+      showToast('Logged in with Demo Admin account! Welcome, recruiter.', 'success');
+      navigate('/admin-dashboard');
+    } catch {
+      try {
+        const res = await api.post('/auth/login', {
+          email: 'Ashish@gmail.com',
+          password: 'Admin@123',
+        });
+        localStorage.setItem('token', res.data.token);
+        await login(res.data.token);
+        showToast('Logged in with Demo Admin account! Welcome, recruiter.', 'success');
+        navigate('/admin-dashboard');
+      } catch (err) {
+        console.error(err);
+        setError('Demo admin login failed. Please enter credentials manually.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFillDemo = () => {
+    setFormData({
+      email: 'Ashish@gmail.com',
+      password: 'Admin@123',
+    });
+    showToast('Demo Admin credentials pre-filled!', 'info');
+  };
+
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-6 px-4">
       <motion.div
@@ -117,9 +153,42 @@ const LoginPage = () => {
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Admin Portal
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm text-slate-600 font-medium mt-1">
               Sign in to your administration dashboard
             </p>
+          </div>
+
+          {/* Recruiter One-Click Access Card */}
+          <div className="mb-6 rounded-2xl border border-indigo-200 bg-indigo-50/70 p-4 text-left shadow-2xs">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-950">
+                <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Recruiter Fast-Track Access</span>
+              </div>
+              <span className="text-[10px] font-bold text-indigo-700 bg-white border border-indigo-200 px-2 py-0.5 rounded-full">
+                Instant Access
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+              Explore admin user management, role moderation, certificates ledger, and system diagnostics in 1 click.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={isLoading}
+                className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 text-xs font-bold transition shadow-sm"
+              >
+                ⚡ One-Click Admin Login
+              </button>
+              <button
+                type="button"
+                onClick={handleFillDemo}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-indigo-200 bg-white hover:bg-indigo-50 text-indigo-700 px-3 py-2.5 text-xs font-semibold transition"
+              >
+                Fill Credentials
+              </button>
+            </div>
           </div>
 
           {/* Form */}

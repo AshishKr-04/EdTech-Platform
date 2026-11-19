@@ -16,33 +16,7 @@ import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
 
-app.use(helmet());
-
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 300,
-  message: {
-    status: "fail",
-    message: "Too many requests from this IP. Please try again after 15 minutes.",
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 200,  // Raised from 50 — enough for development and testing without hitting 429
-  message: {
-    status: "fail",
-    message: "Too many authentication attempts. Please try again after 15 minutes.",
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(globalLimiter);
-
-// Always allow these hardcoded Vercel deployment URLs regardless of NODE_ENV
+// ================= 1. CORS FIRST (Prevents Preflight/OPTIONS & 429 Silent CORS Failures) =================
 const hardcodedOrigins = [
   "https://ed-tech-platform-phi.vercel.app",
   "https://ed-tech-platform-teacherapp.vercel.app",
@@ -67,7 +41,7 @@ if (process.env.NODE_ENV === "production") {
     "http://localhost:5174",
     "http://localhost:5175",
     "http://localhost:3000",
-    "http://localhost:5000",
+    "http://localhost:5000"
   );
 }
 
@@ -75,29 +49,59 @@ const cleanAllowedOrigins = allowedOrigins
   .map((origin) => origin && origin.trim())
   .filter(Boolean);
 
-// Also match any preview/branch Vercel deployments dynamically
+// Match any preview/branch Vercel deployments dynamically
 const allowedOriginPatterns = [
   /^https:\/\/ed-tech-platform.*\.vercel\.app$/,
 ];
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      const isAllowed =
-        !origin ||
-        cleanAllowedOrigins.includes(origin) ||
-        allowedOriginPatterns.some((pattern) => pattern.test(origin));
+const corsOptions = {
+  origin(origin, callback) {
+    const isAllowed =
+      !origin ||
+      cleanAllowedOrigins.includes(origin) ||
+      allowedOriginPatterns.some((pattern) => pattern.test(origin));
 
-      if (isAllowed) {
-        return callback(null, true);
-      }
+    if (isAllowed) {
+      return callback(null, true);
+    }
 
-      return callback(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-    optionsSuccessStatus: 200,
-  })
-);
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+
+// ================= 2. SECURITY HEADERS =================
+app.use(helmet());
+
+// ================= 3. RATE LIMITERS (Skip OPTIONS Preflight) =================
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  skip: (req) => req.method === "OPTIONS",
+  message: {
+    status: "fail",
+    message: "Too many requests from this IP. Please try again after 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  skip: (req) => req.method === "OPTIONS",
+  message: {
+    status: "fail",
+    message: "Too many authentication attempts. Please try again after 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(globalLimiter);
 
 app.use(
   express.json({

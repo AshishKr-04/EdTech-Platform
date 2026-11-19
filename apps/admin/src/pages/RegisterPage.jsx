@@ -89,7 +89,7 @@ const RegisterPage = () => {
               <h2 className="text-2xl font-black leading-tight tracking-tight text-slate-900">
                 {role === 'Student' ? 'Embark on Your Tech Journey' : 'Empower the Next Generation'}
               </h2>
-              <p className="text-xs text-slate-500 leading-relaxed">
+              <p className="text-sm text-slate-600 leading-relaxed font-normal">
                 {role === 'Student'
                   ? 'Connect with industry leaders, build a verifiable developer profile, and take control of your educational path.'
                   : 'Publish premium course curricula, track student success metrics, and award cryptographically verifiable graduation certificates.'}
@@ -98,7 +98,7 @@ const RegisterPage = () => {
           </div>
           
           <div className="relative z-10 border-t border-slate-200 pt-6 text-left">
-            <p className="text-[10px] text-slate-500 font-mono">
+            <p className="text-xs text-slate-600 font-semibold tracking-wide">
               {role === 'Student' ? 'EduMind Student Enrollment Portal' : 'EduMind Instructor Onboarding Portal'}
             </p>
           </div>
@@ -111,7 +111,7 @@ const RegisterPage = () => {
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">
               Create an Account
             </h1>
-            <p className="text-xs text-slate-500 mt-1">Get started with a free learning account</p>
+            <p className="text-sm text-slate-600 font-medium mt-1">Get started with a free learning account</p>
           </div>
 
           {/* Form */}
@@ -199,7 +199,7 @@ const RegisterPage = () => {
           </form>
 
           {/* Footer */}
-          <p className="mt-6 text-xs text-center text-slate-500 font-medium">
+          <p className="mt-6 text-sm text-center text-slate-600 font-medium">
             Already have an account?{' '}
             <Link
               to="/login"

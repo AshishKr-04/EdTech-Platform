@@ -79,6 +79,52 @@ router.post("/login", validate(loginSchema), async (req, res, next) => {
   }
 });
 
+// ONE-CLICK DEMO LOGIN (Instant recruiter access)
+router.post("/demo-login", async (req, res, next) => {
+  try {
+    const { role } = req.body; // "Student" | "Teacher" | "Admin"
+    const requestedRole = role || "Student";
+    const targetRole = requestedRole === "Admin" ? "Admin" : (requestedRole === "Teacher" || requestedRole === "Instructor" ? "Teacher" : "Student");
+
+    let demoEmail = `demo.${targetRole.toLowerCase()}@edumind.com`;
+    let user = await User.findOne({ email: demoEmail });
+
+    if (!user) {
+      if (targetRole === "Admin") {
+        user = await User.findOne({ role: "Admin" });
+      } else if (targetRole === "Teacher") {
+        user = await User.findOne({ role: { $in: ["Teacher", "Instructor"] } });
+      } else {
+        user = await User.findOne({ role: "Student" });
+      }
+    }
+
+    if (!user) {
+      const hashed = await bcrypt.hash("Demo@123", 10);
+      user = new User({
+        name: `Demo ${targetRole}`,
+        email: demoEmail,
+        password: hashed,
+        role: targetRole,
+      });
+      await user.save();
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.json({ success: true, token, user: userResponse });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // CURRENT USER
 router.get("/me", authMiddleware, async (req, res, next) => {
   try {

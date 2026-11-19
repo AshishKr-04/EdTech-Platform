@@ -64,10 +64,10 @@ const MyCoursesPage = () => {
   }, [auth.user]);
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10 px-6">
+    <div className="bg-slate-50 min-h-screen py-10 px-6">
       <div className="max-w-6xl mx-auto">
 
-         <h1 className="text-2xl font-semibold mb-6">
+         <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-6">
           {auth.user?.role === "Instructor"
             ? "My Created Courses"
             : "My Learning"}
